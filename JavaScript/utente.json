@@ -1,0 +1,40 @@
+{ 
+    "id": 555,
+    "nome": "Chiara",
+    "cognome": "Formichetti",
+    "codiceFiscale":"FRMCHR99B64L117C",
+    "eta":24,
+    "sposato": false,
+    "indirizzo":{
+        "via":"Via fontana di polo",
+        "citta": "Terni",
+        "provincia": "TR",
+        "codicePostale": "05100"
+    },
+    "recapiti":{
+        "email": ["221973@unimore.it","chiara.formichetti@outlook.it"],
+        "telefono":[ 
+        { 
+        "tipo":"ufficio",  
+        "numero": "123456789"
+        },
+        {
+        "tipo":"cellulare",
+        "numero":"987654321"
+        }
+        ]
+
+    },
+    "amici":[
+        {
+        "nome":"Mario",
+        "conome":"Verdi",
+        "amici":[
+            {
+                "nome":"Anna",
+                "conome":"Gialla"
+            }
+        ]
+    }
+    ]
+}

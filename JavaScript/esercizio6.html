@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Esercizio 6</title>
+</head>
+<body>
+    <table id="tabella">
+        <th>ID</th>
+        <th>Nome</th>
+        <th>Cognome</th>
+        <th>Email</th>
+        <th>Codice fiscale</th>
+        <th>Indirizzo</th>
+    </thead>
+    </table>
+    <script>
+        const data = [
+            {
+                id: 1,
+                nome: "Chiara",
+                cognome: "Formichetti",
+                email: "chiara.formichetti@outlook.it",
+                codiceFiscale: "FRMCHR99B64L117C",
+                indirizzo: "via fontana di polo",
+
+            },
+            {
+                id: 2,
+                nome: "Giordano",
+                cognome: "Conti",
+                email: "giordano.conti@outlook.it",
+                codiceFiscale: "CNTGRD96B64L117C",
+                indirizzo: "strada di tuillo",
+
+            },
+        ];
+        
+        
+        const table = document.getElementById("tabella");
+
+        data.forEach(element => {
+            const row = document.createElement("tr");
+
+            Object.keys(element).forEach(key=>{
+                const column = document.createElement("td");
+                const text = document.createTextNode(element[key]);
+                column.appendChild(text);
+                row.appendChild(column);
+
+                })
+            table.appendChild(row);
+        });
+
+
+
+    </script>
+    
+</body>
+</html>

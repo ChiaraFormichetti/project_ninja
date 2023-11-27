@@ -1,0 +1,13 @@
+{
+    "name": "kaleido/chiara-dev",
+    "autoload": {
+        "psr-4": {
+            "": "src/",
+            "Controller\\": "Controller/",
+            "Model\\": "Model/",
+            "View\\": "View/",
+            "Api\\": "API/"
+        }
+    },
+    "require": {}
+}

@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Async4</title>
+</head>
+<body>
+    <script>
+//Le promise sono una rappresentanza di uno stato,
+//è una promessa che in modo asincrono verrà fatta una determinata azione e otteremo un qualcosa in futuro
+//è uno stato pendente
+//questa qui sotto è la sintassi senza promise,ovvero con le callback
+/*
+chooseToppings(function(toppings){
+    placeOrder(toppings,function(order){
+        collectOrder(order,function(pizza){
+            eatPizza(pizza);
+        },failureCallback);
+    },failureCallback);
+},failureCallback);
+
+//con le promise avremo qualcosa di molto più ordinato e una sola failureCallback
+chooseToppings()
+.then(toppings=>{
+    return placeOrder(toppings);
+})
+.then(order=>{
+    return collectOrder(order);
+})
+.then(pizza=>eatPizza(pizza))
+.catch(failureCallback);
+
+
+//vediamo ora la sintassi delle promise
+//fetch è una funzione asincrona, input è un parametro obbligatorio, quando ci sono i punti di domanda vuol dire che sono facoltativi
+//i due punti dopo le tonde indicano il valore di ritorno
+fetch("/view/assets/images/coffee.jpg")
+.then(response => {
+    if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+    } else{
+        return response.blob();
+    }//blob=binary larhe object
+})//ogni volta che con il punto ci attacchiamo stiamo concatenando=>chaining
+.then(myBlob => {
+    let objectURL = URL.createObjectURL(myBlob);
+    let image = document.createElement('img');
+    image.src = objectURL;
+    document.body.appendChild(image);
+})//risposta in caso di fallimento, se qualcosa va male a qualsiasi elemento, il catch lo prende e lo va a gestire
+.catch(e => {
+    console.log('There has been a problem with your fetch operation: ' + e.message);
+});
+
+//vediamo ora come creare delle nostre promise
+//newPromise((funzione) o viene risolta o rigettata)m gli diciamo che dopo 2 secondi ce la fa andare bene
+//variabile a cui assegniamo una funzione anonima
+let timeoutPromise = new Promise((resolve,reject) =>{
+    setTimeout(function(){
+        resolve('Success!');
+    },2000);
+});
+let prova = new Promise((resolve,reject) =>{
+    resolve();
+});
+*/
+//Vediamo ora l'esempio vero e proprio della promise
+//da questa funzione uscirà la nostra promise
+function timeoutPromise(message,interval){
+    //questa promise può essere risolta o rigettata
+    return new Promise((resolve,reject)=>{
+        if (message === '' || typeof message !== 'string') {
+            reject('Message is empty or not a string');
+        } else if (interval < 0 || typeof interval !== 'number'){
+            reject('Interval is negative or not a number');
+        } else {
+            setTimeout(function () {
+                resolve(message);
+            }, interval);
+        }
+    });
+};
+
+timeoutPromise('Hello there!', 1000)
+.then(message => {
+    alert(message);
+})
+.catch(e => {
+    console.log('Error: ' + e);
+});
+
+
+
+
+
+    </script>
+</body>
+</html>

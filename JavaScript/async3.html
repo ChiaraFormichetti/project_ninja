@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Async3</title>
+</head>
+<body>
+    <button>Vai</button>
+    <p id="demo"></p>
+    <script>
+        /*
+        //Parleremo di setTimeout(funzione,tempi di attesa) e clearTimeout()
+        //setInterval() e clearInterval() 
+        //setTimeout ci permette di mettere una sorta di tempo di pausa in cui andare a eseguire una funzione
+        //set interval ci permette di eseguire la stessa operazione più volte a distanza di tot tempo (come fosse un ciclo)
+        let prova = setTimeout(saluta,5000);
+        //la funzione viene eseguita dopo un certo lasso di tempo
+        //però partono nello stesso momento e la funzione saluta parte in background, su un altro work 
+        const btn = document.querySelector('button');
+        function saluta(){
+            alert('ciao sono in timeout');
+        }
+        //in questo modo pulisco il timeout
+        btn.addEventListener('click',()=>{
+            clearTimeout(prova);
+        })*/
+        //vediamo ora il setInterval()
+        const btn = document.querySelector('button');
+        btn.addEventListener('click',()=>{
+            //in questo modo puliamo il nostro setinterval
+            clearInterval(createClock);
+        })
+        function displayTime(){
+            let date = new Date();
+            let time = date.toLocaleTimeString();
+
+            document.getElementById('demo').textContent = time;
+        }
+        //abbiamo deciso che ogni secondo deve fare la funzione display time
+        const createClock = setInterval(displayTime,1000);
+
+    </script>
+    
+</body>
+</html>

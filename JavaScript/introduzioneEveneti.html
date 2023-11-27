@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Introduzione Eventi</title>
+    <style>
+        input{
+            display: block;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <form>
+        <div>
+            <label for="fname">Nome: </label>
+            <input id="fname" type="text" ><!--onfocus="saluta();"-->
+        </div>
+        <div>
+            <label for="lname">Cognome: </label>
+            <input id="lname" type="text">
+        </div>
+        <div>
+            <input id="submit" type="submit">
+        </div>
+    </form>
+    <p></p>
+    <script>
+        const form = document.querySelector('form');
+        const nome = document.getElementById('fname');
+        const cognome = document.getElementById('lname');
+        const paragrafo = document.getElementById('p');
+        //il submit dentro il form invia il form ma prima prima fa il controllo, se nome e cognome non sono stati inviati 
+        //previene che il form venga inviato e manda a schermo che vengonano inseriti
+        form.onsubmit = function (e){
+            if(nome.value === ''|| cognome.value === ''){
+                //
+                e.preventDefault();
+                paragrafo.textContent = 'You need to fill in both names!';
+            }
+        }
+        //preferiti, perchè ci danno più controllo
+        //il target sarà il valore dell'evento che ci interessa di più
+        //il value ci restituisce il valore
+        nome.addEventListener('focus', function(e){
+            console.log(e.target.value);
+        })
+        
+        /*
+        function saluta(){
+            console.log('ciao chiari');
+        }
+        
+        
+        //questo è l'handler
+        nome.onfocus = function(){
+            console.log('sono in focus');
+        }
+        
+        nome.onclick = function(){
+            console.log('ciao');
+        }*/
+
+    </script>
+</body>
+</html>

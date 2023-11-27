@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Esercizio 2 </title>
+</head>
+<body>
+    <script>
+        /*
+        let size =Math.floor(Math.random()*10);
+        let arrayy = [];
+        for(let i=0;i<size;i++){
+            let number = Math.floor(Math.random()*100);
+            arrayy.push(number);}
+            
+            arrayy.forEach(numero =>{
+
+                const tipo = numero %2 == 0 ? 'pari' : 'dispari';
+                const element = document.createElement("h2");
+                const text = document.createTextNode(`${numero} è ${tipo}`);
+                element.appendChild(text);
+                document.querySelector("body").appendChild(element);
+            })
+            */
+            let size =Math.floor(Math.random()*10);
+            let arrayy = [];
+            for(let i=0;i<size;i++){
+            let number = Math.floor(Math.random()*100);
+            arrayy.push(number);
+        
+            if((number%2==0)&&(number!=0)){
+                string = (`Il numero ${number} è pari`);
+            }
+            else if (number%2==1){
+                string = (`Il numero ${number} è dispari`);
+   
+            }
+            else {
+                string = (`Il numero ${number} è lo 0`);
+            }
+            const element = document.createElement("h2");
+            const text = document.createTextNode(string);
+            element.appendChild(text);
+            document.querySelector("body").appendChild(element);
+        
+        }
+            
+        
+       
+
+    </script>
+</body>
+</html>

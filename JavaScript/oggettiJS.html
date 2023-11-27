@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gli oggetti in javascript</title>
+</head>
+<body>
+    <script>
+        const persona = {
+            nome: 'Chiara',
+            conome: 'Rossi',
+            genere: 'Femmina',
+            eta: 24,
+            interessi: ['nuoto','film','manga'],
+            indirizzo:{
+                via: 'Vocabolo valleprata',
+                cap: '05100',
+                provincia: 'TR',
+                citta: 'Terni'
+            },
+            saluta: function(){
+                //this prende il nome dell'oggetto, è come se fosse persona
+                console.log(`Ciao sono ${this.nome}`)
+            }
+
+        }
+        //console.log(persona['nome']);
+        //è meglio la notazione sopra o sotto ?
+        //dipende se le cose dell'oggetto persona deve essere preso dinamicamente o staticamente,quindi se mettiamo fuori dall'oggetto
+        //const chiave = 'genere';
+        //e poi vado ad usare la dot notation
+        //console.log(persona.chiave);
+        //non me lo trova, perchè va a cercare l'attributo chiave dentro persona, nonn il genere
+        //allora usiamo la bracket notation=>   console.log(persona[chiave]);
+        /*
+        persona.saluta();
+        persona.nome.toLocaleLowerCase()*/
+
+
+        //per effettuare una modifica 
+        persona.nome = 'Paolo';
+        //possiamo cambiare le proprietà dell'oggetto anche se è definito come una costante
+        //possiamo anche aggiungere proprietà
+        persona.colorePreferito = 'blu';
+        persona.saluta()
+    </script>
+    
+</body>
+</html>

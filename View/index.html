@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Homepage</title>
+    <link rel="stylesheet" href="../view/styles/homepage.css">
+
+</head>
+
+<body>
+    <h1 class="center"><b>Homepage prenotazioni</b></h1>
+    <div class="mainDiv" id="mainDiv">
+        <span class="mainSpan" id="trash"><a href="#">CESTINO</a></span>
+        <span class="mainSpan" id="historic"><a href="#">STORICO</a></span>
+        <form class="search" id="search">
+            <div>
+                <a><b>Cerca una prenotazione!</b></a>
+            </div>
+            <div>
+                <label for="name">Nome della prenotazione: </label>
+                <input type="text" id="name" name="name" placeholder="Nome prenotazione ?">
+            </div>
+            <div>
+                <label for="enter">Data di ingresso</label>
+                <input type="date" id="enter" name="enter">
+            </div>
+            <div>
+                <button type="button" id="searchButton">Cerca</button>
+                <button type="button" id="noSearch">Annulla</button>
+            </div>
+        </form>
+        <button class="add" type="button" id="add">Aggiungi nuova prenotazione!</button>
+        <div id="myModal" class="modal">
+            <div class="modal-content">
+                <form id="newReservationForm">
+                    <label for="name">Nome:</label>
+                    <input type="text" id="newName" name="name" required>
+
+                    <label for="seats">Posti:</label>
+                    <input type="number" id="newSeats" name="seats" required>
+
+                    <label for="enter">Data di ingresso:</label>
+                    <input type="date" id="newEnter" name="enter" required>
+
+                    <label for="exit">Dati di uscita:</label>
+                    <input type="date" id="newExit" name="exit" required>
+
+                </form>
+                <span class="close" id="closeModal">&times;</span>
+            </div>
+        </div>
+
+    </div>
+    <script type="module" src="../view/scripts/homepage.js"></script>
+</body>
+
+</html>

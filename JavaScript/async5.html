@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Async5</title>
+</head>
+<body>
+    <script>
+        //vediamo le async e le await
+        //cosa succede se mettiamo async davanti le funzioni ?
+        //rendiamo direttamente le funzioni asincrone
+        //=> ci restituisce una promise
+        //async function hello(){
+        //    return greeting = await Promise.resolve('hello');
+        //}
+        //altrimenti possiamo anche scriverla come espressione e assegnarla ad una variabile
+        //let prova = async () => {return 'hello'}
+        //console.log(hello());
+        //hello().then((value) => {
+        //    console.log(value);
+        //})
+        //oppure visto che abbiamo un solo valore
+        //gli diciamo, con quello che ti da hello fai il console.log 
+        //hello().then(console.log);
+        
+        //    hello().then(console.log);
+            //await è la keyword che mettiamo quando stiamo aspettando il risultato 
+            //quindi await blocca l'esecuzione della funzione finchè il valore non è tornato
+        /*fetch("/view/assets/images/coffee.jpg")
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            } else{
+                return response.blob();
+            }//blob=binary larhe object
+        })//ogni volta che con il punto ci attacchiamo stiamo concatenando=>chaining
+        .then(myBlob => {
+            let objectURL = URL.createObjectURL(myBlob);
+            let image = document.createElement('img');
+            image.src = objectURL;
+            document.body.appendChild(image);
+        })//risposta in caso di fallimento, se qualcosa va male a qualsiasi elemento, il catch lo prende e lo va a gestire
+        .catch(e => {
+            console.log('There has been a problem with your fetch operation: ' + e.message);
+        });*/
+
+        //tutto quello scritto sopra con fetch grazie all'await diventa questo:
+        async function myFetch(){
+            //è come dire await promise
+            try{ 
+            let response = await fetch("/view/assets/images/coffee.jpg");
+
+            let myBlob = await response.blob();
+
+            let objectURL = URL.createObjectURL(myBlob);
+            let image = document.createElement('img');
+            image.src = objectURL;
+            document.body.appendChild(image);
+        } catch (e){
+            console.log('There has been a problem with your fetch operation: ' + e.message);
+        }
+        }
+        meFetch();
+        
+        //come gestire gli errori con try e catch
+
+        //Le promise all 
+        //se ci aspettiamo più di una promise le facciamo tutte insieme in un array di valori 
+
+
+
+
+    </script>
+    
+</body>
+</html>
