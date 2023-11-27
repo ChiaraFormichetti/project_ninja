@@ -1,5 +1,5 @@
 import { edit, moveToTrash, deleteforEver, restoreReservation } from './reservation.js';
-import createHtml from './Element.js';
+import createHtml from './element.js';
 
 //funzione per cancellare la lista delle prenotazioni
 export function resetCalendar() {
