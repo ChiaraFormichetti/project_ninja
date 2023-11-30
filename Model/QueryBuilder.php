@@ -14,9 +14,9 @@ class QueryBuilder
     protected $orderBy;
     protected $updateClauses = [];
     protected $errors = [];
-    protected $limit=null;
+    protected $limit = null;
 
-
+    /*
     public function __construct($tableName)
     {
         $this->tableName = $tableName;
@@ -28,7 +28,7 @@ class QueryBuilder
      * @param string $whereBond 
      * @return QueryBuilder
      */
-
+    /*
     public function where(string $column, $value, $operator = '=', $whereBond = null): QueryBuilder
     {   //CONTROLLO SE $whereBond è corretto
         //caso iniz; accetto solo null
@@ -44,7 +44,7 @@ class QueryBuilder
             ];
         } else {
             $error = 'Operatore logico del where non valido';
-            $this -> errors [] = $error;
+            $this->errors[] = $error;
         }
         return $this;
     }
@@ -63,43 +63,45 @@ class QueryBuilder
         $this->whereClauses = [];
         return $query;
     }
+    
     //parsa i valori, se non sono numeri o stringhe numeriche li trasforma in stringhe
     public function parseClauseValue($value): string
     {
         return is_numeric($value) ? $value : "'" . $value . "'";
     }
-
+    
     public function select(array $columns): QueryBuilder
     {
         $this->selectColumns = $columns;
         return $this;
     }
     // Non mi convince !
-    
+    */
     public function orderBy(string $column, string $direction = null): QueryBuilder
     {
         $this->orderBy = $column . ' ' . $direction;
         return $this;
     }
     //limit serve nella select per far stampare i prirmi $int record di una tabella
-    public function limit (int $limit) : QueryBuilder{
+    public function limit(int $limit): QueryBuilder
+    {
         $this->limit = $limit;
         return $this;
     }
-    
 
-    public function insert_into (array $values): string
+
+    public function insert_into(array $values): string
     {
         return 'INSERT INTO ' . $this->tableName . '(' . implode(',', $this->selectColumns) . ') VALUES ' . '(' . implode(',', $values) . ')';
     }
-
+/*
     public function delete(): string
     {
         $query = 'DELETE FROM ' . $this->tableName;
         $query = $this->appendWhereClausesToQuery($query);
         return $query;
     }
-    
+
     public function update(string $column, $value): QueryBuilder
     {
         $this->updateClauses[] = [
@@ -124,20 +126,21 @@ class QueryBuilder
         $this->updateClauses = [];
         return $query;
     }
-
+*/
     //select query di default
     public function buildDefaultQuery(): string
     {
         return 'SELECT ' . implode(',', $this->selectColumns) . ' FROM ' . $this->tableName . ' ';
     }
-
+    
     public function appendOrderByToQuery($query): string
     {
         $query .= ' ORDER BY ' . $this->orderBy;
         return $query;
     }
 
-    public function appendLimitToQuery($query): string {
+    public function appendLimitToQuery($query): string
+    {
         $query .= ' LIMIT ' . $this->limit;
         $this->limit = null;
         return $query;
@@ -146,16 +149,16 @@ class QueryBuilder
 
     //crea la query con select
     public function toSql()
-    {   
+    {
         $query = $this->buildDefaultQuery();
-    
+
         if (count($this->whereClauses) > 0) {
             $query = $this->appendWhereClausesToQuery($query);
         }
         if (strlen($this->orderBy) > 0) {
             $query = $this->appendOrderByToQuery($query);
         }
-        if($this->limit){
+        if ($this->limit) {
             $query = $this->appendLimitToQuery($query);
         }
         return $query;
