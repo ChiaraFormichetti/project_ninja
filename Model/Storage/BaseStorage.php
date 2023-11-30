@@ -1,7 +1,8 @@
 <?php
 
-namespace Model;
+namespace Model\Storage;
 
+use Model\Connection;
 
 class BaseStorage
 {

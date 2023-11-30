@@ -4,11 +4,19 @@ namespace Api\Service;
 
 use Api\Request\Request;
 use Api\Response\Response;
+use Controller\ReservationManager;
 
 class ReservationService extends BaseService
 {
+protected $reservationManager;
+
+    public function __construct(){
+        $this->reservationManager = new ReservationManager();
+    }
+  
     public function get(Request $request): Response
     {
+
         $response = new Response();
         $action = $request->action;
         $parameters = $request->parameters;
@@ -24,8 +32,13 @@ class ReservationService extends BaseService
                 $response->setErrorCode(Response::HTTP_CODE_ERROR_METHOD_NOT_FOUND);
             }
         } else {
-            $data = chiamata a res manager
-            $response->setData($data);
+            $data = $this->reservationManager->getAllRes();
+            if (count($data)) {
+                $response->setData($data);             
+            } else {
+                $response->setErrors(['message' => 'Non ci sono prenotazioni']);
+
+            }
             
         }
         return $response;
@@ -47,8 +60,8 @@ class ReservationService extends BaseService
                 $response->setErrorCode(Response::HTTP_CODE_ERROR_METHOD_NOT_FOUND);
             }
         } else {
-            $data = chiamata a res manager
-            $response->setData($data);
+            //$data = chiamata a res manager
+            //$response->setData($data);
         }
         return $response;
     }
@@ -67,8 +80,8 @@ class ReservationService extends BaseService
                 $response->setErrorCode(Response::HTTP_CODE_ERROR_METHOD_NOT_FOUND);
             }
         } else {
-            $data = chiamata a res manager
-            $response->setData($data);
+            //$data = chiamata a res manager
+            //$response->setData($data);
         }
         return $response;
     }

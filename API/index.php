@@ -1,5 +1,5 @@
 <?php
-
+namespace Api;
 use Api\Request\Request;
 use Api\Response\Response;
 use Api\Service\ReservationService;
@@ -9,7 +9,7 @@ require '/var/www/vhosts/chiara-dev/vendor/autoload.php';
 //lettura metodo
 $method = strtolower($_SERVER['REQUEST_METHOD']);
 //ottenimento dei parameters
-$url = $_SERVER['HTTP_REFERER'];
+$url = $_SERVER['REQUEST_URI'];
 $urlParts = parse_url($url);
 
 parse_str($urlParts['query'] ?? '',$parameters);
@@ -19,22 +19,21 @@ if ($method=='post'){
     $body = json_decode(file_get_contents('php://input'), true);
 }
 //lettura del servizio
-
-preg_match ('/\/api\/(\w+)\/(\w+)/', $url, $matches);
+$action = null;
+preg_match ('/\/api\/(\w+)(\/(\w+))?/', $url, $matches);
 if(isset($matches[1])){
     $serviceName = $matches[1];
 };
-if(isset($matches[2])){
-    $action = $matches[2];
+if(isset($matches[3])){
+    $action = $matches[3];
 }
-
-$serviceClassName = $serviceName.'Service';   
+$serviceClassName = '\\Api\\Service\\'.ucwords($serviceName).'Service';  
 if (!class_exists($serviceClassName)){
     //restituiscono risposta con errore 
     $result = new Response ();
-    $result -> setSuccess(false);
-    $result -> setErrors(['message' => 'La classe non esiste']);
-    $result -> setCodeErrors(Response::HTTP_CODE_ERROR_BAD_REQUEST);
+    $result->setSuccess(false);
+    $result->setErrors(['message' => 'La classe non esiste']);
+    $result->setErrorCode(Response::HTTP_CODE_ERROR_BAD_REQUEST);
 }
 
 //se $service = 'test' allora la classe da istanziare è testService
@@ -58,4 +57,4 @@ $result = $service->$method($request);
 
 //restituzione del risultato
 //come si setta il codice HTTP della risposta?
-echo $result;
+echo json_encode($result);

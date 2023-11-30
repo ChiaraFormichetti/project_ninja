@@ -1,14 +1,13 @@
 import { resetCalendar, updateCalendar, writeDeleteCalendar } from './calendar.js';
 import { openmodal, closemodal } from './modal.js'
 
-
 //funzione per aggiungere una nuova prenotazione
-export function addNewReservation(reservationXML, modal, div) {
+export function addNewReservation(allReservations, modal, calendarContainer) {
     let name = document.getElementById("newName").value;
     let seats = document.getElementById("newSeats").value;
     let enter = document.getElementById("newEnter").value;
     let exit = document.getElementById("newExit").value;
-    let shortName = name.trim().split(/\s+/);
+    let shortName = name.trim().split(" ");
     let validName = /^[a-zA-Z]+$/.test(name);
     let validSeats = /^[1-9]+$/.test(seats);
     let userEnterDate = new Date (enter);
@@ -19,7 +18,7 @@ export function addNewReservation(reservationXML, modal, div) {
         alert(`Devi inserire tutti i dati !`);
     } else if (shortName.length > 2 || !validName){
         alert ("Il nome inserito non è valido!");
-    } else if (seats > 30 || !validSeats){
+    } else if (seats > 5 || !validSeats){
         alert ("Il numero di posti inserito non è valido!");
     } else if (userEnterDate < currentDate){
         alert ("La data di ingresso inserita non è valida!");
@@ -27,14 +26,14 @@ export function addNewReservation(reservationXML, modal, div) {
         alert ("la data di uscita inserita non è valida!")
     } else {
         let newReservation = {
-            id: generateNewId(reservationXML),
+            id: generateNewId(allReservations),
             nome: name,
             posti: seats,
             ingresso: enter,
             uscita: exit,
         };
-        reservationXML.push(newReservation);
-        updateCalendar(reservationXML, div);
+        allReservations.push(newReservation);
+        updateCalendar(allReservations, calendarContainer);
         closemodal(modal);
         if (close) {
             alert(`Prenotazione aggiunta con successo!`);
@@ -44,25 +43,24 @@ export function addNewReservation(reservationXML, modal, div) {
 
 
 // funzione per generare il nuovo Id da assegnare ad una nuova reservation
-export function generateNewId(reservationXML) {
-    let lastReservation = reservationXML[reservationXML.length - 1];
+export function generateNewId(allReservations) {
+    let lastReservation = allReservations[allReservations.length - 1];
     let newId = lastReservation ? lastReservation.id + 1 : 1;
     return newId;
 };
 
 //funzione per modificare una reservation
-export function edit(reservationXML, id, modal, div) {
+export function edit(allReservations, reservation, modal, calendarContainer) {
     let editName;
     let editSeats;
     let editEnter;
     let editExit;
     let index = "";
-    let reservationY = {};
-
-    reservationXML.forEach((reservation, i) => {
-        if (id == reservation.id) {
-            index = i;
-            reservationY = reservation;
+    let reservationToEdit = {};
+            index = allReservations.indexOf(reservation) + 1;
+            reservationToEdit = JSON.parse(JSON.stringify(reservation));
+    //qui sarà tutto diverso perchè modificheremo completamente la modale
+            //cerca direttamente da modal
             editName = document.getElementById("newName");
             editName.value = reservation.nome;
             editSeats = document.getElementById("newSeats");
@@ -71,21 +69,20 @@ export function edit(reservationXML, id, modal, div) {
             editEnter.value = reservation.ingresso;
             editExit = document.getElementById("newExit");
             editExit.value = reservation.uscita;
-        }
-    });
+        
     const form = document.getElementById("newReservationForm");
     const editButton = document.createElement("button");
     editButton.textContent = "Modifica";
     editButton.id = "editButton";
     form.appendChild(editButton);
-    openmodal(modal);
     editButton.addEventListener("click", () => {
-
+        //mettere modal.
         let name = document.getElementById("newName").value;
         let seats = document.getElementById("newSeats").value;
         let enter = document.getElementById("newEnter").value;
         let exit = document.getElementById("newExit").value;
-        let reservationX = {
+        //rinominala
+        let reservationEdited = {
             id: id,
             nome: name,
             posti: seats,
@@ -93,47 +90,50 @@ export function edit(reservationXML, id, modal, div) {
             uscita: exit,
         };
         if (name != "") {
-            reservationXML[index].nome = reservationX.nome;
+            allReservations[index].nome = reservationEdited.nome;
         }
         if (seats != "") {
-            reservationXML[index].posti = reservationX.posti;
+            allReservations[index].posti = reservationEdited.posti;
         }
         if (enter != "") {
-            reservationXML[index].ingresso = reservationX.ingresso;
+            allReservations[index].ingresso = reservationEdited.ingresso;
         }
         if (exit != "") {
-            reservationXML[index].uscita = reservationX.uscita;
+            allReservations[index].uscita = reservationEdited.uscita;
         }
-        updateCalendar(reservationXML, div);
-
+        updateCalendar(allReservations, calendarContainer);
+        
         closemodal(modal);
-        if (close && reservationXML[index] != reservationY) {
+        
+        if ( JSON.stringify(allReservations[index]) != JSON.stringify(reservationToEdit)) {
+            
             alert(`reservation modificata con successo`);
         }
-
+        
     });
+    openmodal(modal);
 }
 
 //Funzione per cancellare logicamente una reservation
-export function moveToTrash(reservationXML, id, div) {
-    reservationXML[id - 1].cancellato = 1;
+export function moveToTrash(allReservations, id, calendarContainer) {
+    allReservations[id - 1].cancellato = 1;
     // useremo il metodo patch qua
-    updateCalendar(reservationXML, div);
-    console.log(reservationXML);
+    updateCalendar(allReservations, calendarContainer);
+    console.log(allReservations);
 }
 
 //Funzione per cancellare definitivamente una reservation
-export function deleteforEver(deleteReservations, id, div) {
+export function deleteforEver(deleteReservations, id, calendarContainer) {
     deleteReservations.forEach((reservation, i) => {
         if (reservation.id == id) {
             deleteReservations.splice(i, 1);
         }
     })
     resetCalendar();
-    writeDeleteCalendar(deleteReservations, div);
+    writeDeleteCalendar(deleteReservations, calendarContainer);
 }
 
-export function restoreReservation(deleteReservations, id, div) {
+export function restoreReservation(deleteReservations, id, calendarContainer) {
     deleteReservations.forEach((reservation, i) => {
         if (reservation.id == id) {
             reservation.cancellato = 0
@@ -141,6 +141,6 @@ export function restoreReservation(deleteReservations, id, div) {
     })
     //deleteReservations[id-1].cancellato = 0;
     resetCalendar();
-    writeDeleteCalendar(deleteReservations, div);
+    writeDeleteCalendar(deleteReservations, calendarContainer);
     console.log(deleteReservations);
 }

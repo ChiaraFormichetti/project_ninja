@@ -1,11 +1,12 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="it_IT">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Homepage</title>
-    <link rel="stylesheet" href="../view/styles/homepage.css">
+    <link rel="stylesheet" href="/View/styles/homepage.css">
+   
 
 </head>
 
@@ -34,26 +35,34 @@
         <button class="add" type="button" id="add">Aggiungi nuova prenotazione!</button>
         <div id="myModal" class="modal">
             <div class="modal-content">
+                <header class="header-modal" id="headerModal">
+                    <h3>Aggiungi una prenotazione</h3>
+                    <span class="close" id="closeModal">&times;</span>
+                </header>
                 <form id="newReservationForm">
-                    <label for="name">Nome:</label>
-                    <input type="text" id="newName" name="name" required>
-
-                    <label for="seats">Posti:</label>
-                    <input type="number" id="newSeats" name="seats" required>
-
-                    <label for="enter">Data di ingresso:</label>
-                    <input type="date" id="newEnter" name="enter" required>
-
-                    <label for="exit">Dati di uscita:</label>
-                    <input type="date" id="newExit" name="exit" required>
+                    <div>
+                        <label for="name">Nome:</label>
+                        <input type="text" id="newName" name="name" required maxlength="30" class="modal-input">
+                    </div>
+                    <div>
+                        <label for="seats">Posti:</label>
+                        <input type="number" id="newSeats" name="seats" required max="5" class="modal-input">
+                    </div>
+                    <div>
+                        <label for="enter">Data di ingresso:</label>
+                        <input type="date" id="newEnter" name="enter" required class="modal-input">
+                    </div>
+                    <div>
+                        <label for="exit">Dati di uscita:</label>
+                        <input type="date" id="newExit" name="exit" required class="modal-input">
+                    </div>
 
                 </form>
-                <span class="close" id="closeModal">&times;</span>
             </div>
         </div>
 
     </div>
-    <script type="module" src="../view/scripts/homepage.js"></script>
+    <script type="module" src="/View/scripts/homepage.js"></script>
 </body>
 
 </html>

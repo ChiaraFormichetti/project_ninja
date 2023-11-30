@@ -31,6 +31,14 @@ const createHtml = (elements) => {
 
                             parentElement = element.parentElement;
                         }
+                        if (element.children && element.children.length > 0) {
+                            createHtml(element.children.map(
+                                child => {
+                                    child.parentElement = elementNode;
+                                    return child 
+                                }
+                            ));
+                        }
                         parentElement.appendChild(elementNode);
                     }
                 }
@@ -39,3 +47,32 @@ const createHtml = (elements) => {
     }
 }
 export default createHtml;
+
+export class CreateForm { 
+    
+    modalElement = [];
+
+    constructor(aaa) {
+        this.modalElement = aaa;
+    }
+
+    addForm(id, parentId, children) {
+        const formElement = {
+            tagName: 'form',
+            id : 'newReservationForm',
+            parentId : 'modalContent',
+            children : children,
+        };
+        this.modalElements.push(formElement);
+    }
+
+    addInputElement(id,name,required,){
+
+    }
+}
+
+let cf = new CreateForm([123, 222]);
+let bb = new CreateForm([1, 2]);
+
+cf.modalElement;
+bb.modalElement;

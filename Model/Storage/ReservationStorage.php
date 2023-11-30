@@ -1,6 +1,7 @@
 <?php
 
-namespace Model;
+namespace Model\Storage;
+
 //Fare un vero Storage senza tutte queste cose inutili
 class ReservationStorage extends BaseStorage
 {

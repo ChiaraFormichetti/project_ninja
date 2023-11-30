@@ -1,10 +1,10 @@
 <?php
 
-namespace Controller\Test;
+namespace Controller;
 
 use DateTime;
 use Exception;
-use Model\ReservationStorage;
+use Model\Storage\ReservationStorage;
 
 class ReservationManager
 {
@@ -75,7 +75,7 @@ class ReservationManager
     //    }
     //}
     //funzione per stampare tutte le prenotazioni presenti nel database
-    public function printAllRes()
+    public function getAllRes()
     {
         $reservation = $this->rs->getRes();
         return $reservation;

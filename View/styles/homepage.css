@@ -1,0 +1,130 @@
+html{
+    background-color: #a5a5a5;
+    font-family: 'Roboto', sans-serif;
+}
+
+body{
+    max-width:1000px ;
+    margin: auto;
+    background-color: white;
+    padding-inline:15px ;
+    min-height:100vh;
+}
+h1{
+    margin: 0;
+}
+
+.center {
+    text-align: center;
+    padding-block:15px ;
+}
+
+.mainDiv {
+    text-align: center;
+    background-color: rgba(9, 17, 122, 0.747);
+    padding: 15px;
+    margin-inline: -15px;
+
+}
+.year-title{
+    border: 2px solid black;
+    border-radius: 10px;
+    padding: 10px;
+    margin-bottom: 20px;
+    margin-top: 20px;
+
+}
+.reservations-group-title{
+    border: 2px solid black;
+    border-radius: 50px;
+    padding: 5px;
+    display: inline;
+    margin-bottom: 10px;
+    margin-top: 20px;
+}
+
+.mainSpan {
+    background-color: rgba(30, 195, 201, 0.616);
+    border: 2px solid rgb(255, 255, 255);
+    padding: 4px;
+    width: 150px;
+}
+
+.search {
+    max-width: 225px;
+    text-align: left;
+}
+
+.add {
+    text-align: right;
+}
+
+.hidden {
+    display: none;
+}
+
+input {
+
+    margin-bottom: 10px;
+}
+
+.reservation {
+    display: block;
+}
+
+.hidden {
+    display: none;
+}
+
+.modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.74)
+}
+.header-modal {
+    position: relative;
+    background-color: blue;
+    border-radius: 30%;
+    margin-bottom: 10px;
+
+
+}
+
+@keyframes animatezoom { 
+    from {transform: scale(0);}
+    to {transform: scale(1);}}
+
+.modal-content {
+    position: relative;
+    background-color: rgba(164, 211, 192, 0.555);
+    top: 20%;
+    padding: 20px;
+    border: 1px solid #000000;
+    border-radius: 30%;
+    width: 200px;
+    height: 425px;
+    margin:auto;
+    animation: animatezoom 0.6s ;
+}
+
+.modal-input{
+    flex-direction: column;
+    border-radius: 30%;
+    padding-block: 4px;
+    border-color: cyan;
+    margin-block: 10px;
+}
+
+.close {
+    position: relative;
+    top: -10px;
+    padding: 10px;
+    margin-block: 13x;
+    cursor: pointer;
+
+    color: chartreuse;
+}

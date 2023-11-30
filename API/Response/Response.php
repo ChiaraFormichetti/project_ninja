@@ -30,7 +30,7 @@ class Response {
     public function setErrors(array $errors){
         $this->errors = $errors;
     }
-    public function setCodeErrors($code){
+    public function setErrorCode($code){
         $this->code = $code;
     }
     public function toArray(){

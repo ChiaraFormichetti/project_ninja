@@ -2,7 +2,7 @@
 
 namespace Model\Storage;
 
-use Model\BaseStorage;
+
 use Model\QueryBuilder;
 use Model\Table\Reservation;
 
@@ -11,17 +11,18 @@ class ReservationStorage extends BaseStorage
    protected $connection;
    protected $qb;
    protected $rv;
+   protected $tableColumns;
    public function __construct()
    {
       parent::__construct();
       $this->qb = new QueryBuilder('prenotazioni');
       $this->rv = new Reservation();
    }
-   public function translateReservation(){
-      $tableColumns = $this->rv->getTableColumns();
-      $this->qb->select($tableColumns) = $tableColumns;
-      return $tableColumns;
-   } 
+   public function translateReservation()
+   {
+      $this->tableColumns = $this->rv->getTableColumns();
+      $this->qb->select($this->tableColumns);
+   }
 
    //Stampa tutte le prenotazioni valide
    public function getReservation()

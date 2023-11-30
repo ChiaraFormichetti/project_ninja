@@ -1,0 +1,35 @@
+[
+    {
+        "id": 1,
+        "nome": "Chiara",
+        "posti": 3,
+        "ingresso": "2023-01-12",
+        "uscita": "2023-01-23",
+        "cancellato": 0
+    },
+    {
+        "id": 2,
+        "nome": "Federica",
+        "posti": 2,
+        "ingresso": "2023-03-02",
+        "uscita": "2023-03-10",
+        "cancellato": 0
+    },
+    {
+        "id": 3,
+        "nome": "Carlo",
+        "posti": 5,
+        "ingresso": "2023-10-09",
+        "uscita": "2023-10-13",
+        "cancellato": 0
+    },
+    {
+        "id": 4,
+        "nome": "Giulio",
+        "posti": 2,
+        "ingresso": "2022-12-09",
+        "uscita": "2022-12-15",
+        "cancellato": 0
+    }
+   
+]
