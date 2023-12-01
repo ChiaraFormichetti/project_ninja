@@ -5,7 +5,7 @@ namespace Model\Statement;
 class Delete extends CommonStatement
 {   
 
-    protected function __toString()
+    public function __toString()
     {
         $query = 'DELETE FROM ' . $this->tableName;
         $query = $this->appendJoinToQuery($query);

@@ -9,29 +9,30 @@ use Model\Table\Reservation;
 class ReservationStorage extends BaseStorage
 {
    protected $connection;
-   protected $qb;
-   protected $rv;
+   protected $queryBuilder;
+   protected $reservation;
    protected $tableColumns;
-   public function __construct()
+   public function __construct(QueryBuilder $queryBuilder, Reservation $reservation)
    {
       parent::__construct();
-      $this->qb = new QueryBuilder('prenotazioni');
-      $this->rv = new Reservation();
+      $this->queryBuilder = $queryBuilder;
+      $this->reservation = $reservation;
    }
-   public function translateReservation()
+   /*public function translateReservation()
    {
       $this->tableColumns = $this->rv->getTableColumns();
       $this->qb->select($this->tableColumns);
    }
-
+   */
    //Stampa tutte le prenotazioni valide
    public function getReservation()
    {
-      $this->qb->where('ingresso', '>=', 'CURRENT_DATE()')
-         ->where('cancellazione', '=', 0, 'AND')
-         ->orderBy('ingresso');
+     $this->select->selectColumns(['*'])
+                           ->where('ingresso', '>=', 'CURRENT_DATE()')
+                           ->where('cancellazione', '=', 0, 'AND')
+                           ->orderBy('ingresso');
 
-      $query = $this->qb->toSql();
+      $query = $this->queryBuilder->__toString();
       $reservation = [];
       foreach ($this->connection->query('"' . $query . '"') as $row) {
          $reservation[] = $row;

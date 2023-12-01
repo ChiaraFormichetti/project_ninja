@@ -19,12 +19,12 @@ abstract class CommonStatement
     }
     abstract function __toString(): string;
 
-    protected function setColumns(array $columns)
+    public function setColumns(array $columns)
     {
         $this->columns = $columns;
     }
 
-    protected function where(string $column, $value, $operator = '=', $whereBond = null): CommonStatement
+    public function where(string $column, $value, $operator = '=', $whereBond = null): CommonStatement
     {   //CONTROLLO SE $whereBond è corretto
         //caso iniz; accetto solo null
         if (count($this->whereClauses) == 0) {
@@ -44,12 +44,12 @@ abstract class CommonStatement
         return $this;
     }
 
-    protected function parseClauseValue($value): string
+    public function parseClauseValue($value): string
     {
         return is_numeric($value) ? $value : "'" . $value . "'";
     }
 
-    protected function appendWhereClausesToQuery($query): string
+    public function appendWhereClausesToQuery($query): string
     {
         $query .= 'WHERE ';
 
@@ -65,13 +65,13 @@ abstract class CommonStatement
     }
 
     //
-    protected function join($table1, $table2, $column1, $column2, $type = 'INNER'): CommonStatement
+    public function join($table1, $table2, $column1, $column2, $type = 'INNER'): CommonStatement
     {
         $this->joinConditions[] = [
             'table1' => $table1,
             'table2' => $table2,
             'column1' => $column1,
-            'colun2' => $column2,
+            'column2' => $column2,
             'type' => $type,
         ];
 
@@ -79,7 +79,7 @@ abstract class CommonStatement
         return $this;
     }
 
-    protected function appendJoinToQuery($query): string
+    public function appendJoinToQuery($query): string
     {
         foreach ($this->joinConditions as $condition) {
             $query .= ' ' . $condition['type'] . 'JOIN' . $condition['table1'] . '.' . $condition['column1'] . ' = ' .
