@@ -10,39 +10,31 @@ use Model\Statement\Update;
 class QueryBuilder
 {
     protected $statement;
+    protected $tableName;
      
-    //switch
-    //o con __call fai il match
-    /*public function __construct($tableName)
-
-    {   $this->tableName = $tableName;
-        $this->select = new Select($tableName);
-        $this->insert = new Insert($tableName);
-        $this->delete = new Delete($tableName);
-        $this->update = new Update($tableName);
-
+    public function __construct($tableName)
+    {
+       $this-> tableName = $tableName;
     }
 
-*/
-    public function __construct($tableName, $statement)
-    {
-        switch($statement){
-            case 'select':
-                $this->statement = new Select($tableName);
-                break;
-            case 'insert':
-                $this->statement = new Insert($tableName);
-                break;
-            case 'update':
-                $this->statement = new Update($tableName);
-                break;
-            case 'delete':
-                $this->statement = new Delete ($tableName);
-                break;
-            default :
-                //gestione errore
-                break;               
-        }
+    public function select(){
+        $this->statement = new Select($this->tableName);
+        return $this;
+    }
+
+    public function insert(){
+        $this->statement = new Insert($this->tableName);
+        return $this;
+    }
+
+    public function update(){
+        $this->statement = new Update($this->tableName);
+        return $this;
+    }
+
+    public function delete(){
+        $this->statement = new Delete($this->tableName);
+        return $this;
     }
 
     public function getQuery()
@@ -52,15 +44,18 @@ class QueryBuilder
 
     public function selectColumns(array $columns)
     {
-        return $this->statement->setColumns($columns);
+        $this->statement->setColumns($columns);
+        return $this;
     }
 
     public function where(string $column, $value, $operator = '=', $whereBond = null){
-        return $this->statement->where($column, $value, $operator, $whereBond);
+        $this->statement->where($column, $value, $operator, $whereBond);
+        return $this;
     }
 
     public function join($table1, $table2, $column1, $column2, $type = 'INNER'){
-        return $this->statement->join($table1, $table2, $column1, $column2, $type);
+        $this->statement->join($table1, $table2, $column1, $column2, $type);
+        return $this;
     }
 
     public function orderBy(string $column, string $direction = null)
@@ -85,7 +80,7 @@ class QueryBuilder
         $this->statement->limit($limit);
         return $this;
     }
-    public function update (string $column, $value){
+    public function updateFunction (string $column, $value){
         $this->statement->update($column, $value);
         return $this;
     }

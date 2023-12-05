@@ -22,7 +22,7 @@ class Update extends CommonStatement{
         return $query;       
     }
 
-    public function update(string $column, $value): Update
+    public function updateFunction(string $column, $value): Update
     {
         $this->updateClauses[] = [
             'column' => $column,

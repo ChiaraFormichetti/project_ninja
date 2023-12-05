@@ -32,6 +32,7 @@ protected $reservationManager;
                 $response->setErrorCode(Response::HTTP_CODE_ERROR_METHOD_NOT_FOUND);
             }
         } else {
+            
             $data = $this->reservationManager->getAllRes();
             if (count($data)) {
                 $response->setData($data);             

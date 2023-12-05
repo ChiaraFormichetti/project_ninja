@@ -26,7 +26,7 @@ createHtml(createCalendarContainer);
 const calendarContainer = document.getElementById("calendar");
 
 async function fetchData(){
-    let url = 'http://chiara-test.com/api/reservation';
+    let url = 'http://www.chiara-test/api/reservation';
     try {      
         const allReservations = await requestManager.get(url);
         

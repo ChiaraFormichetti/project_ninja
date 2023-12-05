@@ -12,11 +12,11 @@ class ReservationStorage extends BaseStorage
    protected $queryBuilder;
    protected $reservation;
    protected $tableColumns;
-   public function __construct(QueryBuilder $queryBuilder, Reservation $reservation)
+   public function __construct($tableName)
    {
       parent::__construct();
-      $this->queryBuilder = $queryBuilder;
-      $this->reservation = $reservation;
+      $this->queryBuilder = new QueryBuilder($tableName);
+      $this->reservation = new Reservation;
    }
    /*public function translateReservation()
    {
@@ -27,7 +27,8 @@ class ReservationStorage extends BaseStorage
    //Stampa tutte le prenotazioni valide
    public function getReservation()
    {
-     $this->select->selectColumns(['*'])
+     $this->queryBuilder->select()
+                           ->selectColumns(['*'])
                            ->where('ingresso', '>=', 'CURRENT_DATE()')
                            ->where('cancellazione', '=', 0, 'AND')
                            ->orderBy('ingresso');
