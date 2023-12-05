@@ -9,7 +9,7 @@ class Select extends CommonStatement
     protected $limit = null;
     protected $groupBy = [];
 
-    public function __toString()
+    public function __toString():string
     {   
         if ($this->columns == []) {
             $query = 'SELECT ' . '*' . ' FROM ' . $this->tableName . ' ';

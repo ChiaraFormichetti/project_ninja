@@ -17,141 +17,32 @@ const historicButton = document.getElementById("historic");
 
 const createCalendarContainer = [
     {
-        tagName : 'div',
+        tagName: 'div',
         id: 'calendar',
-        parentElement : body,
+        parentElement: body,
     }
 ];
 createHtml(createCalendarContainer);
 const calendarContainer = document.getElementById("calendar");
 
-async function fetchData(){
-    let url = 'http://www.chiara-test/api/reservation';
-    try {      
+searchButton.addEventListener("click", async () => search(calendarContainer));
+noSearchButton.addEventListener("click",async () => noSearch(calendarContainer));
+
+export async function fetchData() {
+    let url = 'http://www.chiara-test.com/api/reservation';
+    try {
         const allReservations = await requestManager.get(url);
-        
-        searchButton.addEventListener("click", () => search(allReservations, calendarContainer));
-        noSearchButton.addEventListener("click", () => noSearch(allReservations, calendarContainer));
+
 
         closeModal.addEventListener("click", () => closemodal(modal));
-        //funzione per chiudere la modale cliccando fuori 
+
         window.addEventListener("click", (event) => {
             if (event.target == modal) {
                 closemodal(modal);
             }
         });
-        
-        openModal.addEventListener("click", () => {
-         /*   const modalElement = [
-            {
-                tagName: 'form',
-                id : 'newReservationForm',
-                parentId : 'modalContent'
-                children : [
-                    {
-                        tagName:'div',
-                        children: [
-                            {
-                                tagName: 'label',
-                                content : 'Nome:',
-                                attributes : {
-                                    for : "name",
-                                }
-                            },
-                            {
-                                tagName: 'input',
-                                id: "newName",
-                                attributes : {
-                                    name : 'name',
-                                    required_max_length : "30"
-                                }
-                            },
-                        ]
-                    }
-                    {
-                        tagName:'div',
-                        children: [
-                            {
-                                tagName: 'label',
-                                content : 'Posti:',
-                                attributes : {
-                                    for : "seats",
-                                }
-                            },
-                            {
-                                tagName: 'input',
-                                id: "newSeats",
-                                attributes : {
-                                    name : 'seats',
-                                    required_max : "5",                    
-                                }
-                            },
-                        ]
-                    }
-                    {
-                        tagName:'div',
-                        children: [
-                            {
-                                tagName: 'label',
-                                content : 'Data di ingresso:',
-                                attributes : {
-                                    for : "enter",
-                                }
-                            },
-                            {
-                                tagName: 'input',
-                                id: "newEnter",
-                                attributes : {
-                                    name : 'enter',
-                                    required : true,
-                                }
-                            },
-                        ]
-                    }
-                    {
-                        tagName:'div',
-                        children: [ 
-                            {
-                                tagName: 'label',
-                                content : 'Data di uscita:',
-                                attributes : {
-                                    for : "exit",
-                                }
-                            },
-                            {
-                                tagName: 'input',
-                                id: "newExit",
-                                attributes : {
-                                    name : 'exit',
-                                    required : true,
-                                }
-                            },
-                        ]
-                    }
-                    {
-                        tagName: 'button',
-                        events: [
-                            {
-                                eventName: 'click',
-                                callbackName: addNewReservation,
-                                parameters: [
-                                    allReservations,
-                                    modal,
-                                    calendarContainer,
-                                ]
-                            }
-                        ],
-                        content: 'Aggiungi',
-                        attributes: {
-                            className: 'add',
-                        },
-                    }
-                ]
-            }
-        ];
 
-               
-        createHtml(modalElement);*/
+        openModal.addEventListener("click", () => {
             const addButton = document.createElement("button");
             addButton.textContent = "Aggiungi";
             addButton.id = "addButton";
@@ -169,35 +60,37 @@ fetchData();
 
 //Qui facciamo la chiamata ajax al cestino
 deleteButton.addEventListener("click", () => {
-    let deleteReservations;
-    let urlDelete = 'View/prenotazioniCancellate.json';
-    let requestDelete = new XMLHttpRequest();
-    requestDelete.open('GET', urlDelete);
-    requestDelete.responseType = 'json';
+    async function fetchTrashData() {
 
-    //qui stampiamo il cestino
-    requestDelete.onload = function () {
-        deleteReservations = requestDelete.response;
-        resetCalendar();
-        writeDeleteCalendar(deleteReservations, calendarContainer);
+        let url = 'http://www.chiara-test.com/api/reservation/trashReservations';
+
+        try {
+            const trashReservations = await requestManager.get(url);
+            resetCalendar();
+            writeDeleteCalendar(trashReservations, calendarContainer);
+        }
+        catch (error) {
+            console.error('Errore durante la fetch: ', error);
+        }
     }
-    requestDelete.send();
+    fetchTrashData();
 });
 
 historicButton.addEventListener("click", () => {
-  
-    let historicReservations;
-    let urlHistoric = 'View/prenotazioniStorico.json';
-    let requestHistoric = new XMLHttpRequest();
-    requestHistoric.open('GET', urlHistoric);
-    requestHistoric.responseType = 'json';
+    async function fetchHistoricData() {
 
-    requestHistoric.onload = function () {
-        historicReservations = requestHistoric.response;
-        resetCalendar();
-        writeHistoricCalendar(historicReservations,calendarContainer);
+        let url = 'http://www.chiara-test.com/api/reservation/historicReservations';
+
+        try {
+            const historicReservations = await requestManager.get(url);
+            resetCalendar();
+            writeHistoricCalendar(historicReservations, calendarContainer);
+        }
+        catch (error) {
+            console.error('Errore durante la fetch: ', error);
+        }
     }
-    requestHistoric.send();
+    fetchHistoricData();
 });
 /*
 children: [
@@ -221,3 +114,114 @@ children: [
     }
 ]*/
 
+
+/*   const modalElement = [
+{
+tagName: 'form',
+id : 'newReservationForm',
+parentId : 'modalContent'
+children : [
+{
+   tagName:'div',
+   children: [
+       {
+           tagName: 'label',
+           content : 'Nome:',
+           attributes : {
+               for : "name",
+           }
+       },
+       {
+           tagName: 'input',
+           id: "newName",
+           attributes : {
+               name : 'name',
+               required_max_length : "30"
+           }
+       },
+   ]
+}
+{
+   tagName:'div',
+   children: [
+       {
+           tagName: 'label',
+           content : 'Posti:',
+           attributes : {
+               for : "seats",
+           }
+       },
+       {
+           tagName: 'input',
+           id: "newSeats",
+           attributes : {
+               name : 'seats',
+               required_max : "5",                    
+           }
+       },
+   ]
+}
+{
+   tagName:'div',
+   children: [
+       {
+           tagName: 'label',
+           content : 'Data di ingresso:',
+           attributes : {
+               for : "enter",
+           }
+       },
+       {
+           tagName: 'input',
+           id: "newEnter",
+           attributes : {
+               name : 'enter',
+               required : true,
+           }
+       },
+   ]
+}
+{
+   tagName:'div',
+   children: [ 
+       {
+           tagName: 'label',
+           content : 'Data di uscita:',
+           attributes : {
+               for : "exit",
+           }
+       },
+       {
+           tagName: 'input',
+           id: "newExit",
+           attributes : {
+               name : 'exit',
+               required : true,
+           }
+       },
+   ]
+}
+{
+   tagName: 'button',
+   events: [
+       {
+           eventName: 'click',
+           callbackName: addNewReservation,
+           parameters: [
+               allReservations,
+               modal,
+               calendarContainer,
+           ]
+       }
+   ],
+   content: 'Aggiungi',
+   attributes: {
+       className: 'add',
+   },
+}
+]
+}
+];
+
+      
+createHtml(modalElement);*/

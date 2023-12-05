@@ -2,168 +2,135 @@
 
 namespace Model\Storage;
 
-//Fare un vero Storage senza tutte queste cose inutili
+
+use Model\QueryBuilder;
+use Model\Table\Reservation;
+
 class ReservationStorage extends BaseStorage
 {
-    protected $connection;
+   protected $connection;
+   protected $queryBuilder;  
+   protected $reservationTable;
+   //protected $tableColumns;
+   public function __construct()
+   {
+      parent::__construct();
+      $this->queryBuilder = new QueryBuilder('prenotazioni');
+      $this->reservationTable = new Reservation();
+   }
 
-    public function __construct()
-    {
-        parent::__construct();
-    }
+   public function translateReservation()
+   {
+      $tableColumns = $this->reservationTable->getTableColumns();
+      return $tableColumns;
+   }
 
-    //funzione per aggiungere una riga al database
-    public function addRow($nome, $num, $ingresso, $uscita)
-    {
-        $ris = $this->connection->query("INSERT INTO `prenotazioni`(nome,posti,ingresso,uscita)
-        VALUES('$nome',$num,'$ingresso','$uscita');");
-        return $ris->rowCount();
-    }
-    //funzione per stampare le prenotazioni raggruppandole per data
-    public function printReservationByDate($date){
-       $reservation = [];
+   public function getReservation()
+   {
+     $this->queryBuilder->select()
+                           ->selectColumns(['*'])
+                           ->where('ingresso', '>=', date('Y-m-d'))
+                           ->where('cancellazione', '=', 0, 'AND')
+                           ->orderBy('ingresso');
 
-        foreach ($this->connection->query("SELECT * FROM `prenotazioni` WHERE ingresso='$date' AND cancelazzione=0") as $row) {
-            $reservation[] = $row;
-        }
-        return $reservation;
-        
-    }
-    
-    //il group by non funziona
-    //funzione per prendere tutte le prenotazioni dal database
-    public function getRes()
-    {
-        $reservation = [];
-        $now = date('Y-m-d');
-    
-        foreach ($this->connection->query("SELECT* FROM `prenotazioni` WHERE cancellazione=0 AND ingresso>='$now' ORDER BY ingresso ") as $row) {
-            $reservation[] = $row;
-        }
-        return $reservation;
-    }
+      $query = $this->queryBuilder->getQuery();
+      $reservations = [];
+      foreach ($this->connection->query( $query ) as $row) {
+         $reservations[] = $row;
+      }
+      return $reservations;
+   }
 
-    //funzione per trovare una prenotazione nel database dato il suo id
-    public function getResById($id)
-    {
-        $now = date('Y-m-d');
-        $res = $this->connection->query("SELECT nome,posti,ingresso,uscita FROM `prenotazioni` WHERE Id = '$id' AND cancellazione=0 AND ingresso>='$now'");
-        return $res->fetch();
-    }
+   //Stampa le prenotazioni passate
+   public function getHistoricReservation()
+   {
+      $this->queryBuilder->select()
+         ->selectColumns(['*'])
+         ->where('ingresso', '<', date('Y-m-d'))
+         ->where('cancellazione', '=', 0, 'AND')
+         ->orderBy('ingresso');
 
-    /*public function getPosti(){
-        $posti = $this->connection->query("SELECT MAX(posti) AS PostoMax FROM `prenotazioni`");
-        return $posti->fetch();
+      $query = $this->queryBuilder->getQuery();
+      $reservations = [];
+      foreach ($this->connection->query( $query ) as $row) {
+         $reservations[] = $row;
+      }
+      return $reservations;
+   }
+   //Stampa le prenotazioni nel cestino
+   public function getTrashReservation()
+   {
+      $this->queryBuilder->select()
+         ->selectColumns(['*'])
+         ->where('cancellazione', '=', 1)
+         ->orderBy('ingresso');
 
-    }
-    public function getPrenMaxNum($posti){
-        $pren = [];
-        foreach($this->connection->query("SELECT * FROM `prenotazioni` WHERE posti = '$posti'") as $row){
-            $pren[] = $row;
-        }
-        return $pren;
-    }*/
-
-    public function getPrenMaxNum()
-    {
-        $pren = [];
-        foreach ($this->connection->query("SELECT* FROM `prenotazioni` WHERE posti = (SELECT MAX(posti) FROM `prenotazioni`)") as $row) {
-            $pren[] = $row;
-        }
-        return $pren;
-    }
-    
-    //funzione per modificare una prenotazione
-    public function modify($nome,$posti,$ingresso,$uscita,$id)
-    {
-        $mod = $this->connection->query("UPDATE `prenotazioni` SET nome='$nome', posti='$posti', ingresso='$ingresso', uscita='$uscita' WHERE id='$id' ");
-        return $mod;
-    }
-
-
-    public function deleteReservation($id){
-        $delete = $this->connection->query("UPDATE `prenotazioni` SET cancellazione =1 WHERE id='$id'");
-        return $delete;
-    }
-    public function ripristinaReservation($id){
-        $ripristina = $this->connection->query("UPDATE `prenotazioni` SET cancellazione=0 WHERE id='$id'");
-        return $ripristina;
-    }
-    //funzione per creare lo storico delle prenotazioni
-    public function createHistoric()
-    {
-        $create = $this->connection->query("CREATE TABLE `historic` AS SELECT * FROM `prenotazioni` WHERE 1 = 2");
-        return $create;
-    }
-
-    //funzione che cerca le prenotazioni passate nella tabella prenotazioni
-    public function searchPastRes()
-    {
-        $now = date('Y-m-d');
-        $past = [];
-
-        foreach ($this->connection->query("SELECT * FROM `prenotazioni` WHERE cancellazione=0 AND ingresso<'$now' ORDER BY ingresso") as $row) {
-            $past[] = $row;
-        }
-        return $past;
-    }
-
-    //funzione che cerca le prenotazioni nel cestino
-    public function searchInTrash(){
-        $trash = [];
-        foreach($this->connection->query("SELECT * FROM `prenotazioni` WHERE cancellazione = 1  ORDER BY ingresso") as $row){
-            $trash[] = $row;
-        }
-        return $trash;
-   
-   
-    }   
-
-    /*funzione per aggiungere l'array all'historic
-     public function addHist($histor){
-        $hist = foreach($histor as $his){
-            $this->connection->query("INSERT INTO `historic`(id,nome,posti,ingresso,uscita) VALUES ($his);");
-            }
-        return ;}
-        /*
-        $f = $this->connection->query("INSERT INTO `historic`(id,nome,posti,ingresso,uscita) VALUES($histor["id"],$histor["nome"],$histor["posti"],$histor["ingresso"],$histor["uscita"]);");
-        return $f->rowCount();
-
-     }*/
-
-    public function addHist()
-    {
-        $now = date('Y-m-d');
-        $s = $this->connection->query("INSERT INTO `historic`(id,nome,posti,ingresso,uscita) VALUES (SELECT * FROM `prenotazioni` WHERE ingresso<'$now' )");
-        return $s->rowCount();
-    }
-    public function searchReservation($nome=null, $ingresso=null){
-        
-        $sql = '';
-        $search = [];
-
-        //scrittura query in base ai valori di $nome e $ingresso
-
-        if($nome){
-            $now = date('Y-m-d');
-            $sql = "SELECT * FROM `prenotazioni` WHERE nome = '$nome' AND cancellazione=0 AND ingresso>'$now' ORDER BY ingresso";
+      $query = $this->queryBuilder->getQuery();
+      $reservations = [];
+      foreach ($this->connection->query($query ) as $row) {
+         $reservations[] = $row;
+      }
+      return $reservations;
+   }
+   //Stampa le prenotazioni cercate
+   public function searchReservation($name, $enter)
+   {
+      $this->queryBuilder->select()
+         ->selectColumns(['*']);
+         if($name){
+            $this->queryBuilder->where('nome','=',$name);
          }
-         else if ($ingresso){
-            
-            $now = date('Y-m-d');
-            $sql = "SELECT * FROM `prenotazioni` WHERE ingresso = '$ingresso' AND cancellazione=0 AND ingresso>'$now' ORDER BY ingresso";
-        }
-        else if($nome && $ingresso){
-            $now = date('Y-m-d');
-            $sql = "SELECT * FROM `prenotazioni` WHERE ingresso = '$ingresso' AND nome='$nome' AND cancellazione=0 AND ingresso>'$now' ORDER BY ingresso";
-        }
-
-        if ($sql) {
-            foreach($this->connection->query($sql) as $row){
-                $search[] = $row;
-            }
-        }
-
-        return $search;
-    }
+         if($enter){
+            $this->queryBuilder->where('ingresso', '=' , $enter, 'OR');
+         }
+         $this->queryBuilder
+         ->orderBy('ingresso');
+      $query = $this->queryBuilder->getQuery();
+      $reservations = [];
+      foreach ($this->connection->query($query) as $row) {
+         $reservations[] = $row;
+      }
+      return $reservations;
+   }
+   
+   //Aggiunge una prenotazione
+   public function addReservation(array $body)
+   {
+      $this->queryBuilder->insert()
+         ->insert_into($body);
+         $query = $this->queryBuilder->getQuery();
+      $ris = $this->connection->query('"' . $query . '"');
+      return $ris->rowCount();
+   }
+   //Sposta la prenotazione nel cestino
+   public function trashReservation(int $id)
+   {
+      $this->queryBuilder->update()
+         ->updateFunction('cancellazione', 1)
+         ->where('id', '=', $id);
+      $query = $this->queryBuilder->getQuery();
+      $trash = $this->connection->query('"' . $query . '"');
+      return $trash;
+   }
+   //Modifica prenotazione
+   public function editReservation(array $updateData,int $id)
+   {  //per ogni colonna set value
+      $this->queryBuilder->update();
+         foreach($updateData as $column => $value){
+            $this->queryBuilder->updateFunction($column,$value);
+         }
+         $this->queryBuilder->where('id','=',$id);
+      $query = $this->queryBuilder->getQuery();
+      $edit = $this->connection->query('"' . $query . '"');
+      return $edit;
+   }
+   //Cancella definitivamente una prenotazione
+   public function deleteReservation($id)
+   {
+      $this->queryBuilder->delete()
+         ->where('id', '=', $id);
+      $query = $this->queryBuilder->getQuery();
+      $delete = $this->connection->query('"' . $query . '"');
+      return $delete;
+   }
 }

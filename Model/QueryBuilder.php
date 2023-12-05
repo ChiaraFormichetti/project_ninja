@@ -48,8 +48,8 @@ class QueryBuilder
         return $this;
     }
 
-    public function where(string $column, $value, $operator = '=', $whereBond = null){
-        $this->statement->where($column, $value, $operator, $whereBond);
+    public function where(string $column, $operator = '=',$value, $whereBond = null){
+        $this->statement->where($column,$operator, $value, $whereBond);
         return $this;
     }
 

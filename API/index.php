@@ -1,10 +1,16 @@
 <?php
+
 namespace Api;
+
 use Api\Request\Request;
 use Api\Response\Response;
 use Api\Service\ReservationService;
 
 require '/var/www/vhosts/chiara-dev/vendor/autoload.php';
+
+header("Access-Control-Allow-Origin: *");
+header("Access-Control-Allow-Methods: GET, POST, OPTIONS");
+header("Access-Control-Allow-Headers: Content-Type, Authorization");
 
 //lettura metodo
 $method = strtolower($_SERVER['REQUEST_METHOD']);

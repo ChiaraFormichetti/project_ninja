@@ -36,15 +36,7 @@ export function groupReservations(allReservations) {
         return groupedReservations;
     }
 }
-/*.reduce(
-    (obj, key) => {
-        obj[key] = groupedReservationsUnordered[key];
-        return obj;
-    },
-    {}
-);*/
 
-//funzione per scrivere la lista delle prenotazioni
 export function writeCalendar(allReservations, calendarContainer) {
 
     if (allReservations != "") {

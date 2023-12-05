@@ -9,11 +9,11 @@ abstract class CommonStatement
     protected $values = [];
     protected $joinConditions = [];
     protected $whereClauses = [];
-    protected $bondArray = ['AND', 'OR', 'NOT',];
+    protected $bondArray = ['AND', 'OR', 'NOT'];
     protected $errors = [];
 
 
-    protected function __construct($tableName)
+    public function __construct($tableName)
     {
         $this->tableName = $tableName;
     }
@@ -24,13 +24,13 @@ abstract class CommonStatement
         $this->columns = $columns;
     }
 
-    public function where(string $column, $value, $operator = '=', $whereBond = null): CommonStatement
+    public function where(string $column,$operator = '=', $value, $whereBond = null): CommonStatement
     {   //CONTROLLO SE $whereBond è corretto
         //caso iniz; accetto solo null
         if (count($this->whereClauses) == 0) {
             $whereBond = null;
         }
-        if ($whereBond === null || array_search($whereBond, $this->bondArray)) {
+        if ($whereBond === null || in_array($whereBond, $this->bondArray)) {
             $this->whereClauses[] = [
                 'column' => $column,
                 'operator' => $operator,
@@ -50,7 +50,7 @@ abstract class CommonStatement
     }
 
     public function appendWhereClausesToQuery($query): string
-    {
+    {   if(!empty($this->whereClauses)){
         $query .= 'WHERE ';
 
         foreach ($this->whereClauses as $key => $clause) {
@@ -61,6 +61,7 @@ abstract class CommonStatement
             $query .= $clause['column'] . ' ' . $clause['operator'] . ' ' . $parsedValue;
         }
         $this->whereClauses = [];
+    }
         return $query;
     }
 

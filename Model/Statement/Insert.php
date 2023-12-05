@@ -4,7 +4,7 @@ namespace Model\Statement;
 
 class Insert extends CommonStatement
 {
-    public function __toString()
+    public function __toString():string
     {   //Cercare un errore per errore inserimento dati nel database
         //fare un try catch nello storage
 

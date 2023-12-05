@@ -1,41 +1,46 @@
 import { resetCalendar, writeCalendar } from './calendar.js';
+import { requestManager } from './requestManager.js';
+import { fetchData } from './homepage.js';
 
 //funzione per cercare una prenotazione
-export function search(allReservations, calendarContainer) {
+export async function search(calendarContainer) {
     const searchName = document.getElementById("name");
     const searchEnter = document.getElementById("enter");
     if (searchName.value || searchEnter.value) {
         resetCalendar();
-        let searchReservation = [];
-        //oppure usi filter 
-        allReservations.forEach((reservation) => {
-            if (
-                reservation.nome.toLowerCase() === searchName.value.toLowerCase() ||
-                reservation.ingresso === searchEnter.value
-            ) {
-                console.log(reservation.ingresso, searchEnter.value);
-                searchReservation.push(reservation);
-            }
-        });
+      try {
+        const params = new URLSearchParams();
+        if(searchName.value){
+            params.append('name',searchName.value);
+        }
+        if(searchEnter.value){
+            params.append('enter',searchEnter.value);
+        }
+        const url = `http://www.chiara-test.com/api/reservation?${params.toString()}`;
+        const searchReservation = await requestManager.get(url);
         if (searchReservation.length >= 1) {
             writeCalendar(searchReservation, calendarContainer);
         } else {
             alert(`Non ci sono prenotazioni corrispondenti ai valori cercati`)
-            writeCalendar(allReservations, calendarContainer);
+            fetchData();
         };
-
-    };
+      } catch (error){
+        console.error('Errore durante la ricerca: ',error);
+      }
+    } else {
+        //gestisci il caso in cui non sono stati inseriti criteri di ricerca
+    }
 };
 
 
 //funzione per interrompere la ricerca
-export function noSearch(allReservations, calendarContainer) {
+export async function noSearch(calendarContainer) {
     const searchName = document.getElementById("name");
     const searchEnter = document.getElementById("enter");
     searchName.value = "";
     searchEnter.value = "";
     resetCalendar();
-    writeCalendar(allReservations, calendarContainer);
+    fetchData();
 }
 
 

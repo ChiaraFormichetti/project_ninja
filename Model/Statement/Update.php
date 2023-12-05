@@ -6,7 +6,7 @@ class Update extends CommonStatement{
 
     protected $updateClauses = [];
 
-    public function __toString()
+    public function __toString():string
     {
         $query = 'UPDATE ' . $this->tableName . ' SET ';
         foreach ($this->updateClauses as $key => $clause) {
