@@ -81,7 +81,7 @@ class QueryBuilder
         return $this;
     }
     public function updateFunction (string $column, $value){
-        $this->statement->update($column, $value);
+        $this->statement->updateFunction($column,$value);
         return $this;
     }
     public function insert_into(array $body){

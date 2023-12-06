@@ -68,7 +68,6 @@ export function writeCalendar(allReservations, calendarContainer) {
             divReservation.appendChild(list);
 
             groupedReservations[fullDate].forEach((reservation) => {
-
                 const calendarElements = [
                     {
                         tagName: 'li',
@@ -91,10 +90,8 @@ export function writeCalendar(allReservations, calendarContainer) {
                                 eventName: 'click',
                                 callbackName: edit,
                                 parameters: [
-                                    allReservations,
-                                    reservation,
+                                    reservation.id,
                                     modal,
-                                    calendarContainer
                                 ],
                             },
                         ],
@@ -107,15 +104,13 @@ export function writeCalendar(allReservations, calendarContainer) {
 
                     {
                         tagName: 'button',
-                        events: {
+                        events:[ {
                             eventName: 'click',
                             callbackName: moveToTrash,
                             parameters: [
-                                allReservations,
-                                reservation,
-                                calendarContainer
+                                reservation.id
                             ],
-                        },
+                        }],
                         content: 'sposta nel cestino',
                         attributes: {
                             className: 'add',
@@ -210,9 +205,7 @@ export function writeDeleteCalendar(deleteReservations, calendarContainer) {
                                 eventName: 'click',
                                 callbackName: deleteforEver,
                                 parameters: [
-                                    deleteReservations,
                                     reservation.id,
-                                    calendarContainer
                                 ],
                             },
                         ],
@@ -225,15 +218,15 @@ export function writeDeleteCalendar(deleteReservations, calendarContainer) {
 
                     {
                         tagName: 'button',
-                        events: {
-                            eventName: 'click',
-                            callbackName: restoreReservation,
-                            parameters: [
-                                deleteReservations,
-                                reservation.id,
-                                calendarContainer
-                            ],
-                        },
+                        events:[
+                            {
+                                eventName: 'click',
+                                callbackName: restoreReservation,
+                                parameters: [
+                                    reservation.id,
+                                ],
+                            },
+                        ], 
                         content: 'ripristina prenotazione',
                         attributes: {
                             className: 'add',

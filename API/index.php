@@ -7,13 +7,15 @@ use Api\Response\Response;
 use Api\Service\ReservationService;
 
 require '/var/www/vhosts/chiara-dev/vendor/autoload.php';
-
+//specifica gli origini che hanno accesso alle risorse (* li indica tutti)
 header("Access-Control-Allow-Origin: *");
-header("Access-Control-Allow-Methods: GET, POST, OPTIONS");
-header("Access-Control-Allow-Headers: Content-Type, Authorization");
+//indica i metodi http consentiti quando si accede alla risorsa
+header("Access-Control-Allow-Methods: GET, POST,PUT, DELETE, OPTIONS");
+
 
 //lettura metodo
-$method = strtolower($_SERVER['REQUEST_METHOD']);
+    $method = strtolower($_SERVER['REQUEST_METHOD']);
+
 //ottenimento dei parameters
 $url = $_SERVER['REQUEST_URI'];
 $urlParts = parse_url($url);
@@ -21,8 +23,9 @@ $urlParts = parse_url($url);
 parse_str($urlParts['query'] ?? '',$parameters);
 //ottenimento del body
 $body = [];
-if ($method=='post'){
-    $body = json_decode(file_get_contents('php://input'), true);
+if ($method==='post'){
+    //$body =json_decode(file_get_contents('php://input'), true);
+    $body = $_POST;
 }
 //lettura del servizio
 $action = null;

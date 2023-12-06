@@ -10,6 +10,9 @@ const createHtml = (elements) => {
                             element.events.forEach(
                                 eventObj => {
                                     const fn = eventObj.callbackName;
+                                    if (eventObj.callbackName === 'moveToTrash') {
+                                        debugger
+                                    }
                                     elementNode.addEventListener(eventObj.eventName, () => fn(...eventObj.parameters))
                                 });
                         }

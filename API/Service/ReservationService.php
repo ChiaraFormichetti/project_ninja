@@ -60,7 +60,7 @@ class ReservationService extends BaseService
     public function delete(Request $request): Response
     {
         $action = $request->action;
-        $parameters = $request->action;
+        $parameters = $request->parameters;
         $response = new Response();
         if ($action) {
             $methodName = 'delete' . ucfirst($action);
@@ -71,6 +71,17 @@ class ReservationService extends BaseService
                 $response->setErrorCode(Response::HTTP_CODE_ERROR_METHOD_NOT_FOUND);
             }
         } else {
+            if($parameters !=[]){
+                $id = $parameters['id'];
+                $success = $this->reservationManager->deleteReserations($id);
+            } else {
+                $response ->setErrors(['message' => 'Non è presente l id della prenotazione da cancellare definitivamente']);
+            }
+            if($success){
+                $response->setSuccess(true);
+            } else {
+                $response->setErrors(['message' => 'Non è stato possibile cancellare la prenotazione']);
+            }
             //$data = chiamata a res manager
             //$response->setData($data);
         }
@@ -80,7 +91,7 @@ class ReservationService extends BaseService
     public function post(Request $request): Response
     {
         $action = $request->action;
-        $body = $request->action;
+        $body = $request->body;
         $response = new Response();
         if ($action) {
             $methodName = 'post' . ucfirst($action);
@@ -91,6 +102,30 @@ class ReservationService extends BaseService
                 $response->setErrorCode(Response::HTTP_CODE_ERROR_METHOD_NOT_FOUND);
             }
         } else {
+            if(array_key_exists('id',$body)){
+                $id = $body['id'];
+                if(count($body)==1){
+                    $success = $this->reservationManager->trashReservations($id);
+                    if(!$success){
+                        $response->setErrors(['message' => 'Non è stato possibile spostare la prenotazione nel cestino']);
+                    }
+                } else {
+                    unset($body['id']);
+                    $success = $this->reservationManager->editReservations($body,$id);
+                    if (!$success){
+                        $response->setErrors(['message' => 'Non è stato possibile modificare la prenotazione']);
+                    }
+                }
+            } else {
+                $success = $this->reservationManager->addReservations($body);
+                if (!$success){
+                    $response->setErrors(['message' => 'Non è stato possibile aggiungere la prenotazione']);
+                }
+            }
+            if($success){
+                $response->setSuccess(true);
+            }
+
             //$data = chiamata a res manager
             //$response->setData($data);
         }

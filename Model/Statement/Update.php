@@ -14,7 +14,7 @@ class Update extends CommonStatement{
                 $query .= ', ';
             }
             $parsedValue = $this->parseClauseValue($clause['value']);
-            $query .= $clause['column'] . ' = ' . $parsedValue;
+            $query .= $clause['column'] . ' = ' . $parsedValue.' ';
         }
         $query = $this->appendJoinToQuery($query);
         $query = $this->appendWhereClausesToQuery($query);

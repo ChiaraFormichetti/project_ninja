@@ -47,7 +47,7 @@ export async function fetchData() {
             addButton.textContent = "Aggiungi";
             addButton.id = "addButton";
             modalForm.appendChild(addButton);
-            addButton.addEventListener("click", () => addNewReservation(allReservations, modal, calendarContainer));
+            addButton.addEventListener("click", () => addNewReservation( modal));
             openmodal(modal);
         })
 
@@ -59,8 +59,8 @@ export async function fetchData() {
 fetchData();
 
 //Qui facciamo la chiamata ajax al cestino
-deleteButton.addEventListener("click", () => {
-    async function fetchTrashData() {
+deleteButton.addEventListener("click", async () => fetchTrashData());
+ export async function fetchTrashData() {
 
         let url = 'http://www.chiara-test.com/api/reservation/trashReservations';
 
@@ -72,12 +72,12 @@ deleteButton.addEventListener("click", () => {
         catch (error) {
             console.error('Errore durante la fetch: ', error);
         }
-    }
-    fetchTrashData();
-});
+    };
+    
 
-historicButton.addEventListener("click", () => {
-    async function fetchHistoricData() {
+
+historicButton.addEventListener("click", async () =>  fetchHistoricData());
+   export async function fetchHistoricData() {
 
         let url = 'http://www.chiara-test.com/api/reservation/historicReservations';
 
@@ -89,9 +89,8 @@ historicButton.addEventListener("click", () => {
         catch (error) {
             console.error('Errore durante la fetch: ', error);
         }
-    }
-    fetchHistoricData();
-});
+   };
+
 /*
 children: [
     {

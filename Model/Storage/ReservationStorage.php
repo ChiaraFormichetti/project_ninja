@@ -78,12 +78,16 @@ class ReservationStorage extends BaseStorage
       $this->queryBuilder->select()
          ->selectColumns(['*']);
          if($name){
-            $this->queryBuilder->where('nome','=',$name);
+            //La clausola like consente di eseguire una ricerca di stringhe simili o paziali (senza il '%' ci dà la corrispondenza esatta)
+            //Il wildcard % indica che la stinga $name può essere tovata in qualsiasi parte del campo 'nome' (pima e/o dopo)
+            $this->queryBuilder->where('nome','LIKE','%'.$name.'%');
          }
          if($enter){
             $this->queryBuilder->where('ingresso', '=' , $enter, 'OR');
          }
          $this->queryBuilder
+         ->where('ingresso', '>=', date('Y-m-d'),'AND')
+         ->where('cancellazione', '=', 0, 'AND')
          ->orderBy('ingresso');
       $query = $this->queryBuilder->getQuery();
       $reservations = [];
@@ -99,7 +103,7 @@ class ReservationStorage extends BaseStorage
       $this->queryBuilder->insert()
          ->insert_into($body);
          $query = $this->queryBuilder->getQuery();
-      $ris = $this->connection->query('"' . $query . '"');
+      $ris = $this->connection->query( $query );
       return $ris->rowCount();
    }
    //Sposta la prenotazione nel cestino
@@ -109,7 +113,7 @@ class ReservationStorage extends BaseStorage
          ->updateFunction('cancellazione', 1)
          ->where('id', '=', $id);
       $query = $this->queryBuilder->getQuery();
-      $trash = $this->connection->query('"' . $query . '"');
+      $trash = $this->connection->query( $query );
       return $trash;
    }
    //Modifica prenotazione
@@ -121,7 +125,7 @@ class ReservationStorage extends BaseStorage
          }
          $this->queryBuilder->where('id','=',$id);
       $query = $this->queryBuilder->getQuery();
-      $edit = $this->connection->query('"' . $query . '"');
+      $edit = $this->connection->query($query );
       return $edit;
    }
    //Cancella definitivamente una prenotazione
@@ -130,7 +134,7 @@ class ReservationStorage extends BaseStorage
       $this->queryBuilder->delete()
          ->where('id', '=', $id);
       $query = $this->queryBuilder->getQuery();
-      $delete = $this->connection->query('"' . $query . '"');
+      $delete = $this->connection->query( $query );
       return $delete;
    }
 }
