@@ -34,7 +34,7 @@ export async function search(calendarContainer) {
 
 
 //funzione per interrompere la ricerca
-export async function noSearch(calendarContainer) {
+export async function noSearch() {
     const searchName = document.getElementById("name");
     const searchEnter = document.getElementById("enter");
     searchName.value = "";

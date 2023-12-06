@@ -28,29 +28,25 @@ const calendarContainer = document.getElementById("calendar");
 searchButton.addEventListener("click", async () => search(calendarContainer));
 noSearchButton.addEventListener("click",async () => noSearch(calendarContainer));
 
+openModal.addEventListener("click", () => {
+    const addButton = document.createElement("button");
+    addButton.textContent = "Aggiungi";
+    addButton.id = "addButton";
+    modalForm.appendChild(addButton);
+    addButton.addEventListener("click", () => addNewReservation( modal));
+    openmodal(modal);
+})
+closeModal.addEventListener("click", () => closemodal(modal));
+
+window.addEventListener("click", (event) => {
+    if (event.target == modal) {
+        closemodal(modal);
+    }
+});
 export async function fetchData() {
     let url = 'http://www.chiara-test.com/api/reservation';
     try {
         const allReservations = await requestManager.get(url);
-
-
-        closeModal.addEventListener("click", () => closemodal(modal));
-
-        window.addEventListener("click", (event) => {
-            if (event.target == modal) {
-                closemodal(modal);
-            }
-        });
-
-        openModal.addEventListener("click", () => {
-            const addButton = document.createElement("button");
-            addButton.textContent = "Aggiungi";
-            addButton.id = "addButton";
-            modalForm.appendChild(addButton);
-            addButton.addEventListener("click", () => addNewReservation( modal));
-            openmodal(modal);
-        })
-
         writeCalendar(allReservations, calendarContainer);
     } catch (error) {
         console.error('Errore durante la fetch: ', error);
