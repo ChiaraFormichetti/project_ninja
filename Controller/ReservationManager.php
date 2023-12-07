@@ -4,6 +4,7 @@ namespace Controller;
 
 use DateTime;
 use Model\Storage\ReservationStorage;
+use Model\Table\Reservation;
 
 class ReservationManager
 {
@@ -14,6 +15,19 @@ class ReservationManager
     {
         $this->reservationStorage = new ReservationStorage();
     }
+    
+    public function checkColumns(array $parameters)
+    {  
+        $reservationTable = new Reservation();
+        $tableColumns = $reservationTable->getTableColumns();
+        $existentColumns = array_diff(array_keys($parameters), $tableColumns); //problema!!!!!
+        if (empty($existentColumns)) {
+            $error = "Le seguenti colonne non esistono all'interno della tabella prenotazioni" ;
+            return $error;
+        }
+        return null;
+    }
+
 
     //funzione per la gestione degli errori nell'agggiunta di una prenotazione
     public function errorMan($name, $seats, $enter, $exit)
@@ -27,7 +41,6 @@ class ReservationManager
             $date = new DateTime("$enter");
             $date1 = new DateTime("$exit");
             $now = new DateTime;
-
 
             if ((is_numeric($seats)) && (is_string($name)) && ($date > $now) && ($date1 > $date)) {
                 $res["success"] = true;
@@ -81,31 +94,36 @@ class ReservationManager
     //Lo useremo per trovvare gli errori nell'update $tableColumns = $this->reservationStorage->translateReservation();
 
     //funzione per cercare le prenotazioni
-    public function searchReservations($name, $enter){ 
+    public function searchReservations($name, $enter)
+    {
         $reservations = $this->reservationStorage->searchReservation($name, $enter);
         return $reservations;
     }
 
     //funzione per aggiungere una prenotazione
-    public function addReservations(array $body){
+    public function addReservations(array $body)
+    {
         $result = $this->reservationStorage->addReservation($body);
         return $result;
     }
 
     //funzione per modificare una prenotazione
-    public function editReservations(array $updateData, int $id){
-        $result = $this->reservationStorage->editReservation($updateData,$id);
+    public function editReservations(array $updateData, int $id)
+    {
+        $result = $this->reservationStorage->editReservation($updateData, $id);
         return $result;
     }
 
     //funzione pe spostare una cancellazione nel cestino
-    public function trashReservations(int $id){
+    public function trashReservations(int $id)
+    {
         $result = $this->reservationStorage->trashReservation($id);
         return $result;
     }
 
     //funzione per cancellare una prenotazione
-    public function deleteReserations(int $id){
+    public function deleteReserations(int $id)
+    {
         $result = $this->reservationStorage->deleteReservation($id);
         return $result;
     }
