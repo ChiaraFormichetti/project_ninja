@@ -10,9 +10,6 @@ const createHtml = (elements) => {
                             element.events.forEach(
                                 eventObj => {
                                     const fn = eventObj.callbackName;
-                                    if (eventObj.callbackName === 'moveToTrash') {
-                                        debugger
-                                    }
                                     elementNode.addEventListener(eventObj.eventName, () => fn(...eventObj.parameters))
                                 });
                         }
@@ -22,9 +19,9 @@ const createHtml = (elements) => {
                         if (element.id) {
                             elementNode.id = element.id;
                         }
-                        if (element.attributes && element.attributes.length > 0) {
-                            for ([attributes, values] of Object.entries(element.attributes)) {
-                                elementNode.attributes = values;
+                        if (element.attributes && Object.keys(element.attributes).length > 0) {
+                            for(const [attribute, value] of Object.entries(element.attributes)) {
+                                elementNode.setAttribute(attribute,value);
                             }
                         }
                         let parentElement;

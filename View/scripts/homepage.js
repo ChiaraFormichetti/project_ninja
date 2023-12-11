@@ -6,14 +6,14 @@ import { requestManager } from './requestManager.js';
 import createHtml from './element.js';
 
 const body = document.querySelector("body");
-const modal = document.getElementById("myModal");
-const openModal = document.getElementById("add");
-const closeModal = document.getElementById("closeModal");
-const searchButton = document.getElementById("searchButton");
-const noSearchButton = document.getElementById("noSearch");
-const modalForm = document.getElementById("newReservationForm");
-const deleteButton = document.getElementById("trash");
-const historicButton = document.getElementById("historic");
+const modal = body.querySelector("#myModal");
+const buttonOpenModal = body.querySelector("#add");
+const closeModal = modal.querySelector("#closeModal");
+const searchButton = body.querySelector("#searchButton");
+const noSearchButton = body.querySelector("#noSearch");
+const modalForm = modal.querySelector("#newReservationForm");
+const deleteButton = body.querySelector("#trash");
+const historicButton = body.querySelector("#historic");
 
 const createCalendarContainer = [
     {
@@ -23,19 +23,38 @@ const createCalendarContainer = [
     }
 ];
 createHtml(createCalendarContainer);
-const calendarContainer = document.getElementById("calendar");
+const calendarContainer = body.querySelector("#calendar");
 
 searchButton.addEventListener("click", async () => search(calendarContainer));
 noSearchButton.addEventListener("click",async () => noSearch(calendarContainer));
 
-openModal.addEventListener("click", () => {
-    const addButton = document.createElement("button");
-    addButton.textContent = "Aggiungi";
-    addButton.id = "addButton";
-    modalForm.appendChild(addButton);
-    addButton.addEventListener("click", () => addNewReservation( modal));
+//generalizzare ancors, quando clicchiamo su buttonOpenModal prima di usare la funzione opendModal creiamo tutta la modale
+buttonOpenModal.addEventListener("click", () => {
+
+    const addButton = [
+        {
+            tagName: 'button',
+            id: 'addButton',           
+            parentElement:modalForm,
+            events: [
+                {
+                    eventName: 'click',
+                    callbackName: addNewReservation,
+                    parameters: [
+                        modal,
+                    ]
+                }
+            ],
+            content: 'Aggiungi',
+            attributes: {
+                class: 'add',
+            }
+        }
+    ] 
+    createHtml(addButton);
     openmodal(modal);
-})
+});
+
 closeModal.addEventListener("click", () => closemodal(modal));
 
 window.addEventListener("click", (event) => {

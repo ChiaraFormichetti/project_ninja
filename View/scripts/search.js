@@ -4,10 +4,10 @@ import { fetchData } from './homepage.js';
 
 //funzione per cercare una prenotazione
 export async function search(calendarContainer) {
-    const searchName = document.getElementById("name");
-    const searchEnter = document.getElementById("enter");
+    const searchForm = document.getElementById('search');
+    const searchName = searchForm.querySelector("#name");
+    const searchEnter = searchForm.querySelector("#enter");
     if (searchName.value || searchEnter.value) {
-        resetCalendar();
       try {
         const params = new URLSearchParams();
         if(searchName.value){
@@ -19,15 +19,17 @@ export async function search(calendarContainer) {
         const url = `http://www.chiara-test/api/reservation?${params.toString()}`;
         const searchReservation = await requestManager.get(url);
         if (searchReservation.length >= 1) {
+            resetCalendar();
             writeCalendar(searchReservation, calendarContainer);
         } else {
             alert(`Non ci sono prenotazioni corrispondenti ai valori cercati`)
-            fetchData();
+           // fetchData();
         };
       } catch (error){
         console.error('Errore durante la ricerca: ',error);
       }
     } else {
+        alert('Non sono stti inseriti dei campi validi');
         //gestisci il caso in cui non sono stati inseriti criteri di ricerca
     }
 };
@@ -35,12 +37,15 @@ export async function search(calendarContainer) {
 
 //funzione per interrompere la ricerca
 export async function noSearch() {
-    const searchName = document.getElementById("name");
-    const searchEnter = document.getElementById("enter");
-    searchName.value = "";
-    searchEnter.value = "";
-    resetCalendar();
-    fetchData();
+    const searchForm = document.getElementById('search');
+    const searchName = searchForm.querySelector("#name");
+    const searchEnter = searchForm.querySelector("#enter");
+    if(searchName.value!="" || searchEnter.value!=""){
+        searchName.value = "";
+        searchEnter.value = "";
+        resetCalendar();
+        fetchData();
+    } 
 }
 
 

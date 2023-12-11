@@ -15,62 +15,53 @@ class ReservationManager
     {
         $this->reservationStorage = new ReservationStorage();
     }
-    
+
+    //metodo per controllare che i parametri in ingresso nel service abbiano delle colonne (chiavi dell'array) che coincidono
+    //con le colonne della tabella in questione
+    //se avessi più tabelle potrei generalizzarlo mettendolo nel base manager, controllando che esista la classe reservation e nel caso
+    //in cui esista la istanziamo e usiamo il metodo getTableColumns
     public function checkColumns(array $parameters)
-    {  
+    {  //La classe reservation usa i metodi della classe table per convertire le sue proprietà in un array 
         $reservationTable = new Reservation();
         $tableColumns = $reservationTable->getTableColumns();
-        $existentColumns = array_diff(array_keys($parameters),array_keys( $tableColumns)); //problema!!!!!
-        if (!empty($existentColumns)) {
-            $error = "Le seguenti colonne non esistono all'interno della tabella prenotazioni" ;
-            return $error;
+        //controlliamo che l'array di sinistra sia interamente contenuto nell'array di destra
+        $errorColumns = array_diff(array_keys($parameters), array_keys($tableColumns));
+        //se ci sono colonne d'errore ritorniamo l'errore
+        if (!empty($errorColumns)) {
+            return "Le seguenti colonne non esistono all'interno della tabella prenotazioni";
+            //ritorniamo direttamente
         }
+        //se non ci sono colonne d'errore ritorniamo un valore null
         return null;
     }
 
 
     //funzione per la gestione degli errori nell'agggiunta di una prenotazione
-    public function errorMan($name, $seats, $enter, $exit)
+    public function errorMan(array $parameters)
     {
         $res = [
             "success" => false,
             "errors" => []
         ];
-
-        if ((preg_match('#\d{4}\-\d{2}\-\d{2}#', $enter)) && (preg_match('#\d{4}\-\d{2}\-\d{2}#', $exit))) {
-            $date = new DateTime("$enter");
-            $date1 = new DateTime("$exit");
+        //controllo degli errori, prima controlla il formato della data (Big-Endian)
+        if ((preg_match('#\d{4}\-\d{2}\-\d{2}#', $parameters['ingresso'])) && (preg_match('#\d{4}\-\d{2}\-\d{2}#', $parameters['uscita']))) {
+            $date = new DateTime($parameters['ingresso']);
+            $date1 = new DateTime($parameters['uscita']);
             $now = new DateTime;
-
-            if ((is_numeric($seats)) && (is_string($name)) && ($date > $now) && ($date1 > $date)) {
+            //controlliamo che tutti gli input siano corretti
+            if ((is_numeric($parameters['posti'])) && (is_string($parameters['nome'])) && ($date > $now) && ($date1 > $date)) {
                 $res["success"] = true;
             } else {
+                //restituiamo l'errore
                 $res["errors"][] = "Errore nell'inserimento dei dati";
             }
         } else {
+            //se la data non è nel formato voluto restituiamo l'errore
             $res["errors"][] = "Errore nell'inserimento della data";
         }
         return $res;
     }
-/*
-    //funzione per la gestione del tipo di valore da modificare
-    public function typeError(array $updateDate)
-    {
-        $res = [
-            "success" => false,
-            "errors" => ""
-        ];
-        $str = ["nome", "posti", "ingresso", "uscita"];
-        foreach (array_keys($updateDate) as $column) {
-            if (in_array($column, $str)) {
-                $res["success"] = true;
-            } else {
-                $res["errors"] = "Errore nell'inserimento del tipo di valore da modificare";
-            }
-        }
-        return $res;
-    }
-*/
+
     //Funzione per stampare tutte le prenotazioni
     public function getReservations()
     {
@@ -90,8 +81,6 @@ class ReservationManager
         $reservations = $this->reservationStorage->getHistoricReservation();
         return $reservations;
     }
-
-    //Lo useremo per trovvare gli errori nell'update $tableColumns = $this->reservationStorage->translateReservation();
 
     //funzione per cercare le prenotazioni
     public function searchReservations($name, $enter)

@@ -10,6 +10,9 @@ export async function addNewReservation(modal) {
     let seats = document.getElementById("newSeats").value;
     let enter = document.getElementById("newEnter").value;
     let exit = document.getElementById("newExit").value;
+    //uso il metodo trim() per imuovere gli spazi bianchi all'inizio e alla fine della stringa
+    //uso il metodo split per dividere la stringa in un array di sottostringhe usando lo spazio vuoto come separatore
+    //in questo modo possiamo usare poi il metodo lenght degli array per contare quanti elemtni ci sono e imporgli un massimo
     let shortName = name.trim().split(" ");
     let validName = /^[a-zA-Z]+$/.test(name);
     let validSeats = /^[1-9]+$/.test(seats);
@@ -28,7 +31,7 @@ export async function addNewReservation(modal) {
     } else if (userExitDate <= userEnterDate) {
         alert("la data di uscita inserita non è valida!")
     } else {
-
+        
         try {
             const url = 'http://www.chiara-test/api/reservation';
             const formData = new FormData();
@@ -65,6 +68,7 @@ export async function edit( id, modal) {
     try {
         let url = 'http://www.chiara-test/api/reservation';
         const allReservations = await requestManager.get(url);
+        //faccio la ricerca attraverso l'id invece che passargli direttamente la prenotazione così da avere i dati costantemente aggiornati
         const foundReservation = allReservations.find(reservation => reservation.id===id)
 
         if(foundReservation){
@@ -77,6 +81,7 @@ export async function edit( id, modal) {
             let editExit = document.getElementById("newExit");
             editExit.value = foundReservation.uscita;
         }
+        
     }
         catch (error) {
             console.error('Errore durante la fetch: ', error);

@@ -49,12 +49,12 @@ class ReservationService extends BaseService
             }
         } else {
             //non abbiamo una action ma abbiamo dei parametri => siamo nella search
-            if ($parameters != []) { 
-                    //se non esiste nessun valore nell'array di parametri associato alla chiave name o enter assegna alle due variabili che passeremo 
-                    //allo storage valore null
-                    $name = $parameters['name'] ?? null;
-                    $enter = $parameters['enter'] ?? null;
-                    $data = $this->reservationManager->searchReservations($name, $enter);
+            if ($parameters != []) {
+                //se non esiste nessun valore nell'array di parametri associato alla chiave name o enter assegna alle due variabili che passeremo 
+                //allo storage valore null
+                $name = $parameters['name'] ?? null;
+                $enter = $parameters['enter'] ?? null;
+                $data = $this->reservationManager->searchReservations($name, $enter);
             } else {
                 //se non abbiamo parametri e non abbiamo action è il caso generale in cui stampiamo tutte le prenotazioni
                 $data = $this->reservationManager->getReservations();
@@ -91,25 +91,25 @@ class ReservationService extends BaseService
             }
         } else {
             if ($parameters != []) {
-                    //controlliamo in generale che le chiavi dei parametri corrispondano all'array delle colonne di reservation
-                    //controlliamo che esista il parametro con chiave id
-                    if ($parameters['id']) {
-                        $id = $parameters['id'];
-                        $success = $this->reservationManager->deleteReserations($id);
+                //controlliamo in generale che le chiavi dei parametri corrispondano all'array delle colonne di reservation
+                //controlliamo che esista il parametro con chiave id
+                if ($parameters['id']) {
+                    $id = $parameters['id'];
+                    $success = $this->reservationManager->deleteReserations($id);
+                } else {
+                    $response->setErrors(['message' => 'Non è presente l id della prenotazione da cancellare definitivamente']);
+                }
+                if ($success) {
+                    if (is_string($success)) {
+                        $response->setErrors(['message' => $success]);
                     } else {
-                        $response->setErrors(['message' => 'Non è presente l id della prenotazione da cancellare definitivamente']);
+                        $response->setSuccess(true);
                     }
-                    if ($success) {
-                        if (is_string($success)) {
-                            $response->setErrors(['message' => $success]);
-                        } else {
-                            $response->setSuccess(true);
-                        }
-                    } else {
-                        $response->setErrors(['message' => 'Non è stato possibile cancellare la prenotazione']);
-                    }
-                } 
+                } else {
+                    $response->setErrors(['message' => 'Non è stato possibile cancellare la prenotazione']);
+                }
             }
+        }
         return $response;
     }
 
@@ -135,34 +135,68 @@ class ReservationService extends BaseService
                         $response->setErrors(['message' => 'Non è stato possibile spostare la prenotazione nel cestino']);
                     }
                 } else {
+                    //togliamo l'id dal body poichè non verrà mai modificato 
                     unset($body['id']);
-                    $errorManager = $this->reservationManager->checkColumns($body);
-                    if(!$errorManager){
+                    if (array_key_exists('cancellazione', $body)) {
                         $success = $this->reservationManager->editReservations($body, $id);
                         if (!$success) {
-                            $response->setErrors(['message' => 'Non è stato possibile modificare la prenotazione']);
+                            $response->setErrors(['message' => 'Non è stato possibile ripristinare la prenotazione']);
                         }
                     } else {
-                        $response->setErrors(['message' => $errorManager]);
+                        //prima controlliamo che le colonne corrispondono alla nostra tabella
+                        $errorColumns = $this->reservationManager->checkColumns($body);
+                        if (!$errorColumns) {
+                            //poi controlliamo che i valori siano validi
+                            $checkEditErrors = $this->reservationManager->errorMan($body);
+                            if ($checkEditErrors['success']) {
+                                //se è tutto verificato allora modifichiamo
+                                $success = $this->reservationManager->editReservations($body, $id);
+                                if (!$success) {
+                                    //errore nella modifica
+                                    $response->setErrors(['message' => 'Non è stato possibile modificare la prenotazione']);
+                                } else {
+                                    //errore nell'inserimento da parte dell'utente dei valori
+                                    foreach ($checkEditErrors['errors'] as $error) {
+                                        $response->setErrors(['message' => $error]);
+                                    }
+                                }
+                            }
+                        } else {
+                            //errore nell'inserimento delle colonne da modificare
+                            $response->setErrors(['message' => $errorColumns]);
+                        }
                     }
                 }
             } else {
+                //prima controlliamo che le colonne inserite siano effettivamente nella tabella
                 $errorColumns = $this->reservationManager->checkColumns($body);
-                if(!$errorColumns){
-                    //$checkAddErrors = $this->reservationManager->errorMan() correggere prima la gestione degli errori nel manager
-                    //ovvero mettere come ingresso il body e come controllo il body['nome'] etc
-                    $success = $this->reservationManager->addReservations($body);
-                    if (!$success) {
-                        $response->setErrors(['message' => 'Non è stato possibile aggiungere la prenotazione']);
+                if (!$errorColumns) {
+                    //poi controlliamo che i dati inseriti dall'utente siano validi
+                    $checkAddErrors = $this->reservationManager->errorMan($body);
+                    if ($checkAddErrors['success']) {
+                        //se è tutto valido allora aggiungiamo la prenotazione
+                        $success = $this->reservationManager->addReservations($body);
+                        if (!$success) {
+                            //a questo punto controlliamo se l'aggiunta è andata o meno a buon fine
+                            $response->setErrors(['message' => 'Non è stato possibile aggiungere la prenotazione']);
+                        }
+                    } else {
+                        //se i valori inseriti non sono validi settiamo l'errore (errore inserimento dati o errore inserimento della data(formato))
+                        foreach ($checkAddErrors['errors'] as $error) {
+                            $response->setErrors(['message' => $error]);
+                        }
                     }
                 } else {
+                    //settiamo l'errore nel caso in cui le colonne che si vogliono aggiungere non sono nella nostra tabella
                     $response->setErrors(['message' => $errorColumns]);
-                }                
-            }
+                }
+            } //se success esiste
             if ($success) {
+                //ma è una stringa => è un messaggio di errore ( arriva il messaggio di errore specifico)
                 if (is_string($success)) {
                     $response->setErrors(['message' => $success]);
                 } else {
+                    //se non è una stringa allora success is true e l'operazione è andata a buon fine
                     $response->setSuccess(true);
                 }
             }
