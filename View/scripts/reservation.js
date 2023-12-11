@@ -30,7 +30,7 @@ export async function addNewReservation(modal) {
     } else {
 
         try {
-            const url = 'http://www.chiara-test.com/api/reservation';
+            const url = 'http://www.chiara-test/api/reservation';
             const formData = new FormData();
             formData.append('nome', name);
             formData.append('posti', seats);
@@ -63,7 +63,7 @@ export async function edit( id, modal) {
     //qui sarà tutto diverso perchè modificheremo completamente la modale
     //cerca direttamente da modal
     try {
-        let url = 'http://www.chiara-test.com/api/reservation';
+        let url = 'http://www.chiara-test/api/reservation';
         const allReservations = await requestManager.get(url);
         const foundReservation = allReservations.find(reservation => reservation.id===id)
 
@@ -93,7 +93,7 @@ export async function edit( id, modal) {
         let enter = document.getElementById("newEnter").value;
         let exit = document.getElementById("newExit").value;
         try {
-            const url = 'http://www.chiara-test.com/api/reservation';
+            const url = 'http://www.chiara-test/api/reservation';
             const formData = new FormData();
             formData.append('id',id)
             if (name != "") {
@@ -127,7 +127,7 @@ export async function edit( id, modal) {
 //Funzione per cancellare logicamente una reservation
 export async function moveToTrash(id) {
     try {
-        const url = 'http://www.chiara-test.com/api/reservation';
+        const url = 'http://www.chiara-test/api/reservation';
         const formData = new FormData();
         formData.append('id', id);
         const trashReservation = await requestManager.post(url, formData);
@@ -147,7 +147,7 @@ export async function moveToTrash(id) {
 //Funzione per cancellare definitivamente una reservation
 export async function deleteforEver(id) {
     try {
-        const baseURL = 'http://www.chiara-test.com/api/reservation';
+        const baseURL = 'http://www.chiara-test/api/reservation';
         const url = new URL(baseURL);
         url.searchParams.append('id', id);
         const deleteResevation = await requestManager.delete(url.toString());
@@ -166,7 +166,7 @@ export async function deleteforEver(id) {
 
 export async function restoreReservation(id) {
     try {
-        const url = 'http://www.chiara-test.com/api/reservation';
+        const url = 'http://www.chiara-test/api/reservation';
         const formData = new FormData();
         formData.append('id', id);
         formData.append('cancellazione', 0);

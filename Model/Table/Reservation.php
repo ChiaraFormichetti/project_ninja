@@ -2,16 +2,15 @@
 namespace Model\Table;
 
 class Reservation extends Table {
-    protected $id = null;
-    protected $name = '';
-    protected $seats = 0;
-    protected $enter = '';
-    protected $exit = '';
-    protected $cancellazione = false;
+    protected $id;
+    protected $nome;
+    protected $posti;
+    protected $ingresso;
+    protected $uscita;
+    protected $cancellazione;
     
     public function __construct(){
         parent::__construct();
-        $this->tableColumns = $this->getTableColumns();
     }
 }
 

@@ -20,8 +20,8 @@ class ReservationManager
     {  
         $reservationTable = new Reservation();
         $tableColumns = $reservationTable->getTableColumns();
-        $existentColumns = array_diff(array_keys($parameters), $tableColumns); //problema!!!!!
-        if (empty($existentColumns)) {
+        $existentColumns = array_diff(array_keys($parameters),array_keys( $tableColumns)); //problema!!!!!
+        if (!empty($existentColumns)) {
             $error = "Le seguenti colonne non esistono all'interno della tabella prenotazioni" ;
             return $error;
         }
@@ -52,7 +52,7 @@ class ReservationManager
         }
         return $res;
     }
-
+/*
     //funzione per la gestione del tipo di valore da modificare
     public function typeError(array $updateDate)
     {
@@ -70,7 +70,7 @@ class ReservationManager
         }
         return $res;
     }
-
+*/
     //Funzione per stampare tutte le prenotazioni
     public function getReservations()
     {

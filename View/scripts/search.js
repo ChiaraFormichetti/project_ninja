@@ -16,7 +16,7 @@ export async function search(calendarContainer) {
         if(searchEnter.value){
             params.append('enter',searchEnter.value);
         }
-        const url = `http://www.chiara-test.com/api/reservation?${params.toString()}`;
+        const url = `http://www.chiara-test/api/reservation?${params.toString()}`;
         const searchReservation = await requestManager.get(url);
         if (searchReservation.length >= 1) {
             writeCalendar(searchReservation, calendarContainer);

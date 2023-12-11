@@ -44,7 +44,7 @@ window.addEventListener("click", (event) => {
     }
 });
 export async function fetchData() {
-    let url = 'http://www.chiara-test.com/api/reservation';
+    let url = 'http://www.chiara-test/api/reservation';
     try {
         const allReservations = await requestManager.get(url);
         writeCalendar(allReservations, calendarContainer);
@@ -58,7 +58,7 @@ fetchData();
 deleteButton.addEventListener("click", async () => fetchTrashData());
  export async function fetchTrashData() {
 
-        let url = 'http://www.chiara-test.com/api/reservation/trashReservations';
+        let url = 'http://www.chiara-test/api/reservation/trashReservations';
 
         try {
             const trashReservations = await requestManager.get(url);
@@ -75,7 +75,7 @@ deleteButton.addEventListener("click", async () => fetchTrashData());
 historicButton.addEventListener("click", async () =>  fetchHistoricData());
    export async function fetchHistoricData() {
 
-        let url = 'http://www.chiara-test.com/api/reservation/historicReservations';
+        let url = 'http://www.chiara-test/api/reservation/historicReservations';
 
         try {
             const historicReservations = await requestManager.get(url);

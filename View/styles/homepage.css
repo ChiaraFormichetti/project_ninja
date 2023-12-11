@@ -106,7 +106,7 @@ input {
     border: 1px solid #000000;
     border-radius: 30%;
     width: 200px;
-    height: 425px;
+    height: 500px;
     margin:auto;
     animation: animatezoom 0.6s ;
 }
