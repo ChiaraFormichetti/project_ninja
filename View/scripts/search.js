@@ -1,14 +1,13 @@
-import { resetCalendar, writeCalendar } from './calendar.js';
-import { requestManager } from './requestManager.js';
-import { fetchData } from './homepage.js';
-
+import { resetCalendar} from './calendar.js';
+import { getReservations, getSearchReservation } from './get.js';
+import { commonSelector } from './commonSelector.js';
 //funzione per cercare una prenotazione
+const searchName = commonSelector.searchName;
+const searchEnter = commonSelector.searchEnter;
+
 export async function search(calendarContainer) {
-    const searchForm = document.getElementById('search');
-    const searchName = searchForm.querySelector("#name");
-    const searchEnter = searchForm.querySelector("#enter");
     if (searchName.value || searchEnter.value) {
-      try {
+      
         const params = new URLSearchParams();
         if(searchName.value){
             params.append('name',searchName.value);
@@ -17,17 +16,8 @@ export async function search(calendarContainer) {
             params.append('enter',searchEnter.value);
         }
         const url = `http://www.chiara-test/api/reservation?${params.toString()}`;
-        const searchReservation = await requestManager.get(url);
-        if (searchReservation.length >= 1) {
-            resetCalendar();
-            writeCalendar(searchReservation, calendarContainer);
-        } else {
-            alert(`Non ci sono prenotazioni corrispondenti ai valori cercati`)
-           // fetchData();
-        };
-      } catch (error){
-        console.error('Errore durante la ricerca: ',error);
-      }
+        getSearchReservation(url, calendarContainer);
+       
     } else {
         alert('Non sono stti inseriti dei campi validi');
         //gestisci il caso in cui non sono stati inseriti criteri di ricerca
@@ -36,15 +26,12 @@ export async function search(calendarContainer) {
 
 
 //funzione per interrompere la ricerca
-export async function noSearch() {
-    const searchForm = document.getElementById('search');
-    const searchName = searchForm.querySelector("#name");
-    const searchEnter = searchForm.querySelector("#enter");
+export async function noSearch(calendarContainer) {
     if(searchName.value!="" || searchEnter.value!=""){
         searchName.value = "";
         searchEnter.value = "";
-        resetCalendar();
-        fetchData();
+        resetCalendar(calendarContainer);
+        getReservations(calendarContainer);
     } 
 }
 

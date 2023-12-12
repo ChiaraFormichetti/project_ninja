@@ -1,20 +1,12 @@
-import { resetCalendar, writeCalendar, writeDeleteCalendar, writeHistoricCalendar } from './calendar.js';
 import { openmodal, closemodal } from './modal.js';
-import { addNewReservation, deleteforEver } from './reservation.js';
 import { search, noSearch } from './search.js';
-import { requestManager } from './requestManager.js';
 import createHtml from './element.js';
+import { getReservations, getTrashReservations, getHistoricReservations } from './get.js';
+import { addNewReservation } from './reservation.js';
+import { commonSelector } from './commonSelector.js';
 
-const body = document.querySelector("body");
-const modal = body.querySelector("#myModal");
-const buttonOpenModal = body.querySelector("#add");
-const closeModal = modal.querySelector("#closeModal");
-const searchButton = body.querySelector("#searchButton");
-const noSearchButton = body.querySelector("#noSearch");
-const modalForm = modal.querySelector("#newReservationForm");
-const deleteButton = body.querySelector("#trash");
-const historicButton = body.querySelector("#historic");
-
+//creiamo il div calendar e lo selezioniamo
+const body = commonSelector.body
 const createCalendarContainer = [
     {
         tagName: 'div',
@@ -24,110 +16,61 @@ const createCalendarContainer = [
 ];
 createHtml(createCalendarContainer);
 const calendarContainer = body.querySelector("#calendar");
-
+const searchButton = commonSelector.searchButton;
+const noSearchButton = commonSelector.noSearchButton; 
+//XXXXXXXXXX
+//definiamo quali funzioni partiranno quando cliccheremo sui nostri bottoni di cerca e di annulla ricerca (se facciamo in tempo li spostiamo nell'index)
 searchButton.addEventListener("click", async () => search(calendarContainer));
-noSearchButton.addEventListener("click",async () => noSearch(calendarContainer));
-
-//generalizzare ancors, quando clicchiamo su buttonOpenModal prima di usare la funzione opendModal creiamo tutta la modale
+noSearchButton.addEventListener("click", async () => noSearch(calendarContainer));
+//XXXXXXXXXX
+//(generalizzare ancors, quando clicchiamo su buttonOpenModal prima di usare la funzione opendModal creiamo tutta la modale)
+//quando clicchiamo nel bottone di aggiungi una nuova prenotazine aggiungiamo il bottone di aggiungi alla modale e poi la apriamo.
+const buttonOpenModal = body.querySelector("#add");
+const modalForm = commonSelector.modalForm;
 buttonOpenModal.addEventListener("click", () => {
-
     const addButton = [
         {
             tagName: 'button',
-            id: 'addButton',           
-            parentElement:modalForm,
+            id: 'addButton',
+            parentElement: modalForm,
             events: [
                 {
                     eventName: 'click',
                     callbackName: addNewReservation,
                     parameters: [
-                        modal,
-                    ]
-                }
+                        calendarContainer,
+                    ],
+                },
             ],
             content: 'Aggiungi',
             attributes: {
                 class: 'add',
             }
         }
-    ] 
+    ]
     createHtml(addButton);
-    openmodal(modal);
+    openmodal();
 });
-
-closeModal.addEventListener("click", () => closemodal(modal));
-
+//quando cliccheremo sull'elemento closeModal partirà la funzione che ci chiuderà la modale
+const closeModal = commonSelector.closeModal;
+closeModal.addEventListener("click", () => closemodal());
+const modal = commonSelector.modal;
+//se l'utente fa click all'esterno della finestra modale questa si chiuderà.
 window.addEventListener("click", (event) => {
     if (event.target == modal) {
-        closemodal(modal);
+        closemodal();
     }
 });
-export async function fetchData() {
-    let url = 'http://www.chiara-test/api/reservation';
-    try {
-        const allReservations = await requestManager.get(url);
-        writeCalendar(allReservations, calendarContainer);
-    } catch (error) {
-        console.error('Errore durante la fetch: ', error);
-    }
-}
-fetchData();
+
+//fetch per prendere tutte le prenotazioni
+
+getReservations(calendarContainer);
 
 //Qui facciamo la chiamata ajax al cestino
-deleteButton.addEventListener("click", async () => fetchTrashData());
- export async function fetchTrashData() {
-
-        let url = 'http://www.chiara-test/api/reservation/trashReservations';
-
-        try {
-            const trashReservations = await requestManager.get(url);
-            resetCalendar();
-            writeDeleteCalendar(trashReservations, calendarContainer);
-        }
-        catch (error) {
-            console.error('Errore durante la fetch: ', error);
-        }
-    };
-    
-
-
-historicButton.addEventListener("click", async () =>  fetchHistoricData());
-   export async function fetchHistoricData() {
-
-        let url = 'http://www.chiara-test/api/reservation/historicReservations';
-
-        try {
-            const historicReservations = await requestManager.get(url);
-            resetCalendar();
-            writeHistoricCalendar(historicReservations, calendarContainer);
-        }
-        catch (error) {
-            console.error('Errore durante la fetch: ', error);
-        }
-   };
-
-/*
-children: [
-    {
-        tagName: 'button',
-        events: [
-            {
-                eventName: 'click',
-                callbackName: addNewReservation,
-                parameters: [
-                    allReservations,
-                    modal,
-                    calendarContainer,
-                ]
-            }
-        ],
-        content: 'Aggiungi',
-        attributes: {
-            className: 'add',
-        }
-    }
-]*/
-
+const deleteButton = commonSelector.deleteButton;
+deleteButton.addEventListener("click", async () => getTrashReservations(calendarContainer));
+const historicButton = commonSelector.historicButton;
+historicButton.addEventListener("click", async () => getHistoricReservations(calendarContainer));
 
 /*   const modalElement = [
 {

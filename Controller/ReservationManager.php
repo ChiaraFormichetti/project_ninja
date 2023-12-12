@@ -69,6 +69,11 @@ class ReservationManager
         return $reservations;
     }
 
+    public function getReservationById($id){
+        $reservation = $this->reservationStorage->getReservationById($id);
+        return $reservation;
+    }
+
     //funzione per stampare le cancellazioni cancellate
     public function getTrashReservations()
     {

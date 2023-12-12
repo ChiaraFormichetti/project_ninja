@@ -44,6 +44,24 @@ class ReservationStorage extends BaseStorage
       }
    }
 
+   public function getReservationById($id)
+   {
+      try {
+         $this->queryBuilder->select()
+            ->selectColumns(['*'])
+            ->where('id', '=', $id);
+         $query = $this->queryBuilder->getQuery();
+         $reservations = [];
+         foreach ($this->connection->query($query) as $row) {
+            $reservations[] = $row;
+         }
+         return $reservations;
+      } catch (\Exception $e) {
+         error_log('Errore durante il recupero della prenotazione: ' . $e->getMessage());
+         return $e->getMessage();
+      }
+   }
+
    //Stampa le prenotazioni passate
    public function getHistoricReservation()
    {

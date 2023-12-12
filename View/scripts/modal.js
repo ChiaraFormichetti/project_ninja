@@ -1,21 +1,16 @@
-
+import { commonSelector } from './commonSelector.js';
 //funzione per aprire la modale
-export function openmodal(modal) {
-    modal.style.display = "block";
-    //const addReservation = document.getElementById("addReservation");
-    //const editReservationButton = document.getElementById("editReservation");
-    //if (addingMode) {
-    //    addReservation.classList.remove('hidden');
-    //    editReservationButton.classList.add('hidden');
-    //} else {
-    //    addReservation.classList.add('hidden');
-    //    editReservationButton.classList.remove('hidden');
-    //}
 
+const modal = commonSelector.modal;
+
+
+export function openmodal() {
+    modal.style.display = "block";
+  
 };
 
 //funzione per chiudere la modale
-export function closemodal(modal) {
+export function closemodal() {
     modal.style.display = "none";
     resetModal();
 
@@ -23,16 +18,17 @@ export function closemodal(modal) {
 
 //funzione per resettare la modale
 export function resetModal() {
-    let name = document.getElementById("newName");
+    const modal = commonSelector.modal;
+    let name = modal.querySelector("#newName");
     name.value = "";
-    let seats = document.getElementById("newSeats");
+    let seats = modal.querySelector("#newSeats");
     seats.value = "";
-    let enter = document.getElementById("newEnter");
+    let enter = modal.querySelector("#newEnter");
     enter.value = "";
-    let exit = document.getElementById("newExit");
+    let exit = modal.querySelector("#newExit");
     exit.value = "";
-    let addButton = document.getElementById("addButton");
-    let editButton = document.getElementById("editButton");
+    let addButton = modal.querySelector("#addButton");
+    let editButton = modal.querySelector("#editButton");
     if (addButton) {
         addButton.remove();
     }

@@ -1,20 +1,21 @@
-import { edit, moveToTrash, deleteforEver, restoreReservation } from './reservation.js';
+import { edit } from './reservation.js';
 import createHtml from './element.js';
+import { postMoveToTrash, postRestoreReservation} from './post.js';
+import { deleteforEverById } from './delete.js';
+import { commonSelector } from './commonSelector.js';
+
 
 //funzione per cancellare la lista delle prenotazioni
-export function resetCalendar() {
-    const body = document.querySelector('body');
-    let calendarElement = body.querySelector("#calendar");
-
-    while (calendarElement.firstChild) {
-        calendarElement.removeChild(calendarElement.firstChild);
+export function resetCalendar(calendarContainer) {
+    while (calendarContainer.firstChild) {
+        calendarContainer.removeChild(calendarContainer.firstChild);
     }
 }
 
 //funzione per aggiornare la lista prenotazioni
 export function updateCalendar(allReservations, calendarContainer) {
 
-    resetCalendar();
+    resetCalendar(calendarContainer);
     writeCalendar(allReservations, calendarContainer);
 }
 
@@ -39,10 +40,7 @@ export function groupReservations(allReservations) {
 }
 
 export function writeCalendar(allReservations, calendarContainer) {
-
     if (allReservations != "") {
-
-        const modal = document.getElementById("myModal");
         let bookYear = "";
         const createDivReservation = [
             {
@@ -52,6 +50,7 @@ export function writeCalendar(allReservations, calendarContainer) {
             },
         ];
         createHtml(createDivReservation);
+
         const divReservation = calendarContainer.querySelector('#divReservation');
 
         let groupedReservations = groupReservations(allReservations);
@@ -133,7 +132,7 @@ export function writeCalendar(allReservations, calendarContainer) {
                                 callbackName: edit,
                                 parameters: [
                                     reservation.id,
-                                    modal,
+                                    calendarContainer
                                 ],
                             },
                         ],
@@ -148,9 +147,10 @@ export function writeCalendar(allReservations, calendarContainer) {
                         tagName: 'button',
                         events: [{
                             eventName: 'click',
-                            callbackName: moveToTrash,
+                            callbackName: postMoveToTrash,
                             parameters: [
-                                reservation.id
+                                reservation.id,
+                                calendarContainer
                             ],
                         }],
                         content: 'sposta nel cestino',
@@ -167,6 +167,8 @@ export function writeCalendar(allReservations, calendarContainer) {
     } else {
 
         calendarContainer.textContent = `Non ci sono prenotazioni nello storage !`
+        const searchButton = commonSelector.searchButton;
+        //potremmo usare questa logica per il bottone che ristampa tutte le prenotazioni
         searchButton.setAttribute("disabled");
     }
 }
@@ -257,9 +259,10 @@ export function writeDeleteCalendar(deleteReservations, calendarContainer) {
 
                             {
                                 eventName: 'click',
-                                callbackName: deleteforEver,
+                                callbackName: deleteforEverById,
                                 parameters: [
                                     reservation.id,
+                                    calendarContainer
                                 ],
                             },
                         ],
@@ -275,9 +278,10 @@ export function writeDeleteCalendar(deleteReservations, calendarContainer) {
                         events: [
                             {
                                 eventName: 'click',
-                                callbackName: restoreReservation,
+                                callbackName: postRestoreReservation,
                                 parameters: [
                                     reservation.id,
+                                    calendarContainer
                                 ],
                             },
                         ],
@@ -297,6 +301,7 @@ export function writeDeleteCalendar(deleteReservations, calendarContainer) {
     } else {
 
         calendarContainer.textContent = `Non ci sono prenotazioni nel cestino !`
+        const searchButton = commonSelector.searchButton;
         searchButton.setAttribute("disabled");
     }
 }
@@ -389,6 +394,7 @@ export function writeHistoricCalendar(historicReservations, calendarContainer) {
     } else {
 
         calendarContainer.textContent = `Non ci sono prenotazioni nello storico !`
+        const searchButton = commonSelector.searchButton;
         searchButton.setAttribute("disabled");
     }
 }

@@ -50,11 +50,15 @@ class ReservationService extends BaseService
         } else {
             //non abbiamo una action ma abbiamo dei parametri => siamo nella search
             if ($parameters != []) {
-                //se non esiste nessun valore nell'array di parametri associato alla chiave name o enter assegna alle due variabili che passeremo 
-                //allo storage valore null
-                $name = $parameters['name'] ?? null;
-                $enter = $parameters['enter'] ?? null;
-                $data = $this->reservationManager->searchReservations($name, $enter);
+                if(array_key_exists('id',$parameters) && count($parameters)==1){
+                    $data = $this->reservationManager->getReservationById($parameters['id']);
+                } else {
+                    //se non esiste nessun valore nell'array di parametri associato alla chiave name o enter assegna alle due variabili che passeremo 
+                    //allo storage valore null
+                    $name = $parameters['name'] ?? null;
+                    $enter = $parameters['enter'] ?? null;
+                    $data = $this->reservationManager->searchReservations($name, $enter);
+                }
             } else {
                 //se non abbiamo parametri e non abbiamo action è il caso generale in cui stampiamo tutte le prenotazioni
                 $data = $this->reservationManager->getReservations();

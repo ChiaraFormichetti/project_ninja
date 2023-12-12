@@ -8,7 +8,7 @@ const createHtml = (elements) => {
                     if (elementNode) {
                         if (element.events && element.events.length > 0) {
                             element.events.forEach(
-                                eventObj => {
+                                eventObj => {            
                                     const fn = eventObj.callbackName;
                                     elementNode.addEventListener(eventObj.eventName, () => fn(...eventObj.parameters))
                                 });
