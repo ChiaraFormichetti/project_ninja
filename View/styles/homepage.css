@@ -90,8 +90,9 @@ input {
     background-color: blue;
     border-radius: 30%;
     margin-bottom: 10px;
-
-
+}
+.text-header {
+    color:yellow;
 }
 
 @keyframes animatezoom { 

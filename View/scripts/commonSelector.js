@@ -20,6 +20,12 @@ export const commonSelector =
     noSearchButton : body.querySelector("#noSearch"),    
     deleteButton : body.querySelector("#trash"),
     historicButton : body.querySelector("#historic"),
+    homepageButton : body.querySelector("#return"),
     searchName : searchForm.querySelector("#name"),
     searchEnter : searchForm.querySelector("#enter"),
-}
+    preButton : body.querySelector("#pre"),
+    succButton : body.querySelector("#succ"),
+    currentPageViews : body.querySelector("#currentPage"),
+
+
+}   

@@ -10,6 +10,7 @@ class Select extends CommonStatement
     protected $groupBy = [];
     protected $limitInit = null;
     protected $limitFinal = null;
+    protected $countColumn = null;
 
     //implementazione del metodo astatto della classe commonstatement
     //crea la nostra query string
@@ -17,15 +18,20 @@ class Select extends CommonStatement
         return parent::getErrors();
     }
     public function __toString(): string
-    {   //se l'array di colonne è vuoto => non abbiamo specificato nessuna colonna, le prendiamo tutte e scriviamo la prima parte della query
-        if ($this->columns == []) {
-            $query = 'SELECT ' . '*' . ' FROM ' . $this->tableName . ' ';
+    {   if ($this->countColumn){
+        $query = 'SELECT COUNT('. $this->countColumn.') FROM ' . $this->tableName.' ';
+        $this->countColumn = null;       
         } else {
-            //altrimenti usiamo quelle che abbiamo specificato
-            $query = 'SELECT ' . implode(',', $this->columns) . ' FROM ' . $this->tableName . ' ';
-        } //dopo averle usate le azzeriamo (tanto ormai sono nella query)
-        $this->columns = [];
-        //se ci sono elementi di group by li concateniamo
+            //se l'array di colonne è vuoto => non abbiamo specificato nessuna colonna, le prendiamo tutte e scriviamo la prima parte della query
+            if ($this->columns == []) {
+                $query = 'SELECT ' . '*' . ' FROM ' . $this->tableName . ' ';
+            } else {
+                //altrimenti usiamo quelle che abbiamo specificato
+                $query = 'SELECT ' . implode(',', $this->columns) . ' FROM ' . $this->tableName . ' ';
+            } //dopo averle usate le azzeriamo (tanto ormai sono nella query)
+            $this->columns = [];
+            //se ci sono elementi di group by li concateniamo
+        }
         if ($this->groupBy != []) {
             $query .= 'GROUP BY ' . implode(',', $this->groupBy);
         }
@@ -62,6 +68,13 @@ class Select extends CommonStatement
         //ci ritorna la query completa del select
         return $query;
     }
+
+    public function countElements (string $column):Select 
+    {
+        $this->countColumn = $column;
+        return $this;
+    }
+
     //assegniamo all'oggetto select un valore alla proprietà order by
     public function orderBy(string $column, string $direction = null): Select
     {

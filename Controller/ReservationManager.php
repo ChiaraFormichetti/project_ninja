@@ -62,6 +62,11 @@ class ReservationManager
         return $res;
     }
 
+    public function getPage($parameters = []){
+        $response = $this->reservationStorage->getPage($parameters = []);
+        return $response;
+    }
+
     //Funzione per stampare tutte le prenotazioni
     public function getReservations()
     {

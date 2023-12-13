@@ -1,13 +1,39 @@
 import { requestManager } from "./requestManager";
 import { writeCalendar, writeDeleteCalendar, writeHistoricCalendar, resetCalendar } from "./calendar";
 import { commonSelector } from './commonSelector.js';
+import { pageManager } from "./calendar";
 
 const apiURL = commonSelector.apiURL;
+
+export async function getPages (calendarContainer, currentPages=null, reservationForPages=null ){
+   try{
+       const parameters = new URLSearchParams();
+        if (currentPages){
+            parameters.append('page',currentPages);
+        }
+        if(reservationForPages){
+            parameters.append('number', reservationForPages);
+        }
+        let url = apiURL + `?${parameters.toString()}`;
+        const response = await requestManager.get(url);
+
+        const totalPages = response.totalPages;
+        const currentPage = response.currentPage;
+        const reservations = response.reservations;
+        resetCalendar(calendarContainer);
+        writeCalendar(reservations, calendarContainer)
+        pageManager(totalPages, currentPage);
+    } 
+    catch (error){
+    console.error("Errore durante la paginazione");
+    }
+}
 
 export async function  getReservations(calendarContainer) {
     let url = apiURL;
     try {
         const allReservations = await requestManager.get(url);
+        resetCalendar(calendarContainer);
         writeCalendar(allReservations, calendarContainer);
     } catch (error) {
         console.error('Errore durante la fetch: ', error);
@@ -50,7 +76,6 @@ export async function getSearchReservation (url, calendarContainer) {
             writeCalendar(searchReservation, calendarContainer);
         } else {
             alert(`Non ci sono prenotazioni corrispondenti ai valori cercati`)
-           // fetchData();
         };
       } catch (error){
         console.error('Errore durante la ricerca: ',error);

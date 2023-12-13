@@ -66,6 +66,12 @@ class QueryBuilder
         } 
     }
 
+    public function countElements (string $column)
+    {
+        $this->statement->countElements($column);
+        return $this;
+    }
+
     public function selectColumns(array $columns)
     {
         $this->statement->setColumns($columns);

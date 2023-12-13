@@ -21,6 +21,39 @@ class ReservationStorage extends BaseStorage
    //il controllo lo farei più nel manager che nello storage!!!!
    //quindi l'oggetto new reservation lo faremo li, posto in cui faremo il manager di tutti gli errori !
 
+   public function getPage($parameters=[]){
+     try { $this->queryBuilder->select()
+         ->countElements('*')
+         ->where('ingresso', '>=', date('Y-m-d'))
+         ->where('cancellazione', '=', 0, 'AND');
+         $query = $this->queryBuilder->getQuery();
+         $count = $this->connection->query($query)->fetchColumn();
+         $resultForPage = (isset($parameters['number']) && is_numeric($parameters['number'])) ? $parameters['number'] : 9;
+         $totPages = ceil($count/$resultForPage);   
+         $currentPage = (isset($parameters['page']) && is_numeric($parameters['page'])) ? $parameters['page'] : 1;
+         $start = ($currentPage-1)*$resultForPage;   
+         $this->queryBuilder
+         ->selectColumns(['*'])
+         ->where('ingresso', '>=', date('Y-m-d'))
+         ->where('cancellazione', '=', 0, 'AND')
+         ->orderBy('ingresso')
+         ->limit($start,$resultForPage);
+         $query = $this->queryBuilder->getQuery();
+         $reservations = [];
+         foreach ($this->connection->query($query) as $row) {
+            $reservations[] = $row;
+         }
+         return [
+            'reservations' => $reservations,
+            'totalPages' => $totPages,
+            'currentPage' => $currentPage
+         ];
+      } catch (\Exception $e) {
+         error_log('Errore durante il recupero delle prenotazioni: ' . $e->getMessage());
+         return $e->getMessage();
+      }
+   }
+
    public function getReservation()
    {
       try {

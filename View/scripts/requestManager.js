@@ -12,7 +12,20 @@ export const requestManager = {
             })
             //se la chiamata json viene completata con successo la promise restituita risolve con i dati ottenuti dalla risposta (result)
             //In caso di errori viene eseguito il blocco catch
-            .then(result => result.data)
+            .then(result => {
+                if(result.success === false || result.code !== 200){
+                    throw new Error(result.errors.join(', '));
+                }
+                const data = result.data;
+                const totalPages = data.totalPages;
+                const currentPage = data.currentPage;
+                const reservations = data.reservations
+
+                data.totalPages = totalPages;
+                data.currentPage = currentPage;
+                data.reservations = reservations;
+                return data;
+            })
             .catch(error => {
                 //cattura gli errori che si verificano nel blocco catch, se la richiesta http fallisce iene lanciata un'eccezione
                 //all'interno del blocco then che verrà catturata dal blocco catch
@@ -26,7 +39,13 @@ export const requestManager = {
             method: "DELETE",
         }).then(response => {
             if(!response.ok) {
-                throw new Error('Errore durante la richiesta di eliminazione');
+                return response.json()
+                .then(result => {
+                    throw new Error(result.errors.join(', '));
+                }).catch(() => {
+                    //lo restituiamo se la l'analisi json della risposta fallisce
+                    throw new Error('Errore durante la richiesta di eliminazione');
+                });
             }
             return true; //L'eliminazione è avvenuta con successo
         }).catch(error => {
@@ -41,9 +60,14 @@ export const requestManager = {
             body: formData,
         }).then(response => {
             if(!response.ok){
+                return response.json()
+                .then(result => {
+                    throw new Error(result.errors.join(', '));
+                }).catch(() => {
                 throw new Error('Errore durante la richiesta di modifica/aggiunta');
-            }
-            return response.json();
+            });
+        }
+            return true;
         }).catch(error => {
             console.error('Errore durante la richiesta di modifica/aggiunta: ',error);
             return false;

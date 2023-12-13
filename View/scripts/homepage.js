@@ -1,7 +1,7 @@
 import { openmodal, closemodal } from './modal.js';
 import { search, noSearch } from './search.js';
 import createHtml from './element.js';
-import { getReservations, getTrashReservations, getHistoricReservations } from './get.js';
+import { getReservations, getTrashReservations, getHistoricReservations, getPages } from './get.js';
 import { addNewReservation } from './reservation.js';
 import { commonSelector } from './commonSelector.js';
 
@@ -64,13 +64,15 @@ window.addEventListener("click", (event) => {
 
 //fetch per prendere tutte le prenotazioni
 
-getReservations(calendarContainer);
+getPages(calendarContainer);
 
 //Qui facciamo la chiamata ajax al cestino
 const deleteButton = commonSelector.deleteButton;
 deleteButton.addEventListener("click", async () => getTrashReservations(calendarContainer));
 const historicButton = commonSelector.historicButton;
 historicButton.addEventListener("click", async () => getHistoricReservations(calendarContainer));
+const homepageButton = commonSelector.homepageButton;
+homepageButton.addEventListener("click", async () => getReservations(calendarContainer));
 
 /*   const modalElement = [
 {

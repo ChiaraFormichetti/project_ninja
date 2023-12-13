@@ -5,6 +5,26 @@ import { deleteforEverById } from './delete.js';
 import { commonSelector } from './commonSelector.js';
 
 
+export function  pageManager(totalPages, currentPage){
+    const preButton = commonSelector.preButton;
+    const succButton = commonSelector.succButton
+    const currentPageViews = commonSelector.currentPageViews;
+    if(currentPageViews.firstChild){
+        currentPageViews.removeChild(currentPageViews.firstChild);
+    }
+    let page = document.createTextNode(currentPage);
+    currentPageViews.appendChild(page);
+    if(currentPage==1){
+        preButton.disabled = true;
+    } else {
+        preButton.disabled = false;
+    }
+    if (currentPage == totalPages){
+        succButton.disabled = true
+    } else {
+        succButton.disabled = false
+    }
+}
 //funzione per cancellare la lista delle prenotazioni
 export function resetCalendar(calendarContainer) {
     while (calendarContainer.firstChild) {
