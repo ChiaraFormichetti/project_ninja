@@ -1,5 +1,5 @@
 import { openmodal} from './modal.js'
-import { getReservationById} from './get.js';
+import { getPages, getReservationById} from './get.js';
 import { postNewReservation, postEditReservation } from './post.js';
 import createHtml from './element.js';
 import { commonSelector } from './commonSelector.js';
@@ -46,6 +46,7 @@ export async function addNewReservation(calendarContainer) {
 
 //funzione per modificare una reservation
 export async function edit( id, calendarContainer) {
+    debugger
     const modalForm = commonSelector.modalForm;
     const reservationToEdit =  await getReservationById(id);
         if(reservationToEdit){

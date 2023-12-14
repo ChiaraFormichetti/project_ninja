@@ -5,6 +5,8 @@ import { getReservations, getTrashReservations, getHistoricReservations, getPage
 import { addNewReservation } from './reservation.js';
 import { commonSelector } from './commonSelector.js';
 
+let trash = false;
+let historic = false;
 //creiamo il div calendar e lo selezioniamo
 const body = commonSelector.body
 const createCalendarContainer = [
@@ -17,11 +19,11 @@ const createCalendarContainer = [
 createHtml(createCalendarContainer);
 const calendarContainer = body.querySelector("#calendar");
 const searchButton = commonSelector.searchButton;
-const noSearchButton = commonSelector.noSearchButton; 
+const noSearchButton = commonSelector.noSearchButton;
 //XXXXXXXXXX
 //definiamo quali funzioni partiranno quando cliccheremo sui nostri bottoni di cerca e di annulla ricerca (se facciamo in tempo li spostiamo nell'index)
-searchButton.addEventListener("click", async () => search(calendarContainer));
-noSearchButton.addEventListener("click", async () => noSearch(calendarContainer));
+searchButton.addEventListener("click", async () => search(calendarContainer, trash, historic));
+noSearchButton.addEventListener("click", async () => noSearch(calendarContainer, trash, historic));
 //XXXXXXXXXX
 //(generalizzare ancors, quando clicchiamo su buttonOpenModal prima di usare la funzione opendModal creiamo tutta la modale)
 //quando clicchiamo nel bottone di aggiungi una nuova prenotazine aggiungiamo il bottone di aggiungi alla modale e poi la apriamo.
@@ -63,16 +65,43 @@ window.addEventListener("click", (event) => {
 });
 
 //fetch per prendere tutte le prenotazioni
+//getReservations(calendarContainer);
 
 getPages(calendarContainer);
 
+
 //Qui facciamo la chiamata ajax al cestino
 const deleteButton = commonSelector.deleteButton;
-deleteButton.addEventListener("click", async () => getTrashReservations(calendarContainer));
+deleteButton.addEventListener("click", () => {
+    trash = true;
+    historic = false
+    getPages(calendarContainer, 1, trash)
+});
 const historicButton = commonSelector.historicButton;
-historicButton.addEventListener("click", async () => getHistoricReservations(calendarContainer));
+historicButton.addEventListener("click", () => {
+    historic = true;
+    trash = false;
+    getPages(calendarContainer, 1, trash, historic)
+});
 const homepageButton = commonSelector.homepageButton;
-homepageButton.addEventListener("click", async () => getReservations(calendarContainer));
+homepageButton.addEventListener("click", () => {
+    trash = false;
+    historic = false;
+    getPages(calendarContainer)
+});
+
+const succButton = commonSelector.succButton;
+const currentPageViews = commonSelector.currentPageViews;
+const preButton = commonSelector.preButton;
+succButton.addEventListener("click", () => {
+    let currentPages = +(currentPageViews.textContent) + 1;
+    getPages(calendarContainer, currentPages, trash, historic);
+});
+preButton.addEventListener("click", () => {
+    let currentPages = +(currentPageViews.textContent) - 1;
+    getPages(calendarContainer, currentPages, trash, historic);
+});
+
 
 /*   const modalElement = [
 {

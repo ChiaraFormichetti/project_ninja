@@ -57,12 +57,10 @@ class Select extends CommonStatement
             $query .= ' ORDER BY ' . $this->orderBy;
             $this->orderBy = null;
         } //se abbiamo un limit iniziale lo concateniamo
-        if ($this->limitInit) {
-            $query .= ' LIMIT ' . $this->limitInit;
-            $this->limitInit = null;
-        } //se abbiamo un limit finale lo concateniamo
+        //se abbiamo un limit finale lo concateniamo
         if ($this->limitFinal) {
-            $query .= ', ' . $this->limitFinal;
+            $query .= ' LIMIT ' . $this->limitInit.', ' . $this->limitFinal;
+            $this->limitInit = null;
             $this->limitFinal = null;
         }
         //ci ritorna la query completa del select

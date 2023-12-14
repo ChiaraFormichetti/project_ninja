@@ -1,5 +1,5 @@
 import { resetCalendar } from "./calendar";
-import { getReservations, getTrashReservations } from "./get";
+import { getReservations, getTrashReservations ,getPages} from "./get";
 import { closemodal } from "./modal";
 import { requestManager } from "./requestManager";
 import { commonSelector } from './commonSelector.js';
@@ -10,7 +10,7 @@ export async function postNewReservation( url, formData, calendarContainer) {
         const addReservation = await requestManager.post(url, formData);
         if (addReservation) {
             resetCalendar(calendarContainer);
-            getReservations(calendarContainer);
+            getPages(calendarContainer);
             closemodal();
             alert('La prenotazione è stata aggiunta');
         } else {
@@ -46,7 +46,9 @@ export async function postEditReservation(id, calendarContainer) {
         const editReservation = await requestManager.post(url, formData);
         if (editReservation) {
             resetCalendar(calendarContainer);
-            getReservations(calendarContainer);
+            const currentPageViews = commonSelector.currentPageViews;
+            let currentPage = +(currentPageViews.textContent);
+            getPages(calendarContainer,currentPage);
             closemodal();
             alert('La prenotazione è stata modificata');
         } else {
@@ -67,6 +69,9 @@ export async function postMoveToTrash(id, calendarContainer) {
         if (trashReservation) {
             alert('La prenotazione è stata spostata nel cestino');
             resetCalendar(calendarContainer);
+            const currentPageViews = commonSelector.currentPageViews;
+            let currentPage = +(currentPageViews.textContent);
+            getPages(calendarContainer,currentPage);
             getReservations(calendarContainer);
         } else {
             alert('Non è stato possibile spostare la prenotazione nel cestino');
@@ -88,7 +93,10 @@ export async function postRestoreReservation(id, calendarContainer) {
         if (restoreReservation) {
             alert('La prenotazione è stata ripristinata');
             resetCalendar(calendarContainer);
-            getTrashReservations(calendarContainer);
+            let trash = true;
+            const currentPageViews = commonSelector.currentPageViews;
+            let currentPage = +(currentPageViews.textContent);
+            getPages(calendarContainer,currentPage,trash)
         } else {
             alert('Non è stato possibile ripistinare la prenotazione');
         }

@@ -78,7 +78,7 @@ class QueryBuilder
         return $this;
     }
 
-    public function where(string $column, $operator = '=', $value, $whereBond = null)
+    public function where(string $column, $operator = '=', $value, $whereBond = 'AND')
     {
         $this->statement->where($column, $operator, $value, $whereBond);
         return $this;
@@ -108,9 +108,9 @@ class QueryBuilder
         return $this;
     }
 
-    public function limit(int $limit)
+    public function limit(int $initLimit, int $finalLimit)
     {
-        $this->statement->limit($limit);
+        $this->statement->limit($initLimit,$finalLimit);
         return $this;
     }
     public function updateFunction(string $column, $value)

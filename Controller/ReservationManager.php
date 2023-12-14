@@ -63,7 +63,7 @@ class ReservationManager
     }
 
     public function getPage($parameters = []){
-        $response = $this->reservationStorage->getPage($parameters = []);
+        $response = $this->reservationStorage->getPage($parameters);
         return $response;
     }
 

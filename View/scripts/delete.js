@@ -1,5 +1,6 @@
 import { resetCalendar } from "./calendar";
-import { getTrashReservations } from "./get";
+import { commonSelector } from "./commonSelector";
+import { getTrashReservations, getPages } from "./get";
 import { requestManager } from "./requestManager";
 
 //Funzione per cancellare definitivamente una reservation
@@ -12,7 +13,10 @@ export async function deleteforEverById(id, calendarContainer) {
         if (deleteResevation) {
             alert('La prenotazione è stata cancellata definitivamente');
             resetCalendar(calendarContainer);
-            getTrashReservations(calendarContainer);
+            const currentPageViews = commonSelector.currentPageViews;
+            let currentPage = +(currentPageViews.textContent);
+            let trash = true;
+            getPages(calendarContainer,currentPage,trash)
         } else {
             alert('Non è stato possibile cancellare la prenotazione');
         }

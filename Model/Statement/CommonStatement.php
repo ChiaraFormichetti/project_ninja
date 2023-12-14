@@ -31,7 +31,7 @@ abstract class CommonStatement
         $this->columns = $columns;
     }
     //definiamo il where 
-    public function where(string $column, $operator = '=', $value, $whereBond = null): CommonStatement
+    public function where(string $column, $operator = '=', $value, $whereBond = 'AND'): CommonStatement
     {   //CONTROLLO SE $whereBond è corretto
         //caso iniz; accetto solo null
         if (count($this->whereClauses) == 0) {

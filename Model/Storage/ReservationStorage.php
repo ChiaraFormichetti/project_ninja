@@ -21,23 +21,51 @@ class ReservationStorage extends BaseStorage
    //il controllo lo farei più nel manager che nello storage!!!!
    //quindi l'oggetto new reservation lo faremo li, posto in cui faremo il manager di tutti gli errori !
 
-   public function getPage($parameters=[]){
-     try { $this->queryBuilder->select()
-         ->countElements('*')
-         ->where('ingresso', '>=', date('Y-m-d'))
-         ->where('cancellazione', '=', 0, 'AND');
+   public function getPage($parameters = [])
+   {
+      try {
+         $this->queryBuilder->select()
+            ->countElements('*');
+         if (isset($parameters['name'])) {
+            $this->queryBuilder->where('nome', 'LIKE', '%' . $parameters['name'] . '%');;
+         }
+         if (isset($parameters['enter'])) {
+            $this->queryBuilder->where('ingresso', '=', $parameters['enter'], 'OR');
+         }
+         if (isset($parameters['time'])) {
+            $this->queryBuilder->where('ingresso', $parameters['time'], date('Y-m-d'));
+         }
+         if (isset($parameters['cancellazione'])) {
+            $this->queryBuilder->where('cancellazione', '=', $parameters['cancellazione']);
+         }
+         if (isset($parameters['id'])) {
+            $this->queryBuilder->where('id', '=', $parameters['id']);
+         }
          $query = $this->queryBuilder->getQuery();
          $count = $this->connection->query($query)->fetchColumn();
-         $resultForPage = (isset($parameters['number']) && is_numeric($parameters['number'])) ? $parameters['number'] : 9;
-         $totPages = ceil($count/$resultForPage);   
+         $resultForPage = (isset($parameters['number']) && is_numeric($parameters['number'])) ? $parameters['number'] : 10;
+         $totPages = ceil($count / $resultForPage);
          $currentPage = (isset($parameters['page']) && is_numeric($parameters['page'])) ? $parameters['page'] : 1;
-         $start = ($currentPage-1)*$resultForPage;   
+         $start = ($currentPage - 1) * $resultForPage;
          $this->queryBuilder
-         ->selectColumns(['*'])
-         ->where('ingresso', '>=', date('Y-m-d'))
-         ->where('cancellazione', '=', 0, 'AND')
-         ->orderBy('ingresso')
-         ->limit($start,$resultForPage);
+            ->selectColumns(['*']);
+         if (isset($parameters['name'])) {
+            $this->queryBuilder->where('nome', 'LIKE', '%' . $parameters['name'] . '%');
+         }
+         if (isset($parameters['enter'])) {
+            $this->queryBuilder->where('ingresso', '=', $parameters['enter'], 'OR');
+         }
+         if (isset($parameters['time'])) {
+            $this->queryBuilder->where('ingresso', $parameters['time'], date('Y-m-d'));
+         }
+         if (isset($parameters['cancellazione'])) {
+            $this->queryBuilder->where('cancellazione', '=', $parameters['cancellazione']);
+         }
+         if (isset($parameters['id'])) {
+            $this->queryBuilder->where('id', '=', $parameters['id']);
+         }
+         $this->queryBuilder->orderBy('ingresso')
+            ->limit($start, $resultForPage);
          $query = $this->queryBuilder->getQuery();
          $reservations = [];
          foreach ($this->connection->query($query) as $row) {

@@ -5,7 +5,7 @@ import { deleteforEverById } from './delete.js';
 import { commonSelector } from './commonSelector.js';
 
 
-export function  pageManager(totalPages, currentPage){
+export function  pageManager(totalPages, currentPage=1){
     const preButton = commonSelector.preButton;
     const succButton = commonSelector.succButton
     const currentPageViews = commonSelector.currentPageViews;

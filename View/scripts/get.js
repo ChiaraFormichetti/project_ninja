@@ -5,7 +5,7 @@ import { pageManager } from "./calendar";
 
 const apiURL = commonSelector.apiURL;
 
-export async function getPages (calendarContainer, currentPages=null, reservationForPages=null ){
+export async function getPages (calendarContainer, currentPages=1, trash=false, historic=false, name=false, enter=false,reservationForPages=null ){
    try{
        const parameters = new URLSearchParams();
         if (currentPages){
@@ -14,15 +14,35 @@ export async function getPages (calendarContainer, currentPages=null, reservatio
         if(reservationForPages){
             parameters.append('number', reservationForPages);
         }
+        if(trash){
+            parameters.append('cancellazione', 1);
+        }  else if(historic){
+            parameters.append('cancellazione', 0);
+            parameters.append('time', '<');            
+        } else {
+            parameters.append('cancellazione', 0);
+            parameters.append('time', '>=');
+        }
+        if(name){
+            parameters.append('name',name);
+        }
+        if(enter){
+            parameters.append('enter',enter);
+        }
+
         let url = apiURL + `?${parameters.toString()}`;
         const response = await requestManager.get(url);
-
         const totalPages = response.totalPages;
-        const currentPage = response.currentPage;
         const reservations = response.reservations;
         resetCalendar(calendarContainer);
-        writeCalendar(reservations, calendarContainer)
-        pageManager(totalPages, currentPage);
+        if(trash){
+            writeDeleteCalendar(reservations,calendarContainer);
+        } else if (historic){
+            writeHistoricCalendar(reservations,calendarContainer);
+        } else {
+            writeCalendar(reservations,calendarContainer);
+        }
+        pageManager(totalPages, currentPages);
     } 
     catch (error){
     console.error("Errore durante la paginazione");
