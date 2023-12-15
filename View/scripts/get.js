@@ -48,9 +48,10 @@ export async function getPages (calendarContainer, currentPages=1, trash=false, 
     console.error("Errore durante la paginazione");
     }
 }
-
+//riusare questa 
 export async function  getReservations(calendarContainer) {
     let url = apiURL;
+
     try {
         const allReservations = await requestManager.get(url);
         resetCalendar(calendarContainer);
@@ -104,9 +105,7 @@ export async function getSearchReservation (url, calendarContainer) {
 
 export async function getReservationById (id){
     try{
-        const parameters = new URLSearchParams();
-        parameters.append('id',id);
-        let url = apiURL + `?${parameters.toString()}`;
+        let url = apiURL + '/reservationById'+ `/${id}`;
         const reservation = await requestManager.get(url);
         return reservation;
     } catch (error){

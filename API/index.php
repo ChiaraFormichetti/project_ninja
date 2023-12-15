@@ -29,12 +29,16 @@ if ($method==='post'){
 }
 //lettura del servizio
 $action = null;
-preg_match ('/\/api\/(\w+)(\/(\w+))?/', $url, $matches);
+$values= [];
+preg_match ('/\/api\/(\w+)(\/(\w+))?(\/(.*))?/', $url, $matches);
 if(isset($matches[1])){
     $serviceName = $matches[1];
 };
 if(isset($matches[3])){
     $action = $matches[3];
+}
+if(isset($matches[5])){
+    $values = explode('/',$matches[5]);
 }
 $serviceClassName = '\\Api\\Service\\'.ucwords($serviceName).'Service';  
 if (!class_exists($serviceClassName)){
@@ -49,7 +53,7 @@ if (!class_exists($serviceClassName)){
 
 //controllo esistenza $serviceClassName
 
-$request = new Request($parameters, $body, $action);
+$request = new Request($parameters, $body, $action, $values);
 
 // <domain>/api/reservation/action?<parameters> GET,DELETE gestire la possibile assenza di action
 // <domain>/api/reservation/action POST -> lettura body

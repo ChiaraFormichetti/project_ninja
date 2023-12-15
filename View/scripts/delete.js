@@ -16,7 +16,7 @@ export async function deleteforEverById(id, calendarContainer) {
             const currentPageViews = commonSelector.currentPageViews;
             let currentPage = +(currentPageViews.textContent);
             let trash = true;
-            getPages(calendarContainer,currentPage,trash)
+           getTrashReservations(calendarContainer);
         } else {
             alert('Non è stato possibile cancellare la prenotazione');
         }

@@ -10,78 +10,92 @@ use Controller\ReservationManager;
 class ReservationService extends BaseService
 {
     protected $reservationManager;
-
-
+    protected $response;
     public function __construct()
     {
         $this->reservationManager = new ReservationManager();
+        $this->response = new Response();
     }
+    public function getActionMethod($action,... $params) {
+        
+        $methodName = 'get'. ucfirst($action);
+        if (method_exists($this->reservationManager, $methodName)) {
+            //funzione per passare un numero variebile di argomenti al metodo
+            $data = call_user_func_array([$this->reservationManager, $methodName],$params); 
+        } else {
+            $this->response->setErrors(['message' => 'Il metodo non esiste']);
+            $this->response->setErrorCode(Response::HTTP_CODE_ERROR_METHOD_NOT_FOUND);
+        }
+        if(isset($data)){
+            if (is_array($data) && count($data)) {
+                $this->response->setData($data);
+            } else if (is_string($data)){
+                $this->response->setErrors(['message' => $data]);
+        } else {
+            $this->response->setErrors(['message' => 'Non ci sono prenotazioni']);
+        } }return $this->response;
+    }
+    
+    
 
     public function get(Request $request): Response
     {
-
-        $response = new Response();
         $action = $request->action;
         $parameters = $request->parameters;
-        if ($action) {
-            //per vedere lo storico o il trash posso farlo direttamente assegnandogli a loro una action
-            //viene invocato il metodo con nome get<action>
-            $methodName = 'get' . ucfirst($action);
-            //controllo se il metodo esiste realmente
-            //se esiste lo richiamo e gli passo i parametri
-            if (method_exists($this->reservationManager, $methodName)) {
-                $data = $this->reservationManager->$methodName(); // scriviamo il metodo che ci dà la/e prenotazione/i che vogliamo in base ai parametri che abbiamo
-                //se data è un array e ha almneo un elemento (controllo necessario perchè l'array vuoto è comunque un array mentre
-                //se faccio il count a una stringa me la considera come un array con un elemento)               
-                if (is_array($data) && count($data)) {
-                    $response->setData($data);
-                } else {
-                    //se data è una stringa => ritorna l'errore
-                    if (is_string($data)) {
-                        $response->setErrors(['message' => $data]);
-                    }
-                    //Non abbiamo errori e quindi semplicemente non ci sono prenotazioni
-                    $response->setErrors(['message' => 'Non ci sono prenotazioni']);
+        $values = $request->values;
+        switch($action){
+            case 'historicReservations':
+                {   if(count($values) ===1 ){
+                    $page = $values[0];
+                    }                    
+                    return $this->getActionMethod($action,$page,$parameters);
+                    break;
                 }
-            } else {
-                $response->setErrors(['message' => 'Il metodo non esiste']);
-                $response->setErrorCode(Response::HTTP_CODE_ERROR_METHOD_NOT_FOUND);
-            }
-        } else {
-            //non abbiamo una action ma abbiamo dei parametri => siamo nella search
-            if ($parameters != []) {
-                if (array_key_exists('id', $parameters) && count($parameters) == 1) {
-                    $data = $this->reservationManager->getReservationById($parameters['id']);
-                } /*else if (array_key_exists('name', $parameters) || array_key_exists('enter', $parameters)) {                  
-                    //se non esiste nessun valore nell'array di parametri associato alla chiave name o enter assegna alle due variabili che passeremo 
-                    //allo storage valore null
+            case 'trashReservations':
+                {   if(count($values) ===1 ){
+                    $page = $values[0];
+                    }  
+                    return $this->getActionMethod($action, $page, $parameters);
+                    break;
+                }
+            case 'reservationById':
+                {   
+                    if(count($values) === 1){
+                        $id = $values[0];
+                    }
+                    return $this->getActionMethod($action,$id);
+                    break;
+                }
+            case 'search':
+                {   
                     $name = $parameters['name'] ?? null;
                     $enter = $parameters['enter'] ?? null;
-                    $data = $this->reservationManager->searchReservations($name, $enter);
-                }*/ else {
-                    //se non abbiamo parametri e non abbiamo action è il caso generale in cui stampiamo tutte le prenotazion
-                    $data = $this->reservationManager->getPage($parameters);
+                    return $this->getActionMethod($action,$name,$enter);
+                    break;
+
                 }
-            } else {
-
-                //$data = $this->reservationManager->getReservations()
-                //$data = $this->reservationManager->getPage();
+            default : 
+                {   $page= null;
+                    if(count($values) ===1 ){
+                    $page = $values[0];
+                    }  
+                    $data = $this->reservationManager->getReservations($page, $parameters);
+                    if (is_array($data) && count($data)) {
+                        $this->response->setData($data);
+                    } else {
+                        //se data è una stringa => ritorna l'errore
+                        if (is_string($data)) {
+                            $this->response->setErrors(['message' => $data]);
+                        }
+                        //Non abbiamo errori e quindi semplicemente non ci sono prenotazioni
+                        $this->response->setErrors(['message' => 'Non ci sono prenotazioni']);
+                    } return $this->response;
+                    break;
+                }
             }
-            //controlliamo che i dati che ci arrivano di risposta siano un array e che abbiano almeno un elemento
-            if (is_array($data) && count($data)) {
-                //creiamo la risposta
-                $response->setData($data);
-            } else {
-                //se il dato che ci arriva è una stringa => abbiamo l'errore dallo storage
-                if (is_string($data)) {
-                    $response->setErrors(['message' => $data]);
-                } //se ci arriva un array vuoto allora semplicemente non ci sono prenotazioni
-                $response->setErrors(['message' => 'Non ci sono prenotazioni']);
-            }
-        }
-        return $response;
     }
-
+    
+    
 
 
     public function delete(Request $request): Response
@@ -212,3 +226,59 @@ class ReservationService extends BaseService
         }
     }
 }
+
+    /* ($action) {
+        //switch ( default è no action all reservation, search (parameters nome e ingresso) per l'id)
+        //per vedere lo storico o il trash posso farlo direttamente assegnandogli a loro una action
+        //viene invocato il metodo con nome get<action>
+        $ methodName = 'get' . 'ReservationById' 
+        $methodName = 'get' . ucfirst($action);
+        //controllo se il metodo esiste realmente
+        //se esiste lo richiamo e gli passo i parametri
+        if (method_exists($this->reservationManager, $methodName)) {
+            $data = $this->reservationManager->$methodName($parameters); // scriviamo il metodo che ci dà la/e prenotazione/i che vogliamo in base ai parametri che abbiamo
+            //se data è un array e ha almneo un elemento (controllo necessario perchè l'array vuoto è comunque un array mentre
+            //se faccio il count a una stringa me la considera come un array con un elemento)               
+            if (is_array($data) && count($data)) {
+                $response->setData($data);
+            } else {
+                //se data è una stringa => ritorna l'errore
+                if (is_string($data)) {
+                    $response->setErrors(['message' => $data]);
+                }
+                //Non abbiamo errori e quindi semplicemente non ci sono prenotazioni
+                $response->setErrors(['message' => 'Non ci sono prenotazioni']);
+            }
+        } else {
+            $response->setErrors(['message' => 'Il metodo non esiste']);
+            $response->setErrorCode(Response::HTTP_CODE_ERROR_METHOD_NOT_FOUND);
+        }
+    } else {
+        //non abbiamo una action ma abbiamo dei parametri => siamo nella search
+        //if ($parameters != []) {
+            if (array_key_exists('id', $parameters) && count($parameters) == 1) {
+                $data = $this->reservationManager->getReservationById($parameters['id']);
+            } else if (array_key_exists('name', $parameters) || array_key_exists('enter', $parameters)) {                  
+                //se non esiste nessun valore nell'array di parametri associato alla chiave name o enter assegna alle due variabili che passeremo 
+                //allo storage valore null
+                $name = $parameters['name'] ?? null;
+                $enter = $parameters['enter'] ?? null;
+                $data = $this->reservationManager->searchReservations($name, $enter);
+            } else {
+                    $data = $this->reservationManager->getReservations($parameters);
+                }
+           // }
+        }
+        //controlliamo che i dati che ci arrivano di risposta siano un array e che abbiano almeno un elemento
+        if (is_array($data) && count($data)) {
+            //creiamo la risposta
+            $response->setData($data);
+        } else {
+            //se il dato che ci arriva è una stringa => abbiamo l'errore dallo storage
+            if (is_string($data)) {
+                $response->setErrors(['message' => $data]);
+            } //se ci arriva un array vuoto allora semplicemente non ci sono prenotazioni
+            $response->setErrors(['message' => 'Non ci sono prenotazioni']);
+        }
+        return $response;
+    }*/

@@ -62,15 +62,10 @@ class ReservationManager
         return $res;
     }
 
-    public function getPage($parameters = []){
-        $response = $this->reservationStorage->getPage($parameters);
-        return $response;
-    }
-
     //Funzione per stampare tutte le prenotazioni
-    public function getReservations()
+    public function getReservations($page=null,$parameters=[])
     {
-        $reservations = $this->reservationStorage->getReservation();
+        $reservations = $this->reservationStorage->getReservation($page, $parameters);
         return $reservations;
     }
 
@@ -80,20 +75,20 @@ class ReservationManager
     }
 
     //funzione per stampare le cancellazioni cancellate
-    public function getTrashReservations()
+    public function getTrashReservations($page=null,$parameters=[])
     {
-        $reservations = $this->reservationStorage->getTrashReservation();
+        $reservations = $this->reservationStorage->getTrashReservation($page, $parameters);
         return $reservations;
     }
     //funzione per stampare le cancellazioni nello storico
-    public function getHistoricReservations()
+    public function getHistoricReservations($page=null,$parameters=[])
     {
-        $reservations = $this->reservationStorage->getHistoricReservation();
+        $reservations = $this->reservationStorage->getHistoricReservation($page, $parameters);
         return $reservations;
     }
 
     //funzione per cercare le prenotazioni
-    public function searchReservations($name, $enter)
+    public function getSearch($name, $enter)
     {
         $reservations = $this->reservationStorage->searchReservation($name, $enter);
         return $reservations;

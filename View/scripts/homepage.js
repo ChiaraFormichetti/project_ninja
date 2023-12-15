@@ -5,8 +5,6 @@ import { getReservations, getTrashReservations, getHistoricReservations, getPage
 import { addNewReservation } from './reservation.js';
 import { commonSelector } from './commonSelector.js';
 
-let trash = false;
-let historic = false;
 //creiamo il div calendar e lo selezioniamo
 const body = commonSelector.body
 const createCalendarContainer = [
@@ -17,6 +15,7 @@ const createCalendarContainer = [
     }
 ];
 createHtml(createCalendarContainer);
+
 const calendarContainer = body.querySelector("#calendar");
 const searchButton = commonSelector.searchButton;
 const noSearchButton = commonSelector.noSearchButton;
@@ -65,34 +64,22 @@ window.addEventListener("click", (event) => {
 });
 
 //fetch per prendere tutte le prenotazioni
-//getReservations(calendarContainer);
+getReservations(calendarContainer);
 
-getPages(calendarContainer);
-
-
-//Qui facciamo la chiamata ajax al cestino
+//Tutti gli event listeners associati ai bottoni per stampare tutte le prenotazioni valide, il cestino o lo storico
 const deleteButton = commonSelector.deleteButton;
-deleteButton.addEventListener("click", () => {
-    trash = true;
-    historic = false
-    getPages(calendarContainer, 1, trash)
-});
+deleteButton.addEventListener("click", async () => getTrashReservations(calendarContainer) );
 const historicButton = commonSelector.historicButton;
-historicButton.addEventListener("click", () => {
-    historic = true;
-    trash = false;
-    getPages(calendarContainer, 1, trash, historic)
-});
+historicButton.addEventListener("click", async () => getHistoricReservations(calendarContainer) );
 const homepageButton = commonSelector.homepageButton;
-homepageButton.addEventListener("click", () => {
-    trash = false;
-    historic = false;
-    getPages(calendarContainer)
-});
-
+homepageButton.addEventListener("click", () => getReservations(calendarContainer));
+/*
 const succButton = commonSelector.succButton;
 const currentPageViews = commonSelector.currentPageViews;
 const preButton = commonSelector.preButton;
+
+//Qui ci sono i bottoni del paginatore, prima rimettiamo a posto le fetch del get e poi aggiungiamo il paginatore
+
 succButton.addEventListener("click", () => {
     let currentPages = +(currentPageViews.textContent) + 1;
     getPages(calendarContainer, currentPages, trash, historic);
@@ -102,7 +89,7 @@ preButton.addEventListener("click", () => {
     getPages(calendarContainer, currentPages, trash, historic);
 });
 
-
+*/
 /*   const modalElement = [
 {
 tagName: 'form',

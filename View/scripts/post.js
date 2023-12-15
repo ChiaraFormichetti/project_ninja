@@ -48,7 +48,8 @@ export async function postEditReservation(id, calendarContainer) {
             resetCalendar(calendarContainer);
             const currentPageViews = commonSelector.currentPageViews;
             let currentPage = +(currentPageViews.textContent);
-            getPages(calendarContainer,currentPage);
+            //getPages(calendarContainer,currentPage);
+            getReservations(calendarContainer);
             closemodal();
             alert('La prenotazione è stata modificata');
         } else {
@@ -71,7 +72,7 @@ export async function postMoveToTrash(id, calendarContainer) {
             resetCalendar(calendarContainer);
             const currentPageViews = commonSelector.currentPageViews;
             let currentPage = +(currentPageViews.textContent);
-            getPages(calendarContainer,currentPage);
+            //getPages(calendarContainer,currentPage);
             getReservations(calendarContainer);
         } else {
             alert('Non è stato possibile spostare la prenotazione nel cestino');
@@ -96,7 +97,8 @@ export async function postRestoreReservation(id, calendarContainer) {
             let trash = true;
             const currentPageViews = commonSelector.currentPageViews;
             let currentPage = +(currentPageViews.textContent);
-            getPages(calendarContainer,currentPage,trash)
+            //getPages(calendarContainer,currentPage,trash)
+            getReservations(calendarContainer);
         } else {
             alert('Non è stato possibile ripistinare la prenotazione');
         }
