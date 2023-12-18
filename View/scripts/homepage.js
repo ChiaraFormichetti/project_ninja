@@ -18,6 +18,8 @@ createHtml(createCalendarContainer);
 
 let trash = false;
 let historic = false;
+let currentPage = 1;
+let reservationForPages = 10;
 
 const calendarContainer = body.querySelector("#calendar");
 const searchButton = commonSelector.searchButton;
@@ -74,48 +76,70 @@ const deleteButton = commonSelector.deleteButton;
 deleteButton.addEventListener("click", async () => {
     trash = true;
     historic = false;
-    getTrashReservations(calendarContainer)
+    currentPage = 1;
+    itemsForPage.value = 10;
+    reservationForPages = 10;
+    getTrashReservations(calendarContainer,currentPage),reservationForPages;
 });
 
 const historicButton = commonSelector.historicButton;
 historicButton.addEventListener("click", async () => {
     trash = false;
     historic = true;
-    getHistoricReservations(calendarContainer)
+    currentPage = 1;
+    itemsForPage.value = 10;
+    reservationForPages = 10;
+    getHistoricReservations(calendarContainer,currentPage,reservationForPages);
 });
 
 const homepageButton = commonSelector.homepageButton;
 homepageButton.addEventListener("click", async () => {
     trash = false;
     historic = false;
-    getReservations(calendarContainer)
+    currentPage = 1;
+    itemsForPage.value = 10;
+    reservationForPages = 10;
+    getReservations(calendarContainer, currentPage, reservationForPages);
 });
 
 const succButton = commonSelector.succButton;
-const currentPageViews = commonSelector.currentPageViews;
 const preButton = commonSelector.preButton;
+const itemsForPage = commonSelector.selectPage;
+
+itemsForPage.addEventListener("change", () => {
+    reservationForPages = itemsForPage.value;
+    if(reservationForPages!== 10){
+        if(trash){
+            getTrashReservations(calendarContainer,currentPage,reservationForPages);
+        } else if (historic){
+            getHistoricReservations(calendarContainer,currentPage,reservationForPages);
+        } else {
+            getReservations(calendarContainer,currentPage,reservationForPages);
+        }
+    }
+})
 
 //Qui ci sono i bottoni del paginatore, prima rimettiamo a posto le fetch del get e poi aggiungiamo il paginatore
 
 succButton.addEventListener("click", () => {
-    let currentPages = +(currentPageViews.textContent) + 1;
+    currentPage +=  1;
     if (trash) {
-        getTrashReservations(calendarContainer, currentPages)
+        getTrashReservations(calendarContainer, currentPage, reservationForPages)
     } else if (historic) {
-        getHistoricReservations(calendarContainer, currentPages)
+        getHistoricReservations(calendarContainer, currentPage, reservationForPages)
     } else {
-        getReservations(calendarContainer, currentPages);
+        getReservations(calendarContainer, currentPage, reservationForPages);
     }
 });
 
 preButton.addEventListener("click", () => {
-    let currentPages = +(currentPageViews.textContent) - 1;
+    currentPage -= 1;
     if (trash) {
-        getTrashReservations(calendarContainer, currentPages)
+        getTrashReservations(calendarContainer, currentPage, reservationForPages)
     } else if (historic) {
-        getHistoricReservations(calendarContainer, currentPages)
+        getHistoricReservations(calendarContainer, currentPage, reservationForPages)
     } else {
-        getReservations(calendarContainer, currentPages);
+        getReservations(calendarContainer, currentPage, reservationForPages);
     }
 });
 

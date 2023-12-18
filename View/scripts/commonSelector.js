@@ -6,6 +6,7 @@ const searchForm = body.querySelector("#search");
 const modalForm = modal.querySelector("#newReservationForm");
 const baseURL = "http://www.chiara-test/";
 const apiURL = baseURL + "api/reservation";
+const divPage = body.querySelector('.page');
 
 export const commonSelector =
  {
@@ -23,9 +24,12 @@ export const commonSelector =
     homepageButton : body.querySelector("#return"),
     searchName : searchForm.querySelector("#name"),
     searchEnter : searchForm.querySelector("#enter"),
-    preButton : body.querySelector("#pre"),
-    succButton : body.querySelector("#succ"),
-    currentPageViews : body.querySelector("#currentPage"),
+    preButton : divPage.querySelector("#pre"),
+    succButton : divPage.querySelector("#succ"),
+    currentPageViews : divPage.querySelector("#currentPage"),
+    itemsViews : divPage.querySelector("#items"),
+    selectPage : divPage.querySelector("#forPage"),
+
 
 
 }   

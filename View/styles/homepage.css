@@ -57,6 +57,19 @@ h1{
 
 .add {
     text-align: right;
+    width: auto;
+    height: auto;
+    margin: 10px;
+    padding: 5px;
+    border-radius: 50px;
+}
+
+.page{
+    height: auto;
+    width: 30%;
+    text-align: center;
+    background-color: #c2baff;
+    padding: 5px;
 }
 
 .hidden {
@@ -66,6 +79,7 @@ h1{
 input {
 
     margin-bottom: 10px;
+    padding-inline: 7px;
 }
 
 .reservation {
@@ -88,8 +102,14 @@ input {
 .header-modal {
     position: relative;
     background-color: blue;
-    border-radius: 30%;
     margin-bottom: 10px;
+    width: auto;
+    height: auto;
+    margin-top: -19px;
+    margin-inline: -15px;
+    border-top-left-radius: 30px;
+    border-top-right-radius: 30px;
+    padding-top: 5px;
 }
 .text-header {
     color:yellow;
@@ -103,18 +123,19 @@ input {
     position: relative;
     background-color: rgba(164, 211, 192, 0.555);
     top: 20%;
-    padding: 20px;
     border: 1px solid #000000;
-    border-radius: 30%;
-    width: 200px;
-    height: 500px;
+    border-radius: 30px;;
+    width: min-content;
+    height: min-content;
     margin:auto;
     animation: animatezoom 0.6s ;
+    padding-inline: 15px;
+    padding-bottom: 15px;
 }
 
 .modal-input{
     flex-direction: column;
-    border-radius: 30%;
+    border-radius: 30px;
     padding-block: 4px;
     border-color: cyan;
     margin-block: 10px;

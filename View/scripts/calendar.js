@@ -5,15 +5,18 @@ import { deleteforEverById } from './delete.js';
 import { commonSelector } from './commonSelector.js';
 
 
-export function  pageManager(totalPages, currentPage=1){
+export function  pageManager(totalPages, currentPage=1, count, reservationForPages=10){
+    debugger
     const preButton = commonSelector.preButton;
     const succButton = commonSelector.succButton
     const currentPageViews = commonSelector.currentPageViews;
-    if(currentPageViews.firstChild){
-        currentPageViews.removeChild(currentPageViews.firstChild);
+    const itemsViews = commonSelector.itemsViews;
+    currentPageViews.textContent = `Pagina ${currentPage} di ${totalPages}`;
+    if(currentPage == totalPages){
+        itemsViews.textContent = `Prenotazioni ${count} di ${count}`;
+    } else {
+        itemsViews.textContent = `Prenotazioni ${reservationForPages*currentPage} di ${count}`;
     }
-    let page = document.createTextNode(currentPage);
-    currentPageViews.appendChild(page);
     if(currentPage==1){
         preButton.disabled = true;
     } else {
@@ -189,7 +192,7 @@ export function writeCalendar(allReservations, calendarContainer) {
         calendarContainer.textContent = `Non ci sono prenotazioni nello storage !`
         const searchButton = commonSelector.searchButton;
         //potremmo usare questa logica per il bottone che ristampa tutte le prenotazioni
-        searchButton.setAttribute("disabled");
+        searchButton.disabled = true;
     }
 }
 

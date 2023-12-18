@@ -51,22 +51,22 @@ class ReservationService extends BaseService
         $root = null;
         switch ($action) {
             case 'historicReservations': {
-                    if (count($values) === 1 && is_numeric($values[0])) {
+                    if (is_numeric($values[0])) {
                         $page = $values[0];
                     }
-                    if (count($values) === 2 && is_numeric($values[1])) {
+                    if (is_numeric($values[1]) || $values[1] === 'all') {
                         $reservationForPage = $values[1];
                     }
                     return $this->getActionMethod($action, $page, $reservationForPage, $parameters);
                     break;
                 }
             case 'trashReservations': {
-                    if (count($values) === 1 && is_numeric($values[0])) {
-                        $page = $values[0];
-                    }
-                    if (count($values) === 2 && is_numeric($values[0])) {
-                        $reservationForPage = $values[1];
-                    }
+                if (is_numeric($values[0])) {
+                    $page = $values[0];
+                }
+                if (is_numeric($values[1]) || $values[1] === 'all') {
+                    $reservationForPage = $values[1];
+                }
                     return $this->getActionMethod($action, $page, $reservationForPage, $parameters);
                     break;
                 }
@@ -110,7 +110,7 @@ class ReservationService extends BaseService
             default: {
                     if (is_numeric($action)) {
                         $page = $action;
-                        if (count($values) === 1 && is_numeric($values[0])) {
+                        if (count($values) === 1 && (is_numeric($values[0]) || $values[0] === 'all')) {
                             $reservationForPage = $values[0];
                         }
                     }

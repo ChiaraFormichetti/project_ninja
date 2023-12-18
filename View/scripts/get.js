@@ -6,7 +6,7 @@ import { pageManager } from "./calendar";
 const apiURL = commonSelector.apiURL;
 
 //riusare questa 
-export async function getReservations(calendarContainer, currentPages = 1, reservationForPages = null) {
+export async function getReservations(calendarContainer, currentPages = 1, reservationForPages = 10) {
     let url = apiURL;
     if (currentPages) {
         url += `/${currentPages}`;
@@ -19,15 +19,16 @@ export async function getReservations(calendarContainer, currentPages = 1, reser
         const response = await requestManager.get(url);
         const totalPages = response.totalPages;
         const reservations = response.reservations;
+        const count = response.count;
         resetCalendar(calendarContainer);
         writeCalendar(reservations, calendarContainer);
-        pageManager(totalPages, currentPages);
+        pageManager(totalPages, currentPages, count, reservationForPages);
     } catch (error) {
         console.error('Errore durante la fetch: ', error);
     }
 };
 
-export async function getTrashReservations(calendarContainer, currentPages = 1, reservationForPages = null) {
+export async function getTrashReservations(calendarContainer, currentPages = 1, reservationForPages = 10) {
 
     let url = apiURL + '/trashReservations';
     if (currentPages) {
@@ -42,16 +43,17 @@ export async function getTrashReservations(calendarContainer, currentPages = 1, 
         const response = await requestManager.get(url);
         const totalPages = response.totalPages;
         const trashReservations = response.reservations;
+        const count = response.count;
         resetCalendar(calendarContainer);
         writeDeleteCalendar(trashReservations, calendarContainer);
-        pageManager(totalPages, currentPages);
+        pageManager(totalPages, currentPages, count, reservationForPages);
     }
     catch (error) {
         console.error('Errore durante la fetch: ', error);
     }
 };
 
-export async function getHistoricReservations(calendarContainer, currentPages = 1, reservationForPages = null) {
+export async function getHistoricReservations(calendarContainer, currentPages = 1, reservationForPages = 10) {
     let url = apiURL + '/historicReservations';
     if (currentPages) {
         url += `/${currentPages}`;
@@ -64,9 +66,10 @@ export async function getHistoricReservations(calendarContainer, currentPages = 
         const response = await requestManager.get(url);
         const totalPages = response.totalPages;
         const historicReservations = response.reservations;
+        const count = response.count;
         resetCalendar(calendarContainer);
         writeHistoricCalendar(historicReservations, calendarContainer);
-        pageManager(totalPages, currentPages);
+        pageManager(totalPages, currentPages, count, reservationForPages);
     }
     catch (error) {
         console.error('Errore durante la fetch: ', error);
