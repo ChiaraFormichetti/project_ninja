@@ -30,7 +30,7 @@ if ($method==='post'){
 //lettura del servizio
 $action = null;
 $values= [];
-preg_match ('/\/api\/(\w+)(\/(\w+))?(\/(.*))?/', $url, $matches);
+preg_match ('/\/api\/(\w+)(\/(\w+))(\/([^?]*))?/', $url, $matches);
 if(isset($matches[1])){
     $serviceName = $matches[1];
 };

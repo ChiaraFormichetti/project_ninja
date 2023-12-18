@@ -63,9 +63,9 @@ class ReservationManager
     }
 
     //Funzione per stampare tutte le prenotazioni
-    public function getReservations($page=null,$parameters=[])
+    public function getReservations($page=null, $reservationForPage = null, $parameters=[])
     {
-        $reservations = $this->reservationStorage->getReservation($page, $parameters);
+        $reservations = $this->reservationStorage->getReservation($page, $reservationForPage, $parameters);
         return $reservations;
     }
 
@@ -75,15 +75,15 @@ class ReservationManager
     }
 
     //funzione per stampare le cancellazioni cancellate
-    public function getTrashReservations($page=null,$parameters=[])
+    public function getTrashReservations($page=null, $reservationForPage=null, $parameters=[])
     {
-        $reservations = $this->reservationStorage->getTrashReservation($page, $parameters);
+        $reservations = $this->reservationStorage->getTrashReservation( $page, $reservationForPage, $parameters);
         return $reservations;
     }
     //funzione per stampare le cancellazioni nello storico
-    public function getHistoricReservations($page=null,$parameters=[])
+    public function getHistoricReservations($page=null, $reservationForPage=null, $parameters=[])
     {
-        $reservations = $this->reservationStorage->getHistoricReservation($page, $parameters);
+        $reservations = $this->reservationStorage->getHistoricReservation($page, $reservationForPage, $parameters);
         return $reservations;
     }
 
@@ -95,28 +95,33 @@ class ReservationManager
     }
 
     //funzione per aggiungere una prenotazione
-    public function addReservations(array $body)
+    public function postAddReservation(array $body)
     {
         $result = $this->reservationStorage->addReservation($body);
         return $result;
     }
 
     //funzione per modificare una prenotazione
-    public function editReservations(array $updateData, int $id)
+    public function postEditReservation(array $updateData, int $id)
     {
         $result = $this->reservationStorage->editReservation($updateData, $id);
         return $result;
     }
 
     //funzione pe spostare una cancellazione nel cestino
-    public function trashReservations(int $id)
+    public function postTrashReservation(int $id)
     {
         $result = $this->reservationStorage->trashReservation($id);
         return $result;
     }
 
+    public function postRestoreReservation(int $id){
+        $result = $this->reservationStorage->restoreReservation($id);
+        return $result;
+    }
+
     //funzione per cancellare una prenotazione
-    public function deleteReserations(int $id)
+    public function deleteReservation(int $id)
     {
         $result = $this->reservationStorage->deleteReservation($id);
         return $result;

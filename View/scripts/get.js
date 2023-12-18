@@ -5,84 +5,68 @@ import { pageManager } from "./calendar";
 
 const apiURL = commonSelector.apiURL;
 
-export async function getPages (calendarContainer, currentPages=1, trash=false, historic=false, name=false, enter=false,reservationForPages=null ){
-   try{
-       const parameters = new URLSearchParams();
-        if (currentPages){
-            parameters.append('page',currentPages);
-        }
-        if(reservationForPages){
-            parameters.append('number', reservationForPages);
-        }
-        if(trash){
-            parameters.append('cancellazione', 1);
-        }  else if(historic){
-            parameters.append('cancellazione', 0);
-            parameters.append('time', '<');            
-        } else {
-            parameters.append('cancellazione', 0);
-            parameters.append('time', '>=');
-        }
-        if(name){
-            parameters.append('name',name);
-        }
-        if(enter){
-            parameters.append('enter',enter);
-        }
+//riusare questa 
+export async function  getReservations(calendarContainer, currentPages=1,reservationForPages=null) {
+    let url = apiURL;
+    if(currentPages){
+        url += `/${currentPages}`;
+    }
+    if(reservationForPages){
+        url += `/${reservationForPages}`;
+    }
 
-        let url = apiURL + `?${parameters.toString()}`;
+    try {
         const response = await requestManager.get(url);
         const totalPages = response.totalPages;
         const reservations = response.reservations;
         resetCalendar(calendarContainer);
-        if(trash){
-            writeDeleteCalendar(reservations,calendarContainer);
-        } else if (historic){
-            writeHistoricCalendar(reservations,calendarContainer);
-        } else {
-            writeCalendar(reservations,calendarContainer);
-        }
+        writeCalendar(reservations, calendarContainer);
         pageManager(totalPages, currentPages);
-    } 
-    catch (error){
-    console.error("Errore durante la paginazione");
-    }
-}
-//riusare questa 
-export async function  getReservations(calendarContainer) {
-    let url = apiURL;
-
-    try {
-        const allReservations = await requestManager.get(url);
-        resetCalendar(calendarContainer);
-        writeCalendar(allReservations, calendarContainer);
     } catch (error) {
         console.error('Errore durante la fetch: ', error);
     }
 };
 
-export async function getTrashReservations(calendarContainer) {
+export async function getTrashReservations(calendarContainer, currentPages=1,reservationForPages=null) {
 
     let url = apiURL + '/trashReservations';
+    if(currentPages){
+        url += `/${currentPages}`;
+    }
+    if(reservationForPages){
+        url += `/${reservationForPages}`;
+    }
 
     try {
-        const trashReservations = await requestManager.get(url);
+        
+        const response = await requestManager.get(url);
+        const totalPages = response.totalPages;
+        const trashReservations = response.reservations;
         resetCalendar(calendarContainer);
         writeDeleteCalendar(trashReservations, calendarContainer);
+        pageManager(totalPages,currentPages);
     }
     catch (error) {
         console.error('Errore durante la fetch: ', error);
     }
 };
 
-export async function getHistoricReservations(calendarContainer) {
-
+export async function getHistoricReservations(calendarContainer, currentPages=1,reservationForPages=null) { 
     let url = apiURL + '/historicReservations';
+    if(currentPages){
+        url += `/${currentPages}`;
+    }
+    if(reservationForPages){
+        url += `/${reservationForPages}`;
+    }
 
     try {
-        const historicReservations = await requestManager.get(url);
+        const response = await requestManager.get(url);
+        const totalPages = response.totalPages;
+        const historicReservations = response.reservations;
         resetCalendar(calendarContainer);
         writeHistoricCalendar(historicReservations, calendarContainer);
+        pageManager(totalPages,currentPages);
     }
     catch (error) {
         console.error('Errore durante la fetch: ', error);
@@ -91,17 +75,17 @@ export async function getHistoricReservations(calendarContainer) {
 
 export async function getSearchReservation (url, calendarContainer) {
     try {
-        const searchReservation = await requestManager.get(url);
-        if (searchReservation.length >= 1) {
+        const searchReservations = await requestManager.get(url);
+        if (searchReservations.length >= 1) {
             resetCalendar(calendarContainer);
-            writeCalendar(searchReservation, calendarContainer);
+            writeCalendar(searchReservations, calendarContainer);
         } else {
             alert(`Non ci sono prenotazioni corrispondenti ai valori cercati`)
         };
       } catch (error){
         console.error('Errore durante la ricerca: ',error);
       }
-};
+}; 
 
 export async function getReservationById (id){
     try{

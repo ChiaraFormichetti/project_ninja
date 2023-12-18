@@ -11,128 +11,67 @@ class ReservationStorage extends BaseStorage
 {
    protected $connection;
    protected $queryBuilder;
-   //protected $tableColumns;
+
    public function __construct()
    {
       parent::__construct();
       $this->queryBuilder = new QueryBuilder('prenotazioni');
    }
-   //ci potremmo fare i controlli, abbiamo l'array delle colonne, controlliamo che le colonne inserite siano all'interno dell'array
-   //il controllo lo farei più nel manager che nello storage!!!!
-   //quindi l'oggetto new reservation lo faremo li, posto in cui faremo il manager di tutti gli errori !
-
-   //no *, 
-   /*
-   public function getPage($parameters = [])
-   {
-      try {
-         $this->queryBuilder->select()
-            ->countElements('*');
-         if (isset($parameters['name'])) {
-            $this->queryBuilder->where('nome', 'LIKE', '%' . $parameters['name'] . '%');;
-         }
-         if (isset($parameters['enter'])) {
-            $this->queryBuilder->where('ingresso', '=', $parameters['enter'], 'OR');
-         }
-         if (isset($parameters['time'])) {
-            $this->queryBuilder->where('ingresso', $parameters['time'], date('Y-m-d'));
-         }
-         if (isset($parameters['cancellazione'])) {
-            $this->queryBuilder->where('cancellazione', '=', $parameters['cancellazione']);
-         }
-         if (isset($parameters['id'])) {
-            $this->queryBuilder->where('id', '=', $parameters['id']);
-         }
-         $query = $this->queryBuilder->getQuery();
-         $count = $this->connection->query($query)->fetchColumn();
-         $resultForPage = (isset($parameters['number']) && is_numeric($parameters['number'])) ? $parameters['number'] : 10;
-         $totPages = ceil($count / $resultForPage);
-         $currentPage = (isset($parameters['page']) && is_numeric($parameters['page'])) ? $parameters['page'] : 1;
-         $start = ($currentPage - 1) * $resultForPage;
-         $this->queryBuilder
-            ->selectColumns(['*']);
-         if (isset($parameters['name'])) {
-            $this->queryBuilder->where('nome', 'LIKE', '%' . $parameters['name'] . '%');
-         }
-         if (isset($parameters['enter'])) {
-            $this->queryBuilder->where('ingresso', '=', $parameters['enter'], 'OR');
-         }
-         if (isset($parameters['time'])) {
-            $this->queryBuilder->where('ingresso', $parameters['time'], date('Y-m-d'));
-         }
-         if (isset($parameters['cancellazione'])) {
-            $this->queryBuilder->where('cancellazione', '=', $parameters['cancellazione']);
-         }
-         if (isset($parameters['id'])) {
-            $this->queryBuilder->where('id', '=', $parameters['id']);
-         }
-         $this->queryBuilder->orderBy('ingresso')
-            ->limit($start, $resultForPage);
-         $query = $this->queryBuilder->getQuery();
-         $reservations = [];
-         foreach ($this->connection->query($query) as $row) {
-            $reservations[] = $row;
-         }
-         return [
-            'reservations' => $reservations,
-            'totalPages' => $totPages,
-            'currentPage' => $currentPage
-         ];
-      } catch (\Exception $e) {
-         error_log('Errore durante il recupero delle prenotazioni: ' . $e->getMessage());
-         return $e->getMessage();
-      }
-   }
-   //metodo page ( queryBuilder ) {
-      //select sql_calc_found_rows
-*/
-   //}
 
    //prova con le window 
    /*SELECT id, count(*) over() as totale 
 FROM `prenotazioni` 
 WHERE cancellazione = 0
-limit 10;
-
-select * from prenotazioni p where p.id in(1, 2)
-*/
+limit 10;*/
 
 //altrimenti su get pages cerchi gli id e conteggi quante prenotazioni sono sul foreach e mandi all'altra l'id ddelle prenotazioni cercate e il conteggio
-   public function getPages( $queryBuilder, $page=null, $parameters=[]){
-     // $serializedQueryBuilder = serialize($queryBuilder);
-      //$cloneQueryBuilder = unserialize($serializedQueryBuilder);
-      $cloneQueryBuilder = $this->queryBuilder;
-      $cloneQueryBuilder->countElements('id');
-      $query = $cloneQueryBuilder->getQuery();
-      $count = $this->connection->query($query)->fetchColumn();
+   public function getPages( $queryBuilder, $page=null, $reservationforPages=null, $parameters=[]){
+      $this->queryBuilder;
+      $this->queryBuilder->selectColumns(['id']);
+      $query =  $this->queryBuilder->getQuery();
+      $id = [];
+      foreach($this->connection->query($query) as $row) {
+         $id[] = $row['id'];
+      }
+      $count = count($id);
+      //numero di prenotazioni che vogliamo per pagina (opzionale, poichè di default è 10)
       $resultForPage = (isset($parameters['number']) && is_numeric($parameters['number'])) ? $parameters['number'] : 10;
+      //numero di pagina totali che abbiamo in base al numero di prenotazioni da stampare(arrotondiamo per eccesso)
       $totPages = ceil($count / $resultForPage);
-      $currentPage = (isset($page) && is_numeric($page)) ? $page : 1;
+      //pagina corrente che vogliamo stampare, se non la specifichiamo di default è la prima
+      //il controllo is numeric da fare al service [is_numeric($page)] 
+      $currentPage = (isset($page)) ? $page : 1;
+      //primo parametro del limit, ci definisce da quale prenotazione parte la pagina che stiamo stampando
       $start = ($currentPage - 1) * $resultForPage;
+      //count ci definisce il numero di items totali
+      //lo start ci serve pe ril limit
+      //result for pages è il secondo parametro del limit
+      //totalPages è il numero di pagine totali
       return [
+         'id' => $id,
          'count' => $count,
          'start' => $start,
          'resultForPage' => $resultForPage,
-         'currentPage' => $currentPage,
          'totalPages' => $totPages
       ];
       
    }
 
-   public function getReservation($page=null, $parameters=[])
+   public function getReservation($page=null, $resultForPage=null, $parameters=[])
    { 
       try {
-
-        $cloneQueryBuilder = $this->queryBuilder;
-         //$cloneQueryBuilder->select()
-         $cloneQueryBuilder->select()
+         $this->queryBuilder->select()
             ->where('ingresso', '>=', date('Y-m-d'))
             ->where('cancellazione', '=', 0, 'AND')
             ->orderBy('ingresso');
-         $pageResult = $this->getPages($cloneQueryBuilder, $page, $parameters);
-         $cloneQueryBuilder->selectColumns(['*'])
-                           ->limit($pageResult['start'],$pageResult['resultForPage']);
-         $query = $cloneQueryBuilder->getQuery();
+         $pageResult = $this->getPages($this->queryBuilder, $page, $resultForPage, $parameters);
+         $this->queryBuilder->selectColumns(['*']);
+         foreach($pageResult['id'] as $id){
+            $this->queryBuilder
+            ->where('id', '=', $id,'OR');
+         }
+         $this->queryBuilder->limit($pageResult['start'],$pageResult['resultForPage']);
+         $query = $this->queryBuilder->getQuery();
          $reservations = [];
          foreach ($this->connection->query($query) as $row) {
             $reservations[] = $row;
@@ -140,8 +79,7 @@ select * from prenotazioni p where p.id in(1, 2)
          return [
             'reservations' => $reservations,
             'totalPages' => $pageResult['totalPages'],
-            'currentPage' => $pageResult['currentPage'],
-            'count' => $pageResult['count']
+            'count' => $pageResult['count'],
          ];
          //se nella query builder viene lanciata un'eccezione, la catturiamo, registriamo il messaggio di errore nel log degli errori
          //e restituiamo un array vuoto !
@@ -170,41 +108,59 @@ select * from prenotazioni p where p.id in(1, 2)
    }
 
    //Stampa le prenotazioni passate
-   public function getHistoricReservation($parameters = [])
+   public function getHistoricReservation( $page=null, $resultForPage=null, $parameters=[])
    {
       try {
          $this->queryBuilder->select()
-            ->selectColumns(['*'])
             ->where('ingresso', '<', date('Y-m-d'))
             ->where('cancellazione', '=', 0, 'AND')
             ->orderBy('ingresso');
-
+         $pageResult = $this->getPages($this->queryBuilder, $page, $resultForPage, $parameters);
+         $this->queryBuilder->selectColumns(['*']);
+         foreach($pageResult['id'] as $id){
+            $this->queryBuilder
+            ->where('id', '=', $id,'OR');
+         }
+         $this->queryBuilder->limit($pageResult['start'],$pageResult['resultForPage']);
          $query = $this->queryBuilder->getQuery();
          $reservations = [];
          foreach ($this->connection->query($query) as $row) {
             $reservations[] = $row;
          }
-         return $reservations;
+         return [
+            'reservations' => $reservations,
+            'totalPages' => $pageResult['totalPages'],
+            'count' => $pageResult['count'],
+         ];
       } catch (\Exception $e) {
          error_log('Errore durante il recupero delle prenotazioni nello storico: ' . $e->getMessage());
          return $e->getMessage();
       }
    }
    //Stampa le prenotazioni nel cestino
-   public function getTrashReservation()
+   public function getTrashReservation( $page=null, $resultForPage=null, $parameters=[])
    {
       try {
          $this->queryBuilder->select()
-            ->selectColumns(['*'])
             ->where('cancellazione', '=', 1)
             ->orderBy('ingresso');
-
-         $query = $this->queryBuilder->getQuery();
+            $pageResult = $this->getPages($this->queryBuilder, $page, $resultForPage, $parameters);
+            $this->queryBuilder->selectColumns(['*']);
+            foreach($pageResult['id'] as $id){
+               $this->queryBuilder
+               ->where('id', '=', $id,'OR');
+            }
+            $this->queryBuilder->limit($pageResult['start'],$pageResult['resultForPage']);
+            $query = $this->queryBuilder->getQuery();
          $reservations = [];
          foreach ($this->connection->query($query) as $row) {
             $reservations[] = $row;
          }
-         return $reservations;
+         return [
+            'reservations' => $reservations,
+            'totalPages' => $pageResult['totalPages'],
+            'count' => $pageResult['count'],
+         ];
       } catch (\Exception $e) {
          error_log('Errore durante il recupero delle prenotazioni nel cestino: ' . $e->getMessage());
          return $e->getMessage();
@@ -240,6 +196,7 @@ select * from prenotazioni p where p.id in(1, 2)
       }
    }
 
+
    //Aggiunge una prenotazione
    public function addReservation(array $body)
    {
@@ -266,10 +223,27 @@ select * from prenotazioni p where p.id in(1, 2)
          $trash = $this->connection->query($query);
          return $trash;
       } catch (\Exception $e) {
-         error_log("Errore durante l'aggiunta della prenotazione : " . $e->getMessage());
+         error_log("Errore durante la cancellazione della prenotazione : " . $e->getMessage());
          return $e->getMessage();
       }
    }
+
+   public function restoreReservation(int $id)
+   {
+      try {
+         $this->queryBuilder->update()
+            ->updateFunction('cancellazione', 0)
+            ->where('id', '=', $id);
+         $query = $this->queryBuilder->getQuery();
+         $restore = $this->connection->query($query);
+         return $restore;
+      } catch (\Exception $e) {
+         error_log("Errore durante il ripristina della prenotazione : " . $e->getMessage());
+         return $e->getMessage();
+      }
+   }
+
+
    //Modifica prenotazione
    public function editReservation(array $updateData, int $id)
    {  //per ogni colonna set value
@@ -283,7 +257,7 @@ select * from prenotazioni p where p.id in(1, 2)
          $edit = $this->connection->query($query);
          return $edit;
       } catch (\Exception $e) {
-         error_log("Errore durante l'aggiunta della prenotazione : " . $e->getMessage());
+         error_log("Errore durante la modifica della prenotazione : " . $e->getMessage());
          return $e->getMessage();
       }
    }
@@ -297,7 +271,7 @@ select * from prenotazioni p where p.id in(1, 2)
          $delete = $this->connection->query($query);
          return $delete;
       } catch (\Exception $e) {
-         error_log("Errore durante l'aggiunta della prenotazione : " . $e->getMessage());
+         error_log("Errore durante la cancellazione della prenotazione : " . $e->getMessage());
          return $e->getMessage();
       }
    }

@@ -4,8 +4,10 @@ import { commonSelector } from './commonSelector.js';
 //funzione per cercare una prenotazione
 const searchName = commonSelector.searchName;
 const searchEnter = commonSelector.searchEnter;
+const apiURL = commonSelector.apiURL;
 
 export async function search(calendarContainer) {
+    let url = apiURL + '/search';
     if (searchName.value || searchEnter.value) {
         
           const params = new URLSearchParams();
@@ -15,7 +17,7 @@ export async function search(calendarContainer) {
           if(searchEnter.value){
               params.append('enter',searchEnter.value);
           }
-          const url = `http://www.chiara-test/api/reservation/search?${params.toString()}`;
+          url += `?${params.toString()}`;
           getSearchReservation(url, calendarContainer);
           
       } else {

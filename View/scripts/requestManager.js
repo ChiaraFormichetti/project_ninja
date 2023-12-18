@@ -18,12 +18,12 @@ export const requestManager = {
                 }
                 const data = result.data;
                 const totalPages = data.totalPages;
-                const currentPage = data.currentPage;
-                const reservations = data.reservations
+                const reservations = data.reservations;
+                const count = data.count;
 
                 data.totalPages = totalPages;
-                data.currentPage = currentPage;
                 data.reservations = reservations;
+                data.count = count;
                 return data;
             })
             .catch(error => {

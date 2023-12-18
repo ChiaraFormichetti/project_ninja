@@ -1,13 +1,11 @@
 import { openmodal} from './modal.js'
-import { getPages, getReservationById} from './get.js';
+import { getReservationById} from './get.js';
 import { postNewReservation, postEditReservation } from './post.js';
 import createHtml from './element.js';
 import { commonSelector } from './commonSelector.js';
 
 //funzione per aggiungere una nuova prenotazione
 export async function addNewReservation(calendarContainer) {
-    debugger;
-    console.log("ciao");
     const modalForm = commonSelector.modalForm;
     let name = modalForm.querySelector("#newName").value;  
     let seats =modalForm.querySelector("#newSeats").value;
@@ -34,13 +32,12 @@ export async function addNewReservation(calendarContainer) {
     } else if (userExitDate <= userEnterDate) {
         alert("la data di uscita inserita non è valida!")
     } else {
-            const url = 'http://www.chiara-test/api/reservation';
             const formData = new FormData();
             formData.append('nome', name);
             formData.append('posti', seats);
             formData.append('ingresso', enter);
             formData.append('uscita', exit);
-            postNewReservation(url,formData, calendarContainer);          
+            postNewReservation(formData, calendarContainer);          
     }
 }
 
