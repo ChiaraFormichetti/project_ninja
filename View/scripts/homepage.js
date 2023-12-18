@@ -108,7 +108,7 @@ const itemsForPage = commonSelector.selectPage;
 
 itemsForPage.addEventListener("change", () => {
     reservationForPages = itemsForPage.value;
-    if(reservationForPages!== 10){
+    currentPage = 1;
         if(trash){
             getTrashReservations(calendarContainer,currentPage,reservationForPages);
         } else if (historic){
@@ -116,7 +116,7 @@ itemsForPage.addEventListener("change", () => {
         } else {
             getReservations(calendarContainer,currentPage,reservationForPages);
         }
-    }
+    
 })
 
 //Qui ci sono i bottoni del paginatore, prima rimettiamo a posto le fetch del get e poi aggiungiamo il paginatore

@@ -325,7 +325,7 @@ export function writeDeleteCalendar(deleteReservations, calendarContainer) {
 
         calendarContainer.textContent = `Non ci sono prenotazioni nel cestino !`
         const searchButton = commonSelector.searchButton;
-        searchButton.setAttribute("disabled");
+        searchButton.disabled = true;
     }
 }
 
@@ -418,7 +418,7 @@ export function writeHistoricCalendar(historicReservations, calendarContainer) {
 
         calendarContainer.textContent = `Non ci sono prenotazioni nello storico !`
         const searchButton = commonSelector.searchButton;
-        searchButton.setAttribute("disabled");
+        searchButton.disabled = true;
     }
 }
 
