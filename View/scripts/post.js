@@ -3,6 +3,7 @@ import { getReservations, getTrashReservations } from "./get";
 import { closemodal } from "./modal";
 import { requestManager } from "./requestManager";
 import { commonSelector } from './commonSelector.js';
+import { errorManager } from "./reservation.js";
 
 const apiURL = commonSelector.apiURL;
 
@@ -29,19 +30,7 @@ export async function postEditReservation(id, calendarContainer) {
     let seats = modalForm.querySelector("#newSeats").value;
     let enter = modalForm.querySelector("#newEnter").value;
     let exit = modalForm.querySelector("#newExit").value;
-    const formData = new FormData();
-    if (name != "") {
-        formData.append('nome', name);
-    }
-    if (seats != "") {
-        formData.append('posti', seats);
-    }
-    if (enter != "") {
-        formData.append('ingresso', enter);
-    }
-    if (exit != "") {
-        formData.append('uscita', exit);
-    }
+    const formData = errorManager(name, seats, enter, exit);
     let url = apiURL + '/edit' + `/${id}`;
     try {
         const editReservation = await requestManager.post(url, formData);

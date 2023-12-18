@@ -51,27 +51,27 @@ class ReservationService extends BaseService
         $root = null;
         switch ($action) {
             case 'historicReservations': {
-                    if (count($values) === 1) {
+                    if (count($values) === 1 && is_numeric($values[0])) {
                         $page = $values[0];
                     }
-                    if (count($values) === 2) {
+                    if (count($values) === 2 && is_numeric($values[1])) {
                         $reservationForPage = $values[1];
                     }
                     return $this->getActionMethod($action, $page, $reservationForPage, $parameters);
                     break;
                 }
             case 'trashReservations': {
-                    if (count($values) === 1) {
+                    if (count($values) === 1 && is_numeric($values[0])) {
                         $page = $values[0];
                     }
-                    if (count($values) === 2) {
+                    if (count($values) === 2 && is_numeric($values[0])) {
                         $reservationForPage = $values[1];
                     }
                     return $this->getActionMethod($action, $page, $reservationForPage, $parameters);
                     break;
                 }
             case 'reservationById': {
-                    if (count($values) === 1) {
+                    if (count($values) === 1 && is_numeric($values[0])) {
                         $id = $values[0];
                     }
                     return $this->getActionMethod($action, $id);
@@ -79,10 +79,11 @@ class ReservationService extends BaseService
                 }
 
             case 'search': {
-                    if (count($values) === 1) {
+                    if (count($values) === 1 && is_string($values[0])) {
                         $root = $values[0];
                     }
-                    if (array_key_exists('name', $parameters) || array_key_exists('enter', $parameters)) {
+                    if ((array_key_exists('name', $parameters) && is_string($parameters['name'])) || 
+                        (array_key_exists('enter', $parameters) && (preg_match('#\d{4}\-\d{2}\-\d{2}#', $parameters['enter'])))) {
                         $name = $parameters['name'] ?? null;
                         $enter = $parameters['enter'] ?? null;
                         switch ($root) {
@@ -109,7 +110,7 @@ class ReservationService extends BaseService
             default: {
                     if (is_numeric($action)) {
                         $page = $action;
-                        if (count($values) >= 1) {
+                        if (count($values) === 1 && is_numeric($values[0])) {
                             $reservationForPage = $values[0];
                         }
                     }
