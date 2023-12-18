@@ -63,25 +63,26 @@ class ReservationManager
     }
 
     //Funzione per stampare tutte le prenotazioni
-    public function getReservations($page=null, $reservationForPage = null, $parameters=[])
+    public function getReservations($page = null, $reservationForPage = null, $parameters = [])
     {
         $reservations = $this->reservationStorage->getReservation($page, $reservationForPage, $parameters);
         return $reservations;
     }
 
-    public function getReservationById($id){
+    public function getReservationById($id)
+    {
         $reservation = $this->reservationStorage->getReservationById($id);
         return $reservation;
     }
 
     //funzione per stampare le cancellazioni cancellate
-    public function getTrashReservations($page=null, $reservationForPage=null, $parameters=[])
+    public function getTrashReservations($page = null, $reservationForPage = null, $parameters = [])
     {
-        $reservations = $this->reservationStorage->getTrashReservation( $page, $reservationForPage, $parameters);
+        $reservations = $this->reservationStorage->getTrashReservation($page, $reservationForPage, $parameters);
         return $reservations;
     }
     //funzione per stampare le cancellazioni nello storico
-    public function getHistoricReservations($page=null, $reservationForPage=null, $parameters=[])
+    public function getHistoricReservations($page = null, $reservationForPage = null, $parameters = [])
     {
         $reservations = $this->reservationStorage->getHistoricReservation($page, $reservationForPage, $parameters);
         return $reservations;
@@ -93,6 +94,20 @@ class ReservationManager
         $reservations = $this->reservationStorage->searchReservation($name, $enter);
         return $reservations;
     }
+
+    public function getSearchHistoric($name, $enter)
+    {
+        $reservations = $this->reservationStorage->searchHistoricReservation($name, $enter);
+        return $reservations;
+    }
+
+
+    public function getSearchTrash($name, $enter)
+    {
+        $reservations = $this->reservationStorage->searchTrashReservation($name, $enter);
+        return $reservations;
+    }
+
 
     //funzione per aggiungere una prenotazione
     public function postAddReservation(array $body)
@@ -115,7 +130,8 @@ class ReservationManager
         return $result;
     }
 
-    public function postRestoreReservation(int $id){
+    public function postRestoreReservation(int $id)
+    {
         $result = $this->reservationStorage->restoreReservation($id);
         return $result;
     }

@@ -16,27 +16,30 @@ class ReservationService extends BaseService
         $this->reservationManager = new ReservationManager();
         $this->response = new Response();
     }
-    public function getActionMethod($action,... $params) {
-        
-        $methodName = 'get'. ucfirst($action);
+    public function getActionMethod($action, ...$params)
+    {
+
+        $methodName = 'get' . ucfirst($action);
         if (method_exists($this->reservationManager, $methodName)) {
             //funzione per passare un numero variebile di argomenti al metodo
-            $data = call_user_func_array([$this->reservationManager, $methodName],$params); 
+            $data = call_user_func_array([$this->reservationManager, $methodName], $params);
         } else {
             $this->response->setErrors(['message' => 'Il metodo non esiste']);
             $this->response->setErrorCode(Response::HTTP_CODE_ERROR_METHOD_NOT_FOUND);
         }
-        if(isset($data)){
+        if (isset($data)) {
             if (is_array($data) && count($data)) {
                 $this->response->setData($data);
-            } else if (is_string($data)){
+            } else if (is_string($data)) {
                 $this->response->setErrors(['message' => $data]);
-        } else {
-            $this->response->setErrors(['message' => 'Non ci sono prenotazioni']);
-        } }return $this->response;
+            } else {
+                $this->response->setErrors(['message' => 'Non ci sono prenotazioni']);
+            }
+        }
+        return $this->response;
     }
-    
-    
+
+
 
     public function get(Request $request): Response
     {
@@ -45,56 +48,68 @@ class ReservationService extends BaseService
         $values = $request->values;
         $page = null;
         $reservationForPage = null;
-        switch($action){
-            case 'historicReservations':
-                {   if(count($values) === 1 ){
-                    $page = $values[0];}
-                    if(count($values) === 2){
+        $root = null;
+        switch ($action) {
+            case 'historicReservations': {
+                    if (count($values) === 1) {
+                        $page = $values[0];
+                    }
+                    if (count($values) === 2) {
                         $reservationForPage = $values[1];
-                    }                   
+                    }
                     return $this->getActionMethod($action, $page, $reservationForPage, $parameters);
                     break;
                 }
-            case 'trashReservations':
-                {  if(count($values) === 1 ){
-                    $page = $values[0];}
-                    if(count($values) === 2){
+            case 'trashReservations': {
+                    if (count($values) === 1) {
+                        $page = $values[0];
+                    }
+                    if (count($values) === 2) {
                         $reservationForPage = $values[1];
-                    } 
+                    }
                     return $this->getActionMethod($action, $page, $reservationForPage, $parameters);
                     break;
                 }
-            case 'reservationById':
-                {   
-                    if(count($values) === 1){
+            case 'reservationById': {
+                    if (count($values) === 1) {
                         $id = $values[0];
                     }
-                    return $this->getActionMethod($action,$id);
+                    return $this->getActionMethod($action, $id);
                     break;
                 }
 
-                //potrei metterlo come $value e se arrivando ad un default o al trash o all'historic ho il search mi porto dietro
-                //la variabile search valida e quando arrivo allo storage se ho la variabile search valida metterò i parametri di ricerca all'interno 
-                //della qb.
-                //per non fare lo stesso codice da tutte le parti, potrei fare una funzione
-                //quindi invece che mettere il case search, faccio una funzione che partirà se trovo il value, la quale assegna il nome e l'enter tramite i parametri
-                //e li inserisce poi nel getActionMethod il quale quindi farà partire il manager che si collega allo storage che appunto stamperà solo i valori cercati
-
-            case 'search':
-                {   if (array_key_exists('name', $parameters) || array_key_exists('enter', $parameters)){
-                    $name = $parameters['name'] ?? null;
-                    $enter = $parameters['enter'] ?? null;
-                    return $this->getActionMethod($action,$name,$enter);
+            case 'search': {
+                    if (count($values) === 1) {
+                        $root = $values[0];
+                    }
+                    if (array_key_exists('name', $parameters) || array_key_exists('enter', $parameters)) {
+                        $name = $parameters['name'] ?? null;
+                        $enter = $parameters['enter'] ?? null;
+                        switch ($root) {
+                            case 'historic': {
+                                    $action .= ucfirst($root);
+                                    return $this->getActionMethod($action, $name, $enter);
+                                    break;
+                                }
+                            case 'trash': {
+                                    $action .= ucfirst($root);
+                                    return $this->getActionMethod($action, $name, $enter);
+                                    break;
+                                }
+                            default: {
+                                    return $this->getActionMethod($action, $name, $enter);
+                                    break;
+                                }
+                        }
                     } else {
                         $this->response->setErrors(['message' => 'Parametri di ricerca non validi!']);
                     }
                     break;
                 }
-            default : 
-                {   
-                    if(is_numeric($action)){
+            default: {
+                    if (is_numeric($action)) {
                         $page = $action;
-                        if(count($values) >=1 ){
+                        if (count($values) >= 1) {
                             $reservationForPage = $values[0];
                         }
                     }
@@ -109,13 +124,14 @@ class ReservationService extends BaseService
                         }
                         //Non abbiamo errori e quindi semplicemente non ci sono prenotazioni
                         $this->response->setErrors(['message' => 'Non ci sono prenotazioni']);
-                    } return $this->response;
+                    }
+                    return $this->response;
                     break;
                 }
-            }
+        }
     }
-    
-    
+
+
 
 
     public function delete(Request $request): Response
@@ -125,11 +141,11 @@ class ReservationService extends BaseService
         $id = null;
         $response = new Response();
         if ($action) {
-            if(count($values) === 1 && is_numeric($values[0])){
+            if (count($values) === 1 && is_numeric($values[0])) {
                 $id = $values[0];
                 $methodName = 'delete' . ucfirst($action);
                 if (method_exists($this->reservationManager, $methodName)) {
-                    $success = call_user_func([$this->reservationManager, $methodName], $id );
+                    $success = call_user_func([$this->reservationManager, $methodName], $id);
                     if ($success) {
                         if (is_string($success)) {
                             $response->setErrors(['message' => $success]);
@@ -144,17 +160,18 @@ class ReservationService extends BaseService
                     $response->setErrorCode(Response::HTTP_CODE_ERROR_METHOD_NOT_FOUND);
                 }
             } else {
-                $response -> setErrors(['message' => "Non è presente l'id da cancellare"]);
+                $response->setErrors(['message' => "Non è presente l'id da cancellare"]);
             }
-            } else {
-                $response -> setErrors(['Non è presente la rotta']);
-            }
-            return $response;
+        } else {
+            $response->setErrors(['Non è presente la rotta']);
+        }
+        return $response;
     }
 
-    public function postActionMethod($action,... $params){
-        $methodName = 'post'.ucfirst($action).'Reservation';
-        if(method_exists($this->reservationManager, $methodName)){
+    public function postActionMethod($action, ...$params)
+    {
+        $methodName = 'post' . ucfirst($action) . 'Reservation';
+        if (method_exists($this->reservationManager, $methodName)) {
             $success = call_user_func_array([$this->reservationManager, $methodName], $params);
         } else {
             $this->response->setErrors(['message' => 'Il metodo non esiste!']);
@@ -178,77 +195,74 @@ class ReservationService extends BaseService
         $body = $request->body;
         $values = $request->values;
         $id = null;
-        switch($action){
-            case 'add':
-                {
-                    if($body!=[]){
+        switch ($action) {
+            case 'add': {
+                    if ($body != []) {
                         $errorColumns = $this->reservationManager->checkColumns($body);
-                        if(!$errorColumns){
+                        if (!$errorColumns) {
                             $checkAddErrors = $this->reservationManager->errorMan($body);
-                            if($checkAddErrors['success']){
+                            if ($checkAddErrors['success']) {
                                 $this->postActionMethod($action, $body);
                             } else {
-                                foreach($checkAddErrors['errors'] as $error) {
+                                foreach ($checkAddErrors['errors'] as $error) {
                                     $this->response->setErrors(['message' => $error]);
                                 }
                             }
                         } else {
                             $this->response->setErrors(['message' => $errorColumns]);
-                        }                             
+                        }
                     } else {
                         $this->response->setErrors(['message' => 'Non ci sono valori da inserire']);
                     }
-                    return $this-> response;
+                    return $this->response;
                     break;
                 }
-            case 'edit':
-                {   if (count($values) === 1 && is_numeric($values[0])){
-                    $id = $values[0];
-                    if ($body!=[]){
-                        $errorColumns = $this->reservationManager->checkColumns($body);
-                        if(!$errorColumns){
-                            $checkEditErrors = $this->reservationManager->errorMan($body);
-                            if($checkEditErrors['success']){
-                                $this->postActionMethod($action, $body, $id);
-                            } else {
-                                foreach($checkEditErrors['errors'] as $error) {
-                                    $this->response->setErrors(['message' => $error]);
+            case 'edit': {
+                    if (count($values) === 1 && is_numeric($values[0])) {
+                        $id = $values[0];
+                        if ($body != []) {
+                            $errorColumns = $this->reservationManager->checkColumns($body);
+                            if (!$errorColumns) {
+                                $checkEditErrors = $this->reservationManager->errorMan($body);
+                                if ($checkEditErrors['success']) {
+                                    $this->postActionMethod($action, $body, $id);
+                                } else {
+                                    foreach ($checkEditErrors['errors'] as $error) {
+                                        $this->response->setErrors(['message' => $error]);
+                                    }
                                 }
+                            } else {
+                                $this->response->setErrors(['message' => $errorColumns]);
                             }
                         } else {
-                            $this->response->setErrors(['message' => $errorColumns]);
-                        }                             
+                            $this->response->setErrors(['message' => 'Non ci sono valori da modificare']);
+                        }
                     } else {
-                        $this->response->setErrors(['message' => 'Non ci sono valori da modificare']);
-                    }} else {
                         $this->response->setErrors(['message' => "Non è presente l'id della prenotazione da modificare"]);
                     }
-                    return $this-> response;
+                    return $this->response;
                     break;
-
-                    }
-            case 'trash':
-                {
-                    if (count($values) === 1 && is_numeric($values[0])){
+                }
+            case 'trash': {
+                    if (count($values) === 1 && is_numeric($values[0])) {
                         $id = $values[0];
                         $this->postActionMethod($action, $id);
                     } else {
                         $this->response->setErrors(['message' => "Non è presente l'id della prenotazione da spostar nel cestino"]);
-                    } return $this-> response;
+                    }
+                    return $this->response;
                     break;
                 }
-            case 'restore':
-                {
-                    if (count($values) === 1 && is_numeric($values[0])){
+            case 'restore': {
+                    if (count($values) === 1 && is_numeric($values[0])) {
                         $id = $values[0];
                         $this->postActionMethod($action, $id);
                     } else {
                         $this->response->setErrors(['message' => "Non è presente l'id della prenotazione da ripristinare"]);
-                    } return $this-> response;
+                    }
+                    return $this->response;
                     break;
                 }
-
         }
-
     }
 }

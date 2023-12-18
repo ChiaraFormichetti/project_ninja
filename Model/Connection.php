@@ -7,7 +7,7 @@ class Connection{
 
 
 
-    protected $hostname = "192.168.1.27";
+    protected $hostname = "192.168.157.185";
     protected $dbname = "funziona";
     protected $user = "chiara";
     protected $pass = "Chiara-dev1";

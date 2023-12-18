@@ -1,7 +1,7 @@
 import { openmodal, closemodal } from './modal.js';
 import { search, noSearch } from './search.js';
 import createHtml from './element.js';
-import { getReservations, getTrashReservations, getHistoricReservations} from './get.js';
+import { getReservations, getTrashReservations, getHistoricReservations } from './get.js';
 import { addNewReservation } from './reservation.js';
 import { commonSelector } from './commonSelector.js';
 
@@ -24,8 +24,8 @@ const searchButton = commonSelector.searchButton;
 const noSearchButton = commonSelector.noSearchButton;
 //XXXXXXXXXX
 //definiamo quali funzioni partiranno quando cliccheremo sui nostri bottoni di cerca e di annulla ricerca (se facciamo in tempo li spostiamo nell'index)
-searchButton.addEventListener("click", async () => search(calendarContainer));
-noSearchButton.addEventListener("click", async () => noSearch(calendarContainer));
+searchButton.addEventListener("click", async () => search(calendarContainer, trash, historic));
+noSearchButton.addEventListener("click", async () => noSearch(calendarContainer, trash, historic));
 //XXXXXXXXXX
 //(generalizzare ancors, quando clicchiamo su buttonOpenModal prima di usare la funzione opendModal creiamo tutta la modale)
 //quando clicchiamo nel bottone di aggiungi una nuova prenotazine aggiungiamo il bottone di aggiungi alla modale e poi la apriamo.
@@ -74,19 +74,22 @@ const deleteButton = commonSelector.deleteButton;
 deleteButton.addEventListener("click", async () => {
     trash = true;
     historic = false;
-    getTrashReservations(calendarContainer) });
+    getTrashReservations(calendarContainer)
+});
 
 const historicButton = commonSelector.historicButton;
 historicButton.addEventListener("click", async () => {
     trash = false;
     historic = true;
-    getHistoricReservations(calendarContainer)});
+    getHistoricReservations(calendarContainer)
+});
 
 const homepageButton = commonSelector.homepageButton;
 homepageButton.addEventListener("click", async () => {
     trash = false;
-    historic= false;
-    getReservations(calendarContainer)});
+    historic = false;
+    getReservations(calendarContainer)
+});
 
 const succButton = commonSelector.succButton;
 const currentPageViews = commonSelector.currentPageViews;
@@ -96,9 +99,9 @@ const preButton = commonSelector.preButton;
 
 succButton.addEventListener("click", () => {
     let currentPages = +(currentPageViews.textContent) + 1;
-    if(trash){
+    if (trash) {
         getTrashReservations(calendarContainer, currentPages)
-    } else if(historic){
+    } else if (historic) {
         getHistoricReservations(calendarContainer, currentPages)
     } else {
         getReservations(calendarContainer, currentPages);
@@ -107,9 +110,9 @@ succButton.addEventListener("click", () => {
 
 preButton.addEventListener("click", () => {
     let currentPages = +(currentPageViews.textContent) - 1;
-    if(trash){
-        getTrashReservations(calendarContainer,currentPages)
-    } else if(historic){
+    if (trash) {
+        getTrashReservations(calendarContainer, currentPages)
+    } else if (historic) {
         getHistoricReservations(calendarContainer, currentPages)
     } else {
         getReservations(calendarContainer, currentPages);

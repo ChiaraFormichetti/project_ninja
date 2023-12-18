@@ -24,16 +24,17 @@ FROM `prenotazioni`
 WHERE cancellazione = 0
 limit 10;*/
 
-//altrimenti su get pages cerchi gli id e conteggi quante prenotazioni sono sul foreach e mandi all'altra l'id ddelle prenotazioni cercate e il conteggio
-   public function getPages( $queryBuilder, $page=null, $reservationforPages=null, $parameters=[]){
+   //altrimenti su get pages cerchi gli id e conteggi quante prenotazioni sono sul foreach e mandi all'altra l'id ddelle prenotazioni cercate e il conteggio
+   public function getPages($queryBuilder, $page = null, $reservationforPages = null, $parameters = [])
+   {
       $this->queryBuilder;
       $this->queryBuilder->selectColumns(['id']);
       $query =  $this->queryBuilder->getQuery();
-      $id = [];
-      foreach($this->connection->query($query) as $row) {
-         $id[] = $row['id'];
+      $ids = [];
+      foreach ($this->connection->query($query) as $row) {
+         $ids[] = $row['id'];
       }
-      $count = count($id);
+      $count = count($ids);
       //numero di prenotazioni che vogliamo per pagina (opzionale, poichè di default è 10)
       $resultForPage = (isset($parameters['number']) && is_numeric($parameters['number'])) ? $parameters['number'] : 10;
       //numero di pagina totali che abbiamo in base al numero di prenotazioni da stampare(arrotondiamo per eccesso)
@@ -47,40 +48,34 @@ limit 10;*/
       //lo start ci serve pe ril limit
       //result for pages è il secondo parametro del limit
       //totalPages è il numero di pagine totali
+
+      $this->queryBuilder->selectColumns(['*']);
+      foreach ($ids as $id) {
+         $this->queryBuilder
+            ->where('id', '=', $id, 'OR');
+      }
+      $this->queryBuilder->orderBy('ingresso')
+         ->limit($start, $resultForPage);
+      $query = $this->queryBuilder->getQuery();
+      $reservations = [];
+      foreach ($this->connection->query($query) as $row) {
+         $reservations[] = $row;
+      }
       return [
-         'id' => $id,
+         'reservations' => $reservations,
+         'totalPages' => $totPages,
          'count' => $count,
-         'start' => $start,
-         'resultForPage' => $resultForPage,
-         'totalPages' => $totPages
       ];
-      
    }
 
-   public function getReservation($page=null, $resultForPage=null, $parameters=[])
-   { 
+   public function getReservation($page = null, $resultForPage = null, $parameters = [])
+   {
       try {
          $this->queryBuilder->select()
             ->where('ingresso', '>=', date('Y-m-d'))
-            ->where('cancellazione', '=', 0, 'AND')
-            ->orderBy('ingresso');
-         $pageResult = $this->getPages($this->queryBuilder, $page, $resultForPage, $parameters);
-         $this->queryBuilder->selectColumns(['*']);
-         foreach($pageResult['id'] as $id){
-            $this->queryBuilder
-            ->where('id', '=', $id,'OR');
-         }
-         $this->queryBuilder->limit($pageResult['start'],$pageResult['resultForPage']);
-         $query = $this->queryBuilder->getQuery();
-         $reservations = [];
-         foreach ($this->connection->query($query) as $row) {
-            $reservations[] = $row;
-         }
-         return [
-            'reservations' => $reservations,
-            'totalPages' => $pageResult['totalPages'],
-            'count' => $pageResult['count'],
-         ];
+            ->where('cancellazione', '=', 0, 'AND');
+
+         return $this->getPages($this->queryBuilder, $page, $resultForPage, $parameters);
          //se nella query builder viene lanciata un'eccezione, la catturiamo, registriamo il messaggio di errore nel log degli errori
          //e restituiamo un array vuoto !
       } catch (\Exception $e) {
@@ -108,59 +103,25 @@ limit 10;*/
    }
 
    //Stampa le prenotazioni passate
-   public function getHistoricReservation( $page=null, $resultForPage=null, $parameters=[])
+   public function getHistoricReservation($page = null, $resultForPage = null, $parameters = [])
    {
       try {
          $this->queryBuilder->select()
             ->where('ingresso', '<', date('Y-m-d'))
-            ->where('cancellazione', '=', 0, 'AND')
-            ->orderBy('ingresso');
-         $pageResult = $this->getPages($this->queryBuilder, $page, $resultForPage, $parameters);
-         $this->queryBuilder->selectColumns(['*']);
-         foreach($pageResult['id'] as $id){
-            $this->queryBuilder
-            ->where('id', '=', $id,'OR');
-         }
-         $this->queryBuilder->limit($pageResult['start'],$pageResult['resultForPage']);
-         $query = $this->queryBuilder->getQuery();
-         $reservations = [];
-         foreach ($this->connection->query($query) as $row) {
-            $reservations[] = $row;
-         }
-         return [
-            'reservations' => $reservations,
-            'totalPages' => $pageResult['totalPages'],
-            'count' => $pageResult['count'],
-         ];
+            ->where('cancellazione', '=', 0, 'AND');
+         return $this->getPages($this->queryBuilder, $page, $resultForPage, $parameters);
       } catch (\Exception $e) {
          error_log('Errore durante il recupero delle prenotazioni nello storico: ' . $e->getMessage());
          return $e->getMessage();
       }
    }
    //Stampa le prenotazioni nel cestino
-   public function getTrashReservation( $page=null, $resultForPage=null, $parameters=[])
+   public function getTrashReservation($page = null, $resultForPage = null, $parameters = [])
    {
       try {
          $this->queryBuilder->select()
-            ->where('cancellazione', '=', 1)
-            ->orderBy('ingresso');
-            $pageResult = $this->getPages($this->queryBuilder, $page, $resultForPage, $parameters);
-            $this->queryBuilder->selectColumns(['*']);
-            foreach($pageResult['id'] as $id){
-               $this->queryBuilder
-               ->where('id', '=', $id,'OR');
-            }
-            $this->queryBuilder->limit($pageResult['start'],$pageResult['resultForPage']);
-            $query = $this->queryBuilder->getQuery();
-         $reservations = [];
-         foreach ($this->connection->query($query) as $row) {
-            $reservations[] = $row;
-         }
-         return [
-            'reservations' => $reservations,
-            'totalPages' => $pageResult['totalPages'],
-            'count' => $pageResult['count'],
-         ];
+            ->where('cancellazione', '=', 1);
+         return $this->getPages($this->queryBuilder, $page, $resultForPage, $parameters);
       } catch (\Exception $e) {
          error_log('Errore durante il recupero delle prenotazioni nel cestino: ' . $e->getMessage());
          return $e->getMessage();
@@ -183,6 +144,63 @@ limit 10;*/
          $this->queryBuilder
             ->where('ingresso', '>=', date('Y-m-d'), 'AND')
             ->where('cancellazione', '=', 0, 'AND')
+            ->orderBy('ingresso');
+         $query = $this->queryBuilder->getQuery();
+         $reservations = [];
+         foreach ($this->connection->query($query) as $row) {
+            $reservations[] = $row;
+         }
+         return $reservations;
+      } catch (\Exception $e) {
+         error_log('Errore durante il recupero delle prenotazioni da cercare: ' . $e->getMessage());
+         return $e->getMessage();
+      }
+   }
+
+   public function searchHistoricReservation($name, $enter)
+   {
+      try {
+         $this->queryBuilder->select()
+            ->selectColumns(['*']);
+         if ($name) {
+            //La clausola like consente di eseguire una ricerca di stringhe simili o paziali (senza il '%' ci dà la corrispondenza esatta)
+            //Il wildcard % indica che la stinga $name può essere tovata in qualsiasi parte del campo 'nome' (pima e/o dopo)
+            $this->queryBuilder->where('nome', 'LIKE', '%' . $name . '%');
+         }
+         if ($enter) {
+            $this->queryBuilder->where('ingresso', '=', $enter, 'OR');
+         }
+         $this->queryBuilder
+            ->where('ingresso', '<', date('Y-m-d'), 'AND')
+            ->where('cancellazione', '=', 0, 'AND')
+            ->orderBy('ingresso');
+         $query = $this->queryBuilder->getQuery();
+         $reservations = [];
+         foreach ($this->connection->query($query) as $row) {
+            $reservations[] = $row;
+         }
+         return $reservations;
+      } catch (\Exception $e) {
+         error_log('Errore durante il recupero delle prenotazioni da cercare: ' . $e->getMessage());
+         return $e->getMessage();
+      }
+   }
+
+   public function searchTrashReservation($name, $enter)
+   {
+      try {
+         $this->queryBuilder->select()
+            ->selectColumns(['*']);
+         if ($name) {
+            //La clausola like consente di eseguire una ricerca di stringhe simili o paziali (senza il '%' ci dà la corrispondenza esatta)
+            //Il wildcard % indica che la stinga $name può essere tovata in qualsiasi parte del campo 'nome' (pima e/o dopo)
+            $this->queryBuilder->where('nome', 'LIKE', '%' . $name . '%');
+         }
+         if ($enter) {
+            $this->queryBuilder->where('ingresso', '=', $enter, 'OR');
+         }
+         $this->queryBuilder
+            ->where('cancellazione', '=', 1, 'AND')
             ->orderBy('ingresso');
          $query = $this->queryBuilder->getQuery();
          $reservations = [];
