@@ -79,7 +79,7 @@ deleteButton.addEventListener("click", async () => {
     currentPage = 1;
     itemsForPage.value = 10;
     reservationForPages = 10;
-    getTrashReservations(calendarContainer,currentPage),reservationForPages;
+    getTrashReservations(calendarContainer, currentPage), reservationForPages;
 });
 
 const historicButton = commonSelector.historicButton;
@@ -89,7 +89,7 @@ historicButton.addEventListener("click", async () => {
     currentPage = 1;
     itemsForPage.value = 10;
     reservationForPages = 10;
-    getHistoricReservations(calendarContainer,currentPage,reservationForPages);
+    getHistoricReservations(calendarContainer, currentPage, reservationForPages);
 });
 
 const homepageButton = commonSelector.homepageButton;
@@ -105,24 +105,25 @@ homepageButton.addEventListener("click", async () => {
 const succButton = commonSelector.succButton;
 const preButton = commonSelector.preButton;
 const itemsForPage = commonSelector.selectPage;
+itemsForPage.value = 10;
 
 itemsForPage.addEventListener("change", () => {
     reservationForPages = itemsForPage.value;
     currentPage = 1;
-        if(trash){
-            getTrashReservations(calendarContainer,currentPage,reservationForPages);
-        } else if (historic){
-            getHistoricReservations(calendarContainer,currentPage,reservationForPages);
-        } else {
-            getReservations(calendarContainer,currentPage,reservationForPages);
-        }
-    
+    if (trash) {
+        getTrashReservations(calendarContainer, currentPage, reservationForPages);
+    } else if (historic) {
+        getHistoricReservations(calendarContainer, currentPage, reservationForPages);
+    } else {
+        getReservations(calendarContainer, currentPage, reservationForPages);
+    }
+
 })
 
 //Qui ci sono i bottoni del paginatore, prima rimettiamo a posto le fetch del get e poi aggiungiamo il paginatore
 
 succButton.addEventListener("click", () => {
-    currentPage +=  1;
+    currentPage += 1;
     if (trash) {
         getTrashReservations(calendarContainer, currentPage, reservationForPages)
     } else if (historic) {
