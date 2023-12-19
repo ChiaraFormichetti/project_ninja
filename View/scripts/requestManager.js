@@ -18,7 +18,7 @@ export const requestManager = {
                 }
                 const data = result.data;
                 const totalPages = data.totalPages;
-                const reservations = data.reservations;
+                const reservations = data.items;
                 const count = data.count;
 
                 data.totalPages = totalPages;

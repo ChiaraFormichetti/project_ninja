@@ -7,10 +7,15 @@ import { errorManager } from "./reservation.js";
 
 const apiURL = commonSelector.apiURL;
 
-export async function postNewReservation(formData, calendarContainer) {
+export async function postNewReservation(result, calendarContainer) {
+    if(result.errors.length>0){
+        const errorMessage = result.errors.join('\n');
+        alert(errorMessage);
+        return;
+    }
     try {
         let url = apiURL + '/add';
-        const addReservation = await requestManager.post(url, formData);
+        const addReservation = await requestManager.post(url, result.formData);
         if (addReservation) {
             resetCalendar(calendarContainer);
             getReservations(calendarContainer);
@@ -20,7 +25,7 @@ export async function postNewReservation(formData, calendarContainer) {
             alert('Non è stato possibile aggiungere la prenotazione');
         }
     } catch (error) {
-        console.error("Errore durantel'aggiunta: ", error);
+        console.error("Errore durante l'aggiunta: ", error);
     };
 }
 
@@ -30,16 +35,18 @@ export async function postEditReservation(id, calendarContainer) {
     let seats = modalForm.querySelector("#newSeats").value;
     let enter = modalForm.querySelector("#newEnter").value;
     let exit = modalForm.querySelector("#newExit").value;
-    const formData = errorManager(name, seats, enter, exit);
+    const result = errorManager(name, seats, enter, exit);
+    if(result.errors.length>0){
+        const errorMessage = result.errors.join('\n');
+        alert(errorMessage);
+        return;
+    }
     let url = apiURL + '/edit' + `/${id}`;
     try {
-        const editReservation = await requestManager.post(url, formData);
+        const editReservation = await requestManager.post(url, result.formData);
         if (editReservation) {
             resetCalendar(calendarContainer);
-            const currentPageViews = commonSelector.currentPageViews;
-            let currentPage = +(currentPageViews.textContent);
-            //getPages(calendarContainer,currentPage);
-            getReservations(calendarContainer, currentPage);
+            getReservations(calendarContainer);
             closemodal();
             alert('La prenotazione è stata modificata');
         } else {
@@ -56,12 +63,9 @@ export async function postMoveToTrash(id, calendarContainer) {
         let url = apiURL + '/trash' + `/${id}`;
         const trashReservation = await requestManager.post(url);
         if (trashReservation) {
-            alert('La prenotazione è stata spostata nel cestino');
             resetCalendar(calendarContainer);
-            const currentPageViews = commonSelector.currentPageViews;
-            let currentPage = +(currentPageViews.textContent);
-            //getPages(calendarContainer,currentPage);
-            getReservations(calendarContainer, currentPage);
+            getReservations(calendarContainer);
+            alert('La prenotazione è stata spostata nel cestino');
         } else {
             alert('Non è stato possibile spostare la prenotazione nel cestino');
         }
@@ -77,12 +81,9 @@ export async function postRestoreReservation(id, calendarContainer) {
         let url = apiURL + '/restore' + `/${id}`;
         const restoreReservation = await requestManager.post(url);
         if (restoreReservation) {
-            alert('La prenotazione è stata ripristinata');
             resetCalendar(calendarContainer);
-            const currentPageViews = commonSelector.currentPageViews;
-            let currentPage = +(currentPageViews.textContent);
-            //getPages(calendarContainer,currentPage,trash)
-            getTrashReservations(calendarContainer, currentPage);
+            getTrashReservations(calendarContainer);
+            alert('La prenotazione è stata ripristinata');
         } else {
             alert('Non è stato possibile ripistinare la prenotazione');
         }

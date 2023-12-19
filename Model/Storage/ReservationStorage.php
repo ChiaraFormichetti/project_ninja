@@ -4,8 +4,6 @@ namespace Model\Storage;
 
 
 use Model\QueryBuilder;
-use Model\Table\Reservation;
-
 
 class ReservationStorage extends BaseStorage
 {
@@ -14,8 +12,7 @@ class ReservationStorage extends BaseStorage
 
    public function __construct()
    {
-      parent::__construct();
-      $this->queryBuilder = new QueryBuilder('prenotazioni');
+      parent::__construct('prenotazioni');
    }
 
    //prova con le window 
@@ -25,62 +22,25 @@ WHERE cancellazione = 0
 limit 10;*/
 
    //altrimenti su get pages cerchi gli id e conteggi quante prenotazioni sono sul foreach e mandi all'altra l'id ddelle prenotazioni cercate e il conteggio
-   public function getPages($page = null, $reservationsForPages = null, $parameters = [])
-   {
-      $this->queryBuilder;
-
-      if($reservationsForPages === 'all'){
-         $this->queryBuilder->selectColumns(['*']);
-         $query = $this->queryBuilder->getQuery();
-         $reservations = [];
-         foreach ($this->connection->query($query) as $row) {
-            $reservations[] = $row;
-         }
-         $count = count($reservations);
-         return [
-            'reservations' => $reservations,
-            'totalPages' => 1,
-            'count' => $count,
-         ];
-      }
-      
-      $this->queryBuilder->selectColumns(['id']);
-      $query =  $this->queryBuilder->getQuery();
-      $ids = [];
-      foreach ($this->connection->query($query) as $row) {
-         $ids[] = $row['id'];
-      }
-      $count = count($ids);
-      //numero di prenotazioni che vogliamo per pagina (opzionale, poichè di default è 10)
-      $resultForPage = (isset($reservationsForPages) && is_numeric($reservationsForPages)) ? $reservationsForPages : 10;
-      //numero di pagina totali che abbiamo in base al numero di prenotazioni da stampare(arrotondiamo per eccesso)
-      $totPages = ceil($count / $resultForPage);
-      //pagina corrente che vogliamo stampare, se non la specifichiamo di default è la prima
-      //il controllo is numeric da fare al service [is_numeric($page)] 
-      $currentPage = (isset($page)) ? $page : 1;
-      //primo parametro del limit, ci definisce da quale prenotazione parte la pagina che stiamo stampando
-      $start = ($currentPage - 1) * $resultForPage;
-      //count ci definisce il numero di items totali
-      //lo start ci serve pe ril limit
-      //result for pages è il secondo parametro del limit
-      //totalPages è il numero di pagine totali
-
+   public function getReservationPages($page = null, $reservationsForPages = null, $parameters = [])
+   {  
+      $result = parent:: getPages($page,$reservationsForPages,$parameters);
       $this->queryBuilder->selectColumns(['*']);
-      foreach ($ids as $id) {
+      foreach ($result['id'] as $id) {
          $this->queryBuilder
             ->where('id', '=', $id, 'OR');
       }
       $this->queryBuilder->orderBy('ingresso')
-         ->limit($start, $resultForPage);
+         ->limit($result['start'], $result['resultForPage']);
       $query = $this->queryBuilder->getQuery();
       $reservations = [];
       foreach ($this->connection->query($query) as $row) {
          $reservations[] = $row;
       }
       return [
-         'reservations' => $reservations,
-         'totalPages' => $totPages,
-         'count' => $count,
+         'items' => $reservations,
+         'totalPages' => $result['totalPages'],
+         'count' => $result['count'],
       ];
    }
 
@@ -90,8 +50,10 @@ limit 10;*/
          $this->queryBuilder->select()
             ->where('ingresso', '>=', date('Y-m-d'))
             ->where('cancellazione', '=', 0, 'AND');
-        
-         return $this->getPages($page, $resultForPage, $parameters);
+         if($resultForPage === 'all'){
+            return parent::getAll();
+         }
+         return $this->getReservationPages($page, $resultForPage, $parameters);
          //se nella query builder viene lanciata un'eccezione, la catturiamo, registriamo il messaggio di errore nel log degli errori
          //e restituiamo un array vuoto !
       } catch (\Exception $e) {
@@ -123,9 +85,12 @@ limit 10;*/
    {
       try {
          $this->queryBuilder->select()
-            ->where('ingresso', '<', date('Y-m-d'))
-            ->where('cancellazione', '=', 0, 'AND');
-         return $this->getPages($page, $resultForPage, $parameters);
+         ->where('ingresso', '<', date('Y-m-d'))
+         ->where('cancellazione', '=', 0, 'AND');
+         if($resultForPage === 'all'){
+            return parent::getAll();
+         }
+         return $this->getReservationPages($page, $resultForPage, $parameters);
       } catch (\Exception $e) {
          error_log('Errore durante il recupero delle prenotazioni nello storico: ' . $e->getMessage());
          return $e->getMessage();
@@ -137,7 +102,10 @@ limit 10;*/
       try {
          $this->queryBuilder->select()
             ->where('cancellazione', '=', 1);
-         return $this->getPages($page, $resultForPage, $parameters);
+            if($resultForPage === 'all'){
+               return parent::getAll();
+            }
+         return $this->getReservationPages($page, $resultForPage, $parameters);
       } catch (\Exception $e) {
          error_log('Errore durante il recupero delle prenotazioni nel cestino: ' . $e->getMessage());
          return $e->getMessage();

@@ -6,7 +6,7 @@ use DateTime;
 use Model\Storage\ReservationStorage;
 use Model\Table\Reservation;
 
-class ReservationManager
+class ReservationManager extends BaseManager
 {
     protected $reservationStorage;
     protected  $reservations = [];
@@ -18,23 +18,11 @@ class ReservationManager
 
     //metodo per controllare che i parametri in ingresso nel service abbiano delle colonne (chiavi dell'array) che coincidono
     //con le colonne della tabella in questione
-    //se avessi più tabelle potrei generalizzarlo mettendolo nel base manager, controllando che esista la classe reservation e nel caso
-    //in cui esista la istanziamo e usiamo il metodo getTableColumns
     public function checkColumns(array $parameters)
-    {  //La classe reservation usa i metodi della classe table per convertire le sue proprietà in un array 
-        $reservationTable = new Reservation();
-        $tableColumns = $reservationTable->getTableColumns();
-        //controlliamo che l'array di sinistra sia interamente contenuto nell'array di destra
-        $errorColumns = array_diff(array_keys($parameters), array_keys($tableColumns));
-        //se ci sono colonne d'errore ritorniamo l'errore
-        if (!empty($errorColumns)) {
-            return "Le seguenti colonne non esistono all'interno della tabella prenotazioni";
-            //ritorniamo direttamente
-        }
-        //se non ci sono colonne d'errore ritorniamo un valore null
-        return null;
-    }
+    { 
+        parent::checkColumn('reservation', $parameters);
 
+    }
 
     //funzione per la gestione degli errori nell'agggiunta di una prenotazione
     public function errorMan(array $parameters)

@@ -4,9 +4,9 @@ import { postMoveToTrash, postRestoreReservation} from './post.js';
 import { deleteforEverById } from './delete.js';
 import { commonSelector } from './commonSelector.js';
 
-
+//manager delle pagine
 export function  pageManager(totalPages, currentPage=1, count, reservationForPages=10){
-    debugger
+
     const preButton = commonSelector.preButton;
     const succButton = commonSelector.succButton
     const currentPageViews = commonSelector.currentPageViews;

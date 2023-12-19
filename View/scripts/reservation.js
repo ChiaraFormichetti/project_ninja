@@ -5,30 +5,35 @@ import createHtml from './element.js';
 import { commonSelector } from './commonSelector.js';
 
 export function errorManager(name, seats, enter, exit) {
+    //prima togliamo gli spazi vuoti davanti e dietro e poi lo trasformiamo in array così da poter contare da quante parole è composto
     let shortName = name.trim().split(" ");
-    let validName = /^[a-zA-Z]+$/.test(name);
+    let validName = /^[a-zA-Z]+( [a-zA-Z]+){0,2}$/.test(name);
     let validSeats = /^[1-9]+$/.test(seats);
     let userEnterDate = new Date(enter);
     let userExitDate = new Date(exit);
     let currentDate = new Date();
-
+    let errors = [];
+    
+    const formData = new FormData();
+    formData.append('nome', name);
+    formData.append('posti', seats);
+    formData.append('ingresso', enter);
+    formData.append('uscita', exit);
+    debugger;
     if (name === "" || seats === "" || enter === "" || exit === "") {
-        alert(`Devi inserire tutti i dati !`);
+        errors.push = ("Devi inserire tutti i dati !")
     } else if (shortName.length > 2 || !validName) {
-        alert("Il nome inserito non è valido!");
-    } else if (seats > 5 || !validSeats) {
-        alert("Il numero di posti inserito non è valido!");
+        errors.push("Il nome inserito non è valido!");
+    } else if (seats > 9 || !validSeats) {
+        errors.push("Il numero di posti inserito non è valido!");
     } else if (userEnterDate < currentDate) {
-        alert("La data di ingresso inserita non è valida!");
+        errors.push("La data di ingresso inserita non è valida!");
     } else if (userExitDate <= userEnterDate) {
-        alert("la data di uscita inserita non è valida!")
-    } else {
-        const formData = new FormData();
-        formData.append('nome', name);
-        formData.append('posti', seats);
-        formData.append('ingresso', enter);
-        formData.append('uscita', exit);
-        return formData;
+        errors.push("la data di uscita inserita non è valida!")
+    } 
+    return {
+        formData: errors.length === 0 ? formData : null,
+        errors: errors
     }
 }
 
@@ -39,11 +44,8 @@ export async function addNewReservation(calendarContainer) {
     let seats = modalForm.querySelector("#newSeats").value;
     let enter = modalForm.querySelector("#newEnter").value;
     let exit = modalForm.querySelector("#newExit").value;
-    //uso il metodo trim() per imuovere gli spazi bianchi all'inizio e alla fine della stringa
-    //uso il metodo split per dividere la stringa in un array di sottostringhe usando lo spazio vuoto come separatore
-    //in questo modo possiamo usare poi il metodo lenght degli array per contare quanti elemtni ci sono e imporgli un massimo
-    const formData = errorManager(name, seats, enter, exit);
-    postNewReservation(formData, calendarContainer);
+    const result = errorManager(name, seats, enter, exit);
+    postNewReservation(result, calendarContainer);
 }
 
 
