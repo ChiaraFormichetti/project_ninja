@@ -22,7 +22,7 @@ export function errorManager(name, seats, enter, exit) {
     debugger;
     if (name === "" || seats === "" || enter === "" || exit === "") {
         errors.push = ("Devi inserire tutti i dati !")
-    } else if (shortName.length > 2 || !validName) {
+    } else if (shortName.length > 3 || !validName) {
         errors.push("Il nome inserito non è valido!");
     } else if (seats > 9 || !validSeats) {
         errors.push("Il numero di posti inserito non è valido!");

@@ -71,3 +71,5 @@ $result = $service->$method($request);
 //restituzione del risultato
 //come si setta il codice HTTP della risposta?
 echo json_encode($result);
+
+//dispatcher per gestire tutti i parametri della request
