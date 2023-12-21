@@ -25,15 +25,44 @@ se success=> è stata inviata una mail al beneficiario con i dettagli per la spe
 
 */
 
+
+//sono indecisa su come gestire il front-end, quindi oggi ci focalizzeremo nel back-end, nel sistemare l'index e nel creare la classe router
+//comunque penso che userò sempre il request manager, il commonselector di riferimento
+//la struttura a moduli,
+//e dei moduli molto simili per quanto riguarda il get, post, e delete
+//potrei fare comunque tutto su una pagina gestita dinamicamente
+//creare ogni volta che eccedo alla pagina con url base il form e l'h2
+//dopodichè cancellarli e "creare" la secondo pagina
+//o separare il lavoro in due pagine (soluzione più easy e compatta)
+//la pagina coupon la voglio vuota, pulita e ordinata.
+//h1 rimane, accorciamo il padding nel bottom e mettiamo il background color direttamente nel div
+//quello che cambia è quello sotto l'header, inizialmente avremo un form, una volta che il form è stato valididato, si mette al posto del form un
+//un h3, con scritto codice verificato !
+//Sotto avremo i vari regali associati e un rettangolo con scritto, inserisci i tuoi dati,
+//quando i dati saranno verificati  il rettangolo si colorerà di verde
+//a quel punto con invia si controlla che il codice sia ancora valido e poi se si si invieranno i dati.
 const body = document.querySelector("body");
 const form = body.querySelector("form");
 const inputCode = form.querySelector("#code");
 form.addEventListener('submit', async (e) => {
     e.preventDefault();
     const codeValue = inputCode.ariaValueMax.trim();
+    //url per vedere se c'è il codice all'interno della tabella beneficiari
     let url = apiURL + `/${codeValue}`;
     try{
         const response = await requestManager.get(url);
+        if (response){
+            alert("Il coupon inserito non è più valido");
+        } else {
+            let url = apiURL +'/gifts';
+            const gifts = await requestManager.get(url);
+            if(gifts.items.length>0){
+                
+            }
+
+        }
         
+    } catch(error){
+
     }
 })

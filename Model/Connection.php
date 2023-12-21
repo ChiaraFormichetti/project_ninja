@@ -8,7 +8,7 @@ class Connection{
 
 
     protected $hostname = "192.168.157.185";
-    protected $dbname = "funziona";
+    protected $dbname = "coupon";
     protected $user = "chiara";
     protected $pass = "Chiara-dev1";
     protected $conn;

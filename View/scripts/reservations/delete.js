@@ -1,7 +1,7 @@
 import { resetCalendar } from "./calendar";
 import { commonSelector } from "./commonSelector";
 import { getTrashReservations,} from "./get";
-import { requestManager } from "./requestManager";
+import { requestManager } from "../requestManager";
 
 const apiURL = commonSelector.apiURL;
 

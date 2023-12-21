@@ -1,7 +1,7 @@
-import { requestManager } from "./requestManager";
-import { writeCalendar, writeDeleteCalendar, writeHistoricCalendar, resetCalendar } from "./calendar";
+import { requestManager } from "../requestManager.js";
+import { writeCalendar, writeDeleteCalendar, writeHistoricCalendar, resetCalendar } from "./calendar.js";
 import { commonSelector } from './commonSelector.js';
-import { pageManager } from "./calendar";
+import { pageManager } from "./calendar.js";
 
 const apiURL = commonSelector.apiURL;
 
