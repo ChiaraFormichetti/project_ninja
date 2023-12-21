@@ -1,0 +1,25 @@
+body{
+    text-align: center;
+    margin-inline: 15%;
+    background-color: #e5dbce;
+}
+
+h1{
+    background-color: #f5e9ff;
+    padding: 30px;
+    margin-top: -7px;
+    position: relative;
+    border-radius: 15px;
+    border-style: groove;
+}
+h2{
+    margin-block: 15%;
+    color: #39009d;
+}
+
+.coupon-insert{
+    margin: 12%;
+    padding: 20px;
+    background-color: #e4d4ff;
+    color: #2f0083;
+}

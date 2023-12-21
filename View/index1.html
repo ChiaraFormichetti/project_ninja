@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="it_IT">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Homepage</title>
+    <link rel="stylesheet" href="/View/styles/homepage.css">
+   
+
+</head>
+
+<body>
+    <h1 class="center"><b>Homepage prenotazioni</b></h1>
+    <div class="mainDiv" id="mainDiv">
+
+        <span class="mainSpan" id="trash"><a href="#">CESTINO</a></span>
+        <span class="mainSpan" id="historic"><a href="#">STORICO</a></span>
+        <span class="mainSpan" id ="return"><a href="#">HOMEPAGE</a></span> 
+        <form class="search" id="search">
+            <div>
+                <a><b>Cerca una prenotazione!</b></a>
+            </div>
+            <div>
+                <label for="name">Nome della prenotazione: </label>
+                <input type="text" id="name" name="name" placeholder="Nome prenotazione ?">
+            </div>
+            <div>
+                <label for="enter">Data di ingresso</label>
+                <input type="date" id="enter" name="enter">
+            </div>
+            <div>
+                <button type="button" id="searchButton">Cerca</button>
+                <button type="button" id="noSearch">Annulla</button>
+            </div>
+        </form>
+        <button class="add" type="button" id="add">Aggiungi nuova prenotazione!</button>
+        <div id="myModal" class="modal">
+            <div class="modal-content">
+                <header class="header-modal" id="headerModal">
+                    <h3 class="text-header">Aggiungi una prenotazione</h3>
+                    <span class="close" id="closeModal">&times;</span>
+                </header>
+                <form id="newReservationForm">
+                    <div>
+                        <label for="name">Nome:</label>
+                        <input type="text" id="newName" name="name" required maxlength="30" class="modal-input">
+                    </div>
+                    <div>
+                        <label for="seats">Posti:</label>
+                        <input type="number" id="newSeats" name="seats" required max="5" class="modal-input">
+                    </div>
+                    <div>
+                        <label for="enter">Data di ingresso:</label>
+                        <input type="date" id="newEnter" name="enter" required class="modal-input">
+                    </div>
+                    <div>
+                        <label for="exit">Dati di uscita:</label>
+                        <input type="date" id="newExit" name="exit" required class="modal-input">
+                    </div>
+
+                </form>
+            </div>
+        </div>
+
+    </div>
+    <div class="page">
+        <div>
+            <label for="forPage">Prenotazioni per pagina:</label>
+            <select id="forPage">
+                <option value="5">5</option>
+                <option value="10">10</option>
+                <option value="20">20</option>
+                <option value="50">50</option>
+                <option value="all">Tutte</option>
+            </select>
+        </div>
+        <button type="button" id="pre">PRE<<</button>
+        <span id="currentPage"></span>
+        <button type="button" id="succ">>>SUCC</button>
+        <span id="items"></span>
+    </div>
+    <script type="module" src="/View/scripts/homepage.js"></script>
+</body>
+
+</html>
