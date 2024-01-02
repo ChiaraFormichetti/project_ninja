@@ -1,4 +1,4 @@
-import { requestManager } from "../requestManager.js";
+import { requestManager } from "./requestManager1.js";
 import { writeCalendar, writeDeleteCalendar, writeHistoricCalendar, resetCalendar } from "./calendar.js";
 import { commonSelector } from './commonSelector.js';
 import { pageManager } from "./calendar.js";

@@ -1,7 +1,7 @@
 import { resetCalendar } from "./calendar";
 import { getReservations, getTrashReservations } from "./get.js";
 import { closemodal } from "./modal.js";
-import { requestManager } from "../requestManager.js";
+import { requestManager } from "./requestManager1.js";
 import { commonSelector } from './commonSelector.js';
 import { errorManager } from "./reservation.js";
 

@@ -16,8 +16,14 @@ export const requestManager = {
                 if(result.success === false || result.code !== 200){
                     throw new Error(result.errors.join(', '));
                 }
-                debugger;
                 const data = result.data;
+                const totalPages = data.totalPages;
+                const reservations = data.items;
+                const count = data.count;
+
+                data.totalPages = totalPages;
+                data.reservations = reservations;
+                data.count = count;
                 return data;
             })
             .catch(error => {

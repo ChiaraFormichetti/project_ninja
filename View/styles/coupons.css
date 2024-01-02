@@ -13,13 +13,32 @@ h1{
     border-style: groove;
 }
 h2{
-    margin-block: 15%;
+    margin-block: auto;
     color: #39009d;
+}
+h3{
+    color: brown;
+}
+h4{
+    font-size: smaller;
+    color: maroon;
 }
 
 .coupon-insert{
-    margin: 12%;
-    padding: 20px;
+    margin: 10px;
+    padding: 10px;
     background-color: #e4d4ff;
     color: #2f0083;
+}
+
+.verified{
+    color: black;
+    padding: 15px;
+    font-size: medium;
+    display: flex;
+    justify-content: space-evenly;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    align-content: center;
+    align-items: flex-start;
 }
