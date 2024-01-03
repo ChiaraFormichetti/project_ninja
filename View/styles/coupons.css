@@ -29,9 +29,15 @@ h4{
     padding: 10px;
     background-color: #e4d4ff;
     color: #2f0083;
+    display: flex;
+    flex-direction: column;
+    flex-wrap: nowrap;
+    align-content: center;
+    justify-content: center;
+    align-items: stretch;
 }
 
-.verified{
+.gift-div{
     color: black;
     padding: 15px;
     font-size: medium;
@@ -40,5 +46,48 @@ h4{
     flex-direction: row;
     flex-wrap: nowrap;
     align-content: center;
-    align-items: flex-start;
+    align-items: stretch;
 }
+.beneficiaries-form{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.gift{
+    white-space: pre-line;
+    border: inset;
+    padding: 7px;
+    margin: 7px;
+    display: flex;
+    flex-direction: column;
+    flex-wrap: nowrap;
+    align-content: center;
+    align-items: center;
+}
+
+.chosen{
+    border: double;
+    padding: 1px;
+    margin: 5px;
+    color: darkred;
+}
+
+.spacer{
+    padding: 5px;
+}
+
+
+.verify{
+    padding: 2px;
+    color: blue;
+}
+
+.selected-gift{
+    border: 2px solid red;
+}
+p{
+    color: red;
+}
+

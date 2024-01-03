@@ -33,7 +33,7 @@ class BeneficiariesManager extends BaseManager
         if ($date != $now ) {
             $result["errors"][] = "Errore nell'inserimento automatico della data";
         }
-        if(!preg_match('/^[a-z0-9._-]+@[a-z]+\.(com|it)$/', $parameters['email'])){
+        if(!preg_match('/^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/', $parameters['email'])){
             $result["errors"][] = "Errore nell'inserimento della mail";
         }
 

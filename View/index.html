@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Coupons</title>
     <link rel="stylesheet" href="/View/styles/coupons.css">
+    <link rel="icon" href="data:;base64,iVBORw0KGgo=">
 </head>
 <body>
     <div>
@@ -12,7 +13,7 @@
         <h2>!! Riscuoti il tuo regalo !!</h2>
     </div>
     <div class="coupon-insert">
-        <form>
+        <form id="couponForm">
             <label for="coupons">Inserisci il codice coupon:</label>
             <input type="text" id="code" name="code" pattern="\d{3}[A-Z]{2}\d{2}" title="Il codice deve seguire il formato 3 cifre, 2 lettere maiuscole e 2 cifre" required>
             <input type="submit" value="Controlla">

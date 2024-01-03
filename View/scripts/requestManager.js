@@ -16,7 +16,6 @@ export const requestManager = {
                 if(result.success === false || result.code !== 200){
                     throw new Error(result.errors.join(', '));
                 }
-                debugger;
                 const data = result.data;
                 return data;
             })

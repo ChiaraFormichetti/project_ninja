@@ -6,6 +6,7 @@ const createHtml = (elements) => {
                 if (element.parentElement || element.parentId) {
                     const elementNode = document.createElement(element.tagName);
                     if (elementNode) {
+                        debugger;
                         if (element.events && element.events.length > 0) {
                             element.events.forEach(
                                 eventObj => {            
@@ -47,32 +48,3 @@ const createHtml = (elements) => {
     }
 }
 export default createHtml;
-
-export class CreateForm { 
-    
-    modalElement = [];
-
-    constructor(aaa) {
-        this.modalElement = aaa;
-    }
-
-    addForm(id, parentId, children) {
-        const formElement = {
-            tagName: 'form',
-            id : 'newReservationForm',
-            parentId : 'modalContent',
-            children : children,
-        };
-        this.modalElements.push(formElement);
-    }
-
-    addInputElement(id,name,required,){
-
-    }
-}
-
-let cf = new CreateForm([123, 222]);
-let bb = new CreateForm([1, 2]);
-
-cf.modalElement;
-bb.modalElement;
