@@ -40,7 +40,7 @@ class BeneficiariesService extends BaseService
         if(!$checkValueResult['success']){
            return $this->response->setErrors(['message' => $checkValueResult['errors']]);
         }
-        $result = call_user_func_array([$this->beneficiariesManager, $methodName], $body);
+        $result = call_user_func([$this->beneficiariesManager, $methodName], $body);
         if(!$result){
             $this->response->setErrors(['message' => 'Il metodo non esiste']);
             $this->response->setErrorCode(Response::HTTP_CODE_ERROR_METHOD_NOT_FOUND);

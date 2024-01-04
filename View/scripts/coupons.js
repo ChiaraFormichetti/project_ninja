@@ -7,6 +7,9 @@ const form = body.querySelector("#couponForm");
 const inputCode = form.querySelector("#code");
 let beneficiaries = {};
 let selectedGiftId = null;
+let usedCode = null;
+let usedType = null;
+let reload = false;
 form.addEventListener('submit', async (event) => {
     event.preventDefault();
     const codeValue = inputCode.value.trim();
@@ -18,11 +21,12 @@ form.addEventListener('submit', async (event) => {
         if (!codeCoupon.length) {
             alert("Il coupon inserito non è valido");
         } else {
+            usedCode = codeCoupon[0].code;
+            usedType = codeCoupon[0].type;
             const insertDiv = body.querySelector(".coupon-insert");
             while (insertDiv.firstChild) {
                 insertDiv.removeChild(insertDiv.firstChild);
             }
-            debugger;
             const couponDiv = [
                 {
                     tagName: 'h3',
@@ -124,6 +128,7 @@ form.addEventListener('submit', async (event) => {
                             attributes: {
                                 class: 'verify',
                             },
+                            id: 'verify',
                             events: [
                                 {
                                     eventName: "click",
@@ -146,64 +151,189 @@ form.addEventListener('submit', async (event) => {
 
             ]
             createHtml(couponDiv);
-            let gifturl = commonSelector.apiGiftsURL;
-            gifturl += `type/${codeCoupon[0].type}`;
-            try {
-                const gifts = await requestManager.get(gifturl);
-                if (!gifts) {
-                    alert("Non ci sono regali validi");
-                } else {
-                    debugger
-                    const verifiedDiv = insertDiv.querySelector(".gift-div");
-                    gifts.forEach(gift => {
-                        const giftDiv = [
-                            {
-                                tagName: 'div',
-                                content: `Tipo: ${gift.type}\nTitolo: ${gift.title}\nDescrizione: ${gift.description}`,
-                                parentElement: verifiedDiv,
-                                id: `gift-${gift.id}`,
-                                attributes: {
-                                    class: "gift",
-                                }
-                            },
-                            {
-                                tagName: 'button',
-                                content: 'x',
-                                attributes: {
-                                    class: "chosen",
-                                },
-                                parentId: `gift-${gift.id}`,
-                                events: [
-                                    {
-                                        eventName: "click",
-                                        callbackName: giftSelection,
-                                        parameters: [
-                                            gift.id,
-                                        ]
-                                    }
-                                ]
-
-                            }
-                        ];
-                        createHtml(giftDiv);
-
-                    });
-
-                }
-
-            } catch (error) {
-                console.error("Errore nel recupero dei regali disponibili");
-            }
+            createGiftDiv();
         }
     } catch (error) {
         console.error("Errore nel controllo del coupon");
-
     }
 });
 
+
+async function createGiftDiv() {
+    let gifturl = commonSelector.apiGiftsURL;
+    gifturl += `type/${usedType}`;
+    try {
+        const gifts = await requestManager.get(gifturl);
+        if (!gifts) {
+            alert("Non ci sono regali validi");
+        } else {
+            const insertDiv = body.querySelector(".coupon-insert");
+            const verifiedDiv = insertDiv.querySelector(".gift-div");
+            gifts.forEach(gift => {
+                const giftDiv = [
+                    {
+                        tagName: 'div',
+                        content: `Tipo: ${gift.type}\nTitolo: ${gift.title}\nDescrizione: ${gift.description}`,
+                        parentElement: verifiedDiv,
+                        id: `gift-${gift.id}`,
+                        attributes: {
+                            class: "gift",
+                        }
+                    },
+                    {
+                        tagName: 'button',
+                        content: 'x',
+                        attributes: {
+                            class: "chosen",
+                        },
+                        parentId: `gift-${gift.id}`,
+                        events: [
+                            {
+                                eventName: "click",
+                                callbackName: giftSelection,
+                                parameters: [
+                                    gift.id,
+                                ]
+                            }
+                        ]
+
+                    }
+                ];
+                createHtml(giftDiv);
+
+            });
+            if(!reload){
+                const claimGift = [
+                    {
+                        tagName: 'button',
+                        content: 'Riscuoti regalo',
+                        parentElement: insertDiv,
+                        attributes: {
+                            class: "claim-gift",
+                        },
+                        events: [
+                            {
+                                eventName: "click",
+                                callbackName: redeemGift,
+                                parameters: [
+                                ]
+                            }
+                        ]
+                    }
+                ];
+                createHtml(claimGift);
+            }
+        }
+
+    } catch (error) {
+        console.error("Errore nel recupero dei regali disponibili");
+    }
+
+}
+
+
+async function redeemGift() {
+    let check = checkBeneficiaries()
+    if (selectedGiftId && check) {
+        let gifturl = commonSelector.apiGiftsURL;
+        gifturl += `id/${selectedGiftId}`;
+        try {
+            const checkAvailability = await requestManager.get(gifturl);
+            debugger;
+            console.log(checkAvailability);
+            if (!checkAvailability.length) {
+                alert("Il regalo non è più disponibile, scegline un altro !");
+                const insertDiv = body.querySelector(".coupon-insert");
+                const verifiedDiv = insertDiv.querySelector(".gift-div");
+                while (verifiedDiv.firstChild) {
+                    verifiedDiv.removeChild(verifiedDiv.firstChild);
+                }
+                reload = true;
+                createGiftDiv();
+            } else {
+                beneficiaries.code = usedCode;
+                beneficiaries.id = selectedGiftId;
+                //facciamo la nostra post
+                console.log(beneficiaries);
+                const formData = new FormData();
+                Object.keys(beneficiaries).forEach(key => {
+                    formData.append(key, beneficiaries[key]);
+                });
+                console.log(formData);
+                let beneficiariesURL = commonSelector.apiBeneficiariesURL;
+                beneficiariesURL += 'add';
+                try {
+                    const addBeneficiaries = await requestManager.post(beneficiariesURL, formData);
+                    if (addBeneficiaries) {
+                        //cancelliamo tutto e mostriamo un resoconto
+                        alert("L'operazione è andata a buon fine!");
+                        const insertDiv = body.querySelector(".coupon-insert");
+                        while (insertDiv.firstChild) {
+                            insertDiv.removeChild(insertDiv.firstChild);
+                        }
+                        const successDiv = [
+                            {
+                                tagName:'div',
+                                content: 'Operazione avvenuta con successo.\nVuoi riscuotere un altro coupon?',
+                                parentElement: insertDiv,
+                                id:'successDiv',
+                                attributes: {
+                                    class: 'success',
+                                },
+                                children:[
+                                    {
+                                        tagName:'button',
+                                        content: 'torna alla pagina iniziale',
+                                        events: [
+                                            {
+                                                eventName:"click",
+                                                callbackName: reloadPage,
+                                                parameters:[
+
+                                                ]
+                                            }
+                                        ]
+                                    }
+                                ]
+                            }
+                        ]
+                        createHtml(successDiv);
+                    } else {
+                        alert("C'è stato un errore nell'operazione");
+                    }
+
+                } catch (error) {
+                    console.error("Errore durante l'aggiunta del beneficiario", error);
+                }
+
+            }
+        } catch (error) {
+            console.error("Errore durante la verifica della disponibilità del regalo", error)
+        }
+        //prima fetch per controllare che il regalo sia ancora disponibile e poi operazione per aggiungere il beneficiario
+    } else if (!selectedGiftId) {
+        alert("Scegli un regalo!");
+    } else {
+        alert("Inserisci i tuoi dati!");
+    }
+
+}
+function reloadPage(){
+    location.reload();
+}
+
+function checkBeneficiaries() {
+    const requiredFields = ['name', 'surname', 'email', 'date'];
+    if (Object.keys(beneficiaries).length === requiredFields.length) {
+        for (const field of requiredFields) {
+            if (!beneficiaries[field] || beneficiaries[field].trim() === '') {
+                return false;
+            }
+        } return true;
+    } return false;
+}
+
 function giftSelection(id) {
-    debugger;
-    console.log(id);
     const insertDiv = body.querySelector(".coupon-insert");
     const verifiedDiv = insertDiv.querySelector(".gift-div");
     const gift = verifiedDiv.querySelector(`#gift-${id}`);
@@ -214,11 +344,13 @@ function giftSelection(id) {
     gift.classList.add('selected-gift');
 
     selectedGiftId = id;
+    console.log(selectedGiftId);
+    return selectedGiftId;
 
 };
 
-function verifyInput() {
-    debugger;
+function verifyInput(modified = false) {
+
     const insertDiv = body.querySelector(".coupon-insert");
     const beneficiariesDiv = insertDiv.querySelector('#beneficiariesDiv');
     const nameRegex = /^[a-zA-Z]{1,30}$/;
@@ -229,29 +361,72 @@ function verifyInput() {
 
     if (nameRegex.test(name.value.trim()) && nameRegex.test(surname.value.trim()) &&
         emailRegex.test(email.value.trim())) {
-        const verifyButton = beneficiariesDiv.querySelector('.verify');
+        const verifyButton = beneficiariesDiv.querySelector('#verify');
         verifyButton.style.display = 'none';
 
-        const verificationText = [
-            {
-                tagName: 'p',
-                content: 'Dati verificati !',
-                parentElement: beneficiariesDiv,
+        if (!modified) {
+            const verificationText = [
+                {
+                    tagName: 'p',
+                    content: 'Dati verificati !',
+                    parentElement: beneficiariesDiv,
 
-            },
-        ]
-        createHtml(verificationText);
+                },
+                {
+                    tagName: 'button',
+                    content: 'Modifica',
+                    attributes: {
+                        class: 'verify'
+                    },
+                    id: 'modify',
+                    parentElement: beneficiariesDiv,
+                    events: [
+                        {
+                            eventName: "click",
+                            callbackName: modifyInput,
+                            parameters: [
 
-        const today = new Date().toLocaleDateString();
+                            ],
+                        },
+                    ],
+                }
+            ]
+            createHtml(verificationText);
+        }
+        const today = new Date();
+        const year = today.getFullYear();
+        const month = (today.getMonth() + 1).toString().padStart(2, '0'); // Aggiunge uno zero iniziale se il mese è inferiore a 10
+        const day = today.getDate().toString().padStart(2, '0'); // Aggiunge uno zero iniziale se il giorno è inferiore a 10
+
+        const formattedDate = `${year}-${month}-${day}`;
 
         beneficiaries = {
             'name': name.value.trim(),
             'surname': surname.value.trim(),
             'email': email.value.trim(),
-            'date': today
+            'date': formattedDate,
         };
+        if (modified) {
+            alert("Dati modificati");
+        }
+        console.log(beneficiaries);
         return beneficiaries;
     } else {
         alert('Dati non validi. Si prega di controllare nuovamente i campi.');
     };
 };
+
+function modifyInput() {
+    const insertDiv = body.querySelector(".coupon-insert");
+    const beneficiariesDiv = insertDiv.querySelector('#beneficiariesDiv');
+    const name = beneficiariesDiv.querySelector('#name');
+    const surname = beneficiariesDiv.querySelector('#surname');
+    const email = beneficiariesDiv.querySelector('#email');
+    if (name.value.trim() != beneficiaries.name || surname.value.trim() != beneficiaries.surname || email.value.trim() != beneficiaries.email) {
+        let modified = true;
+        verifyInput(modified);
+    } else {
+        alert("Non hai modificato nessun dato !");
+    }
+
+}

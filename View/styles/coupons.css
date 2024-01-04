@@ -34,7 +34,7 @@ h4{
     flex-wrap: nowrap;
     align-content: center;
     justify-content: center;
-    align-items: stretch;
+    align-items: center;
 }
 
 .gift-div{
@@ -90,4 +90,12 @@ h4{
 p{
     color: red;
 }
+
+.claim-gift{
+    border-style: groove;
+    border-color: chocolate;
+    padding: 3px;
+    margin: 2px;
+}
+
 

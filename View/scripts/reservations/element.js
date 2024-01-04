@@ -6,7 +6,6 @@ const createHtml = (elements) => {
                 if (element.parentElement || element.parentId) {
                     const elementNode = document.createElement(element.tagName);
                     if (elementNode) {
-                        debugger;
                         if (element.events && element.events.length > 0) {
                             element.events.forEach(
                                 eventObj => {            

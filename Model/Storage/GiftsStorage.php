@@ -47,7 +47,7 @@ class GiftsStorage extends BaseStorage
             $stmt = $this->connection->query($query);
             $rowCount = $stmt->rowCount();
             if($rowCount){
-                $this->result['data'] = $rowCount;
+                $this->result['data'] = [$rowCount];
             }                
         } catch (\Exception $e) {
             $this->result['errors'] = $e->getMessage();

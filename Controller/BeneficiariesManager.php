@@ -30,11 +30,14 @@ class BeneficiariesManager extends BaseManager
         if (!preg_match('/\d{3}[A-Z]{2}\d{2}/', $parameters['code'])){
             $result["errors"][] = "Errore nell'inserimento del codice";
         }        
-        if ($date != $now ) {
+        if ($date->format('Y-m-d') !== $now->format('Y-m-d')) {
             $result["errors"][] = "Errore nell'inserimento automatico della data";
         }
         if(!preg_match('/^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/', $parameters['email'])){
             $result["errors"][] = "Errore nell'inserimento della mail";
+        }
+        if(!$parameters['id']){
+            $result["errors"][] = "Errore nell'inserimento dell'id";
         }
 
         if($result["errors"] === []){
