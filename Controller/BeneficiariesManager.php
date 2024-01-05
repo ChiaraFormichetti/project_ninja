@@ -51,4 +51,9 @@ class BeneficiariesManager extends BaseManager
         return $add;
     }
 
+    public function getId(int $id): array{
+        $check = $this->beneficiariesStorage->getId($id);
+        return $check;
+    }
+
 }

@@ -5,6 +5,7 @@ import createHtml from "./reservations/element.js";
 const body = commonSelector.body;
 const form = body.querySelector("#couponForm");
 const inputCode = form.querySelector("#code");
+const insertDiv = body.querySelector(".coupon-insert");
 let beneficiaries = {};
 let selectedGiftId = null;
 let usedCode = null;
@@ -12,41 +13,30 @@ let usedType = null;
 let reload = false;
 form.addEventListener('submit', async (event) => {
     event.preventDefault();
-    const codeValue = inputCode.value.trim();
-    //url per vedere se c'è il codice all'interno della tabella beneficiari
-    let url = commonSelector.apiCodesURL;
-    url += `check/${codeValue}`;
+    let coupon = await checkCodeCoupon();
+    if (coupon) {
+        usedCode = coupon.code;
+        usedType = coupon.type;
+        createBeneficiariesForm();
+    }
+});
+
+
+async function createBeneficiariesForm() {
+    let gifturl = commonSelector.apiGiftsURL;
+    gifturl += `type/${usedType}`;
     try {
-        const codeCoupon = await requestManager.get(url);
-        if (!codeCoupon.length) {
-            alert("Il coupon inserito non è valido");
+        const gifts = await requestManager.get(gifturl);
+        if (!gifts.length) {
+            alert("Non ci sono regali validi");
+            //partono le funzioni per la gestione della situazione in assenza di regali 
         } else {
-            usedCode = codeCoupon[0].code;
-            usedType = codeCoupon[0].type;
-            const insertDiv = body.querySelector(".coupon-insert");
-            while (insertDiv.firstChild) {
-                insertDiv.removeChild(insertDiv.firstChild);
-            }
-            const couponDiv = [
+            const createBeneficiariesForm = [
                 {
-                    tagName: 'h3',
-                    id: 'verified',
-                    parentElement: insertDiv,
-                    content: 'Coupon verificato',
-
-                },
-                {
-                    tagName: 'h4',
-                    content: `Codice coupon: ${codeCoupon[0].code}, tipo di coupon: ${codeCoupon[0].type}, data di scadenza: ${codeCoupon[0].expiration}`,
-                    parentId: 'verified',
-                    id: 'couponData',
-
-                },
-                {
-                    tagName: 'div',
-                    id: 'beneficiariesDiv',
+                    tagName: 'form',
+                    id: 'beneficiariesForm',
                     attributes: {
-                        class: 'beneficiaries-div',
+                        class: 'beneficiaries-form',
                     },
                     parentElement: insertDiv,
                     children: [
@@ -127,6 +117,7 @@ form.addEventListener('submit', async (event) => {
                             content: 'verifica',
                             attributes: {
                                 class: 'verify',
+                                type: 'button',
                             },
                             id: 'verify',
                             events: [
@@ -150,24 +141,66 @@ form.addEventListener('submit', async (event) => {
                 }
 
             ]
-            createHtml(couponDiv);
+            createHtml(createBeneficiariesForm);
             createGiftDiv();
         }
     } catch (error) {
-        console.error("Errore nel controllo del coupon");
-    }
-});
+        console.error("Errore nel controllo dei regali");
+    };
+}
 
+
+async function checkCodeCoupon() {
+    debugger;
+    const codeValue = inputCode.value.trim();
+    //url per vedere se c'è il codice all'interno della tabella beneficiari
+    let url = commonSelector.apiCodesURL;
+    url += `check/${codeValue}`;
+    try {
+        const codeCoupon = await requestManager.get(url);
+        if (!codeCoupon.length) {
+            alert("Il coupon inserito non è valido");
+        } else {
+
+            while (insertDiv.firstChild) {
+                insertDiv.removeChild(insertDiv.firstChild);
+            }
+            const couponDiv = [
+                {
+                    tagName: 'h3',
+                    id: 'verified',
+                    parentElement: insertDiv,
+                    content: 'Coupon verificato',
+
+                },
+                {
+                    tagName: 'h4',
+                    content: `Codice coupon: ${codeCoupon[0].code}, tipo di coupon: ${codeCoupon[0].type}, data di scadenza: ${codeCoupon[0].expiration}`,
+                    parentId: 'verified',
+                    id: 'couponData',
+
+                }
+            ]
+            createHtml(couponDiv);
+            let coupon = codeCoupon[0];
+            return coupon;
+
+        }
+    } catch (error) {
+        console.error("Errore nel controllo del coupon");
+    };
+}
 
 async function createGiftDiv() {
+
     let gifturl = commonSelector.apiGiftsURL;
     gifturl += `type/${usedType}`;
     try {
         const gifts = await requestManager.get(gifturl);
-        if (!gifts) {
+        if (!gifts.length) {
             alert("Non ci sono regali validi");
         } else {
-            const insertDiv = body.querySelector(".coupon-insert");
+
             const verifiedDiv = insertDiv.querySelector(".gift-div");
             gifts.forEach(gift => {
                 const giftDiv = [
@@ -202,7 +235,7 @@ async function createGiftDiv() {
                 createHtml(giftDiv);
 
             });
-            if(!reload){
+            if (!reload) {
                 const claimGift = [
                     {
                         tagName: 'button',
@@ -235,15 +268,13 @@ async function createGiftDiv() {
 async function redeemGift() {
     let check = checkBeneficiaries()
     if (selectedGiftId && check) {
-        let gifturl = commonSelector.apiGiftsURL;
-        gifturl += `id/${selectedGiftId}`;
+        let beneficiariesUrl = commonSelector.apiBeneficiariesURL;
+        beneficiariesUrl += `id/${selectedGiftId}`;
         try {
-            const checkAvailability = await requestManager.get(gifturl);
-            debugger;
-            console.log(checkAvailability);
-            if (!checkAvailability.length) {
+            const checkAvailability = await requestManager.get(beneficiariesUrl);
+            if (checkAvailability.length) {
                 alert("Il regalo non è più disponibile, scegline un altro !");
-                const insertDiv = body.querySelector(".coupon-insert");
+
                 const verifiedDiv = insertDiv.querySelector(".gift-div");
                 while (verifiedDiv.firstChild) {
                     verifiedDiv.removeChild(verifiedDiv.firstChild);
@@ -254,12 +285,10 @@ async function redeemGift() {
                 beneficiaries.code = usedCode;
                 beneficiaries.id = selectedGiftId;
                 //facciamo la nostra post
-                console.log(beneficiaries);
                 const formData = new FormData();
                 Object.keys(beneficiaries).forEach(key => {
                     formData.append(key, beneficiaries[key]);
                 });
-                console.log(formData);
                 let beneficiariesURL = commonSelector.apiBeneficiariesURL;
                 beneficiariesURL += 'add';
                 try {
@@ -267,28 +296,28 @@ async function redeemGift() {
                     if (addBeneficiaries) {
                         //cancelliamo tutto e mostriamo un resoconto
                         alert("L'operazione è andata a buon fine!");
-                        const insertDiv = body.querySelector(".coupon-insert");
+
                         while (insertDiv.firstChild) {
                             insertDiv.removeChild(insertDiv.firstChild);
                         }
                         const successDiv = [
                             {
-                                tagName:'div',
+                                tagName: 'div',
                                 content: 'Operazione avvenuta con successo.\nVuoi riscuotere un altro coupon?',
                                 parentElement: insertDiv,
-                                id:'successDiv',
+                                id: 'successDiv',
                                 attributes: {
                                     class: 'success',
                                 },
-                                children:[
+                                children: [
                                     {
-                                        tagName:'button',
+                                        tagName: 'button',
                                         content: 'torna alla pagina iniziale',
                                         events: [
                                             {
-                                                eventName:"click",
+                                                eventName: "click",
                                                 callbackName: reloadPage,
-                                                parameters:[
+                                                parameters: [
 
                                                 ]
                                             }
@@ -318,7 +347,7 @@ async function redeemGift() {
     }
 
 }
-function reloadPage(){
+function reloadPage() {
     location.reload();
 }
 
@@ -334,7 +363,6 @@ function checkBeneficiaries() {
 }
 
 function giftSelection(id) {
-    const insertDiv = body.querySelector(".coupon-insert");
     const verifiedDiv = insertDiv.querySelector(".gift-div");
     const gift = verifiedDiv.querySelector(`#gift-${id}`);
 
@@ -351,17 +379,16 @@ function giftSelection(id) {
 
 function verifyInput(modified = false) {
 
-    const insertDiv = body.querySelector(".coupon-insert");
-    const beneficiariesDiv = insertDiv.querySelector('#beneficiariesDiv');
+    const beneficiariesForm = insertDiv.querySelector('#beneficiariesForm');
     const nameRegex = /^[a-zA-Z]{1,30}$/;
     const emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
-    const name = beneficiariesDiv.querySelector('#name');
-    const surname = beneficiariesDiv.querySelector('#surname');
-    const email = beneficiariesDiv.querySelector('#email');
+    const name = beneficiariesForm.querySelector('#name');
+    const surname = beneficiariesForm.querySelector('#surname');
+    const email = beneficiariesForm.querySelector('#email');
 
     if (nameRegex.test(name.value.trim()) && nameRegex.test(surname.value.trim()) &&
         emailRegex.test(email.value.trim())) {
-        const verifyButton = beneficiariesDiv.querySelector('#verify');
+        const verifyButton = beneficiariesForm.querySelector('#verify');
         verifyButton.style.display = 'none';
 
         if (!modified) {
@@ -369,7 +396,7 @@ function verifyInput(modified = false) {
                 {
                     tagName: 'p',
                     content: 'Dati verificati !',
-                    parentElement: beneficiariesDiv,
+                    parentElement: beneficiariesForm,
 
                 },
                 {
@@ -379,7 +406,7 @@ function verifyInput(modified = false) {
                         class: 'verify'
                     },
                     id: 'modify',
-                    parentElement: beneficiariesDiv,
+                    parentElement: beneficiariesForm,
                     events: [
                         {
                             eventName: "click",
@@ -417,11 +444,10 @@ function verifyInput(modified = false) {
 };
 
 function modifyInput() {
-    const insertDiv = body.querySelector(".coupon-insert");
-    const beneficiariesDiv = insertDiv.querySelector('#beneficiariesDiv');
-    const name = beneficiariesDiv.querySelector('#name');
-    const surname = beneficiariesDiv.querySelector('#surname');
-    const email = beneficiariesDiv.querySelector('#email');
+    const beneficiariesForm = insertDiv.querySelector('#beneficiariesForm');
+    const name = beneficiariesForm.querySelector('#name');
+    const surname = beneficiariesForm.querySelector('#surname');
+    const email = beneficiariesForm.querySelector('#email');
     if (name.value.trim() != beneficiaries.name || surname.value.trim() != beneficiaries.surname || email.value.trim() != beneficiaries.email) {
         let modified = true;
         verifyInput(modified);

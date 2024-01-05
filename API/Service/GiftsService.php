@@ -34,11 +34,8 @@ class GiftsService extends BaseService
             if(preg_match('/^[A-Z]{1,10}$/', $values[0])){
                 $param = $values[0];
             }
-            if(preg_match('/^\d+$/', $values[0])){
-                $param = $values[0];
-            }
-            $result = call_user_func([$this->giftsManager, $methodName], $param);
         }
+        $result = call_user_func([$this->giftsManager, $methodName], $param);
         if(!$result){ 
             $this->response->setErrors(['message' => 'Il metodo non esiste']);
             $this->response->setSuccess(false);

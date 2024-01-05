@@ -20,7 +20,32 @@ class BeneficiariesService extends BaseService
 
     
     public function get(Request $request): Response
-    {
+    {   $action = $request->action;
+        $values = $request->values;
+        $param = null;
+        $result = [
+            'data' => [],
+            'errors' => [],
+        ];
+
+        $methodName = 'get' . ucfirst($action);
+
+        if(count($values) === 1 && preg_match('/^\d+$/', $values[0])){
+            $param = $values[0];
+        }
+        $result = call_user_func([$this->beneficiariesManager, $methodName],$param);
+        if (!$result){
+            $this->response->setErrors(['message' => 'Il metodo non esiste']);
+            $this->response->setSuccess(false);
+            $this->response->setErrorCode(Response::HTTP_CODE_ERROR_METHOD_NOT_FOUND);
+        } else {
+            if(!$result['errors']){
+                $this->response->setData($result['data']);
+            } else { 
+                $this->response->setErrors(['message' => $result['errors']]);
+                $this->response->setSuccess(false);
+            } 
+        }
         return $this->response;
     }
 

@@ -18,8 +18,5 @@ class GiftsManager extends BaseManager
         $check = $this->giftsStorage->getType($code);
         return $check;
     }
-    public function getId(int $id): array{
-        $check = $this->giftsStorage->getId($id);
-        return $check;
-    }
+   
 }

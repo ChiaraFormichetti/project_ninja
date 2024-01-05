@@ -35,4 +35,20 @@ class BeneficiariesStorage extends BaseStorage
         }
         return $this->result;
     }
+    public function getId(int $id): array{
+        try {
+            $this->queryBuilder->select()
+                ->selectColumns(['id'])
+                ->where('id', '=', $id);
+            $query = $this->queryBuilder->getQuery();
+            $stmt = $this->connection->query($query);
+            $rowCount = $stmt->rowCount();
+            if($rowCount){
+                $this->result['data'] = [$rowCount];
+            }                
+        } catch (\Exception $e) {
+            $this->result['errors'] = $e->getMessage();
+        }
+        return $this->result;
+    }
 }
