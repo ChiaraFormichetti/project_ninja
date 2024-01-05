@@ -13,16 +13,24 @@ let usedType = null;
 let reload = false;
 form.addEventListener('submit', async (event) => {
     event.preventDefault();
-    let coupon = await checkCodeCoupon();
-    if (coupon) {
-        usedCode = coupon.code;
-        usedType = coupon.type;
-        createBeneficiariesForm();
+    const codeValue = inputCode.value.trim();
+    const couponRegex = /\d{3}[A-Z]{2}\d{2}/;
+    if (couponRegex.test(codeValue)) {
+        let coupon = await checkCodeAvailability(codeValue);
+        if (coupon) {
+            createCodeDiv(coupon);
+            usedCode = coupon.code;
+            usedType = coupon.type;
+            createBeneficiariesForm(codeValue);
+        }
+    } else {
+        alert("Il codice inserite non è nel formato richiesto!");
     }
+
 });
 
 
-async function createBeneficiariesForm() {
+async function createBeneficiariesForm(codeValue) {
     let gifturl = commonSelector.apiGiftsURL;
     gifturl += `type/${usedType}`;
     try {
@@ -114,7 +122,7 @@ async function createBeneficiariesForm() {
                         },
                         {
                             tagName: 'button',
-                            content: 'verifica',
+                            content: 'Conferma i tuoi dati',
                             attributes: {
                                 class: 'verify',
                                 type: 'button',
@@ -142,56 +150,55 @@ async function createBeneficiariesForm() {
 
             ]
             createHtml(createBeneficiariesForm);
-            createGiftDiv();
+            createGiftDiv(codeValue);
         }
     } catch (error) {
-        console.error("Errore nel controllo dei regali");
+        console.error("Errore nel controllo dei regali", error);
     };
 }
 
+async function checkCodeAvailability(codeValue) {
 
-async function checkCodeCoupon() {
-    debugger;
-    const codeValue = inputCode.value.trim();
-    //url per vedere se c'è il codice all'interno della tabella beneficiari
     let url = commonSelector.apiCodesURL;
     url += `check/${codeValue}`;
     try {
         const codeCoupon = await requestManager.get(url);
         if (!codeCoupon.length) {
-            alert("Il coupon inserito non è valido");
+            alert("Il coupon inserito non è più valido");
         } else {
-
-            while (insertDiv.firstChild) {
-                insertDiv.removeChild(insertDiv.firstChild);
-            }
-            const couponDiv = [
-                {
-                    tagName: 'h3',
-                    id: 'verified',
-                    parentElement: insertDiv,
-                    content: 'Coupon verificato',
-
-                },
-                {
-                    tagName: 'h4',
-                    content: `Codice coupon: ${codeCoupon[0].code}, tipo di coupon: ${codeCoupon[0].type}, data di scadenza: ${codeCoupon[0].expiration}`,
-                    parentId: 'verified',
-                    id: 'couponData',
-
-                }
-            ]
-            createHtml(couponDiv);
             let coupon = codeCoupon[0];
+            console.log(coupon);
             return coupon;
-
         }
     } catch (error) {
-        console.error("Errore nel controllo del coupon");
-    };
+        console.error("Errore nel controllo del codice coupon", error);
+    }
 }
 
-async function createGiftDiv() {
+
+async function createCodeDiv(coupon) {
+
+    while (insertDiv.firstChild) {
+        insertDiv.removeChild(insertDiv.firstChild);
+    }
+    const couponDiv = [
+        {
+            tagName: 'h3',
+            id: 'verified',
+            parentElement: insertDiv,
+            content: 'Coupon verificato',
+        },
+        {
+            tagName: 'h4',
+            content: `Codice coupon: ${coupon.code}, tipo di coupon: ${coupon.type}, data di scadenza: ${coupon.expiration}`,
+            parentId: 'verified',
+            id: 'couponData',
+        }
+    ]
+    createHtml(couponDiv);
+}
+
+async function createGiftDiv(codeValue) {
 
     let gifturl = commonSelector.apiGiftsURL;
     gifturl += `type/${usedType}`;
@@ -199,6 +206,7 @@ async function createGiftDiv() {
         const gifts = await requestManager.get(gifturl);
         if (!gifts.length) {
             alert("Non ci sono regali validi");
+            reloadPage();
         } else {
 
             const verifiedDiv = insertDiv.querySelector(".gift-div");
@@ -249,6 +257,7 @@ async function createGiftDiv() {
                                 eventName: "click",
                                 callbackName: redeemGift,
                                 parameters: [
+                                    codeValue,
                                 ]
                             }
                         ]
@@ -265,85 +274,92 @@ async function createGiftDiv() {
 }
 
 
-async function redeemGift() {
-    let check = checkBeneficiaries()
-    if (selectedGiftId && check) {
-        let beneficiariesUrl = commonSelector.apiBeneficiariesURL;
-        beneficiariesUrl += `id/${selectedGiftId}`;
-        try {
-            const checkAvailability = await requestManager.get(beneficiariesUrl);
-            if (checkAvailability.length) {
-                alert("Il regalo non è più disponibile, scegline un altro !");
+async function redeemGift(codeValue) {
+    let check = checkBeneficiaries();
+    debugger;
+    let lastCheckForCode = await checkCodeAvailability(codeValue);
+    if (lastCheckForCode) {
+        if (selectedGiftId && check) {
+            let beneficiariesUrl = commonSelector.apiBeneficiariesURL;
+            beneficiariesUrl += `id/${selectedGiftId}`;
+            try {
+                const checkAvailability = await requestManager.get(beneficiariesUrl);
+                if (checkAvailability.length) {
+                    alert("Il regalo non è più disponibile, scegline un altro !");
 
-                const verifiedDiv = insertDiv.querySelector(".gift-div");
-                while (verifiedDiv.firstChild) {
-                    verifiedDiv.removeChild(verifiedDiv.firstChild);
-                }
-                reload = true;
-                createGiftDiv();
-            } else {
-                beneficiaries.code = usedCode;
-                beneficiaries.id = selectedGiftId;
-                //facciamo la nostra post
-                const formData = new FormData();
-                Object.keys(beneficiaries).forEach(key => {
-                    formData.append(key, beneficiaries[key]);
-                });
-                let beneficiariesURL = commonSelector.apiBeneficiariesURL;
-                beneficiariesURL += 'add';
-                try {
-                    const addBeneficiaries = await requestManager.post(beneficiariesURL, formData);
-                    if (addBeneficiaries) {
-                        //cancelliamo tutto e mostriamo un resoconto
-                        alert("L'operazione è andata a buon fine!");
+                    const verifiedDiv = insertDiv.querySelector(".gift-div");
+                    while (verifiedDiv.firstChild) {
+                        verifiedDiv.removeChild(verifiedDiv.firstChild);
+                    }
+                    reload = true;
+                    createGiftDiv();
+                } else {
+                    beneficiaries.code = usedCode;
+                    beneficiaries.id = selectedGiftId;
+                    //facciamo la nostra post
+                    const formData = new FormData();
+                    Object.keys(beneficiaries).forEach(key => {
+                        formData.append(key, beneficiaries[key]);
+                    });
+                    let beneficiariesURL = commonSelector.apiBeneficiariesURL;
+                    beneficiariesURL += 'add';
+                    try {
+                        const addBeneficiaries = await requestManager.post(beneficiariesURL, formData);
+                        if (addBeneficiaries) {
+                            //cancelliamo tutto e mostriamo un resoconto
+                            alert("L'operazione è andata a buon fine!");
 
-                        while (insertDiv.firstChild) {
-                            insertDiv.removeChild(insertDiv.firstChild);
-                        }
-                        const successDiv = [
-                            {
-                                tagName: 'div',
-                                content: 'Operazione avvenuta con successo.\nVuoi riscuotere un altro coupon?',
-                                parentElement: insertDiv,
-                                id: 'successDiv',
-                                attributes: {
-                                    class: 'success',
-                                },
-                                children: [
-                                    {
-                                        tagName: 'button',
-                                        content: 'torna alla pagina iniziale',
-                                        events: [
-                                            {
-                                                eventName: "click",
-                                                callbackName: reloadPage,
-                                                parameters: [
-
-                                                ]
-                                            }
-                                        ]
-                                    }
-                                ]
+                            while (insertDiv.firstChild) {
+                                insertDiv.removeChild(insertDiv.firstChild);
                             }
-                        ]
-                        createHtml(successDiv);
-                    } else {
-                        alert("C'è stato un errore nell'operazione");
+                            const successDiv = [
+                                {
+                                    tagName: 'div',
+                                    content: 'Operazione avvenuta con successo.\nVuoi riscuotere un altro coupon?',
+                                    parentElement: insertDiv,
+                                    id: 'successDiv',
+                                    attributes: {
+                                        class: 'success',
+                                    },
+                                    children: [
+                                        {
+                                            tagName: 'button',
+                                            content: 'torna alla pagina iniziale',
+                                            events: [
+                                                {
+                                                    eventName: "click",
+                                                    callbackName: reloadPage,
+                                                    parameters: [
+
+                                                    ]
+                                                }
+                                            ]
+                                        }
+                                    ]
+                                }
+                            ]
+                            createHtml(successDiv);
+                        } else {
+                            alert("C'è stato un errore nell'operazione");
+                        }
+
+                    } catch (error) {
+                        console.error("Errore durante l'aggiunta del beneficiario", error);
                     }
 
-                } catch (error) {
-                    console.error("Errore durante l'aggiunta del beneficiario", error);
                 }
-
+            } catch (error) {
+                console.error("Errore durante la verifica della disponibilità del regalo", error)
             }
-        } catch (error) {
-            console.error("Errore durante la verifica della disponibilità del regalo", error)
+            //prima fetch per controllare che il regalo sia ancora disponibile e poi operazione per aggiungere il beneficiario
+        } else if (!selectedGiftId) {
+            alert("Scegli un regalo!");
+        } else {
+            alert("Inserisci i tuoi dati!");
         }
-        //prima fetch per controllare che il regalo sia ancora disponibile e poi operazione per aggiungere il beneficiario
-    } else if (!selectedGiftId) {
-        alert("Scegli un regalo!");
-    } else {
-        alert("Inserisci i tuoi dati!");
+    }
+    else {
+        reloadPage();
     }
 
 }
@@ -395,7 +411,7 @@ function verifyInput(modified = false) {
             const verificationText = [
                 {
                     tagName: 'p',
-                    content: 'Dati verificati !',
+                    content: 'Dati confermati!',
                     parentElement: beneficiariesForm,
 
                 },
@@ -403,7 +419,8 @@ function verifyInput(modified = false) {
                     tagName: 'button',
                     content: 'Modifica',
                     attributes: {
-                        class: 'verify'
+                        class: 'verify',
+                        type: 'button',
                     },
                     id: 'modify',
                     parentElement: beneficiariesForm,
@@ -444,6 +461,7 @@ function verifyInput(modified = false) {
 };
 
 function modifyInput() {
+    debugger;
     const beneficiariesForm = insertDiv.querySelector('#beneficiariesForm');
     const name = beneficiariesForm.querySelector('#name');
     const surname = beneficiariesForm.querySelector('#surname');
@@ -453,6 +471,5 @@ function modifyInput() {
         verifyInput(modified);
     } else {
         alert("Non hai modificato nessun dato !");
-    }
-
-}
+    };
+};
