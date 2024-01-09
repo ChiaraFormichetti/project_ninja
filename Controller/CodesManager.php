@@ -14,7 +14,8 @@ class CodesManager extends BaseManager
     }
 
 
-    public function getCheck(string $code): array{
+    public function getCheck(string $code): array
+    {
         $check = $this->codesStorage->getCheck($code);
         return $check;
     }

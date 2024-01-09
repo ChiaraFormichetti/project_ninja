@@ -79,6 +79,11 @@ input{
     align-items: center;
 }
 
+.photo{
+    width: 150px;
+    height: 150px;
+}
+
 .chosen{
     border: double;
     padding: 1px;

@@ -1,26 +1,31 @@
 <?php
+
 namespace Model\Table;
 
 use ReflectionClass;
 use ReflectionProperty;
 
-abstract class Table{
+abstract class Table
+{
     protected $tableColumns = [];
 
-    public function __construct(){
+    public function __construct()
+    {
         $this->mapPropertiesToColumns();
     }
 
-    public function getTableColumns(){
+    public function getTableColumns(): array
+    {
         return $this->tableColumns;
     }
 
-    public function mapPropertiesToColumns(){
+    public function mapPropertiesToColumns()
+    {
         $reflection = new ReflectionClass($this);
         $properties = $reflection->getProperties(ReflectionProperty::IS_PUBLIC | ReflectionProperty::IS_PROTECTED | ReflectionProperty::IS_PRIVATE);
 
-        foreach($properties as $property) {
+        foreach ($properties as $property) {
             $this->tableColumns[$property->getName()] = $this->{$property->getName()};
         }
-    }   
+    }
 }

@@ -46,12 +46,14 @@ class BeneficiariesManager extends BaseManager
         return $result; 
     }
 
-    public function postAdd(array $body): array {
+    public function postAdd(array $body): array 
+    {
         $add = $this->beneficiariesStorage->postAdd($body);
         return $add;
     }
 
-    public function getId(int $id): array{
+    public function getId(int $id): array
+    {
         $check = $this->beneficiariesStorage->getId($id);
         return $check;
     }

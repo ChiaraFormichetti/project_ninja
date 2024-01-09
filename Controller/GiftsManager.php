@@ -14,7 +14,8 @@ class GiftsManager extends BaseManager
     }
 
 
-    public function getType(string $code): array{
+    public function getType(string $code): array
+    {
         $check = $this->giftsStorage->getType($code);
         return $check;
     }

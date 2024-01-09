@@ -222,6 +222,14 @@ async function createGiftDiv(codeValue) {
                         }
                     },
                     {
+                        tagName: 'img',
+                        attributes:{
+                            src: gift.photo,
+                            class: 'photo',
+                        },
+                        parentId: `gift-${gift.id}`,
+                    },
+                    {
                         tagName: 'button',
                         content: 'x',
                         attributes: {
