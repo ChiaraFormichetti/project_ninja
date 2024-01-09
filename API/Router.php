@@ -47,6 +47,7 @@ class Router
 
         $service = $this->instantiateService($serviceName, $request);
 
+        
         $result = $service->$method($request);
         //controllare se il metodo esiste prima di richiamarlo e settare gli errori in caso negativo
 
@@ -54,7 +55,7 @@ class Router
 
     }
 
-    private function instantiateService(string $serviceName, Request $request):object
+    private function instantiateService(string $serviceName, Request $request): object
      {
         $serviceClassName = '\\Api\\Service\\' . ucwords($serviceName) . 'Service';
 

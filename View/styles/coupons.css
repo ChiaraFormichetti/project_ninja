@@ -1,10 +1,10 @@
-body{
+body {
     text-align: center;
     margin-inline: 15%;
     background-color: #e5dbce;
 }
 
-h1{
+h1 {
     background-color: #f5e9ff;
     padding: 30px;
     margin-top: -7px;
@@ -12,11 +12,13 @@ h1{
     border-radius: 15px;
     border-style: groove;
 }
-h2{
+
+h2 {
     margin-block: auto;
     color: #39009d;
 }
-.init-form{
+
+.init-form {
     gap: 10px;
     display: flex;
     flex-direction: column;
@@ -24,19 +26,21 @@ h2{
     align-items: center;
 }
 
-h3{
+h3 {
     color: brown;
 }
-h4{
+
+h4 {
     font-size: smaller;
     color: maroon;
 }
-input{
+
+input {
     text-align: center;
 }
 
 
-.coupon-insert{
+.coupon-insert {
     margin: 10px;
     padding: 10px;
     background-color: #e4d4ff;
@@ -49,7 +53,7 @@ input{
     align-items: center;
 }
 
-.gift-div{
+.gift-div {
     color: black;
     padding: 15px;
     font-size: medium;
@@ -60,14 +64,15 @@ input{
     align-content: center;
     align-items: stretch;
 }
-.beneficiaries-form{
+
+.beneficiaries-form {
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
 }
 
-.gift{
+.gift {
     white-space: pre-line;
     border: inset;
     padding: 7px;
@@ -79,43 +84,44 @@ input{
     align-items: center;
 }
 
-.photo{
+.photo {
     width: 150px;
     height: 150px;
 }
 
-.chosen{
+.chosen {
     border: double;
     padding: 1px;
     margin: 5px;
     color: darkred;
 }
 
-.spacer{
+.spacer {
     padding: 5px;
 }
 
 
-.verify{
+.verify {
     padding: 2px;
     color: blue;
 }
 
-.selected-gift{
+.selected-gift {
     border: 2px solid red;
 }
-p{
+
+p {
     color: red;
 }
 
-.claim-gift{
+.claim-gift {
     border-style: groove;
     border-color: chocolate;
     padding: 3px;
     margin: 2px;
 }
 
-.success{
+.success {
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -123,4 +129,3 @@ p{
     margin: 10px;
     gap: 20px;
 }
-

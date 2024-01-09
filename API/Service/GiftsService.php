@@ -25,7 +25,7 @@ class GiftsService extends BaseService
         $param = null;
 
         $methodName = 'get' . ucfirst($action);
-
+        
         if (count($values) === 1 && preg_match('/^[A-Z]{1,10}$/', $values[0])) {
             $param = $values[0];
             if (method_exists($this->giftsManager, $methodName)) {

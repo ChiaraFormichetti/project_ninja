@@ -14,19 +14,13 @@ let reload = false;
 form.addEventListener('submit', async (event) => {
     event.preventDefault();
     const codeValue = inputCode.value.trim();
-    const couponRegex = /\d{3}[A-Z]{2}\d{2}/;
-    if (couponRegex.test(codeValue)) {
         let coupon = await checkCodeAvailability(codeValue);
         if (coupon) {
             createCodeDiv(coupon);
             usedCode = coupon.code;
             usedType = coupon.type;
             createBeneficiariesForm(codeValue);
-        }
-    } else {
-        alert("Il codice inserite non è nel formato richiesto!");
-    }
-
+    } 
 });
 
 
@@ -158,7 +152,7 @@ async function createBeneficiariesForm(codeValue) {
 }
 
 async function checkCodeAvailability(codeValue) {
-
+    let result = false;
     let url = commonSelector.apiCodesURL;
     url += `check/${codeValue}`;
     try {
@@ -166,13 +160,12 @@ async function checkCodeAvailability(codeValue) {
         if (!codeCoupon.length) {
             alert("Il coupon inserito non è più valido");
         } else {
-            let coupon = codeCoupon[0];
-            console.log(coupon);
-            return coupon;
+           result = codeCoupon[0];
         }
     } catch (error) {
         console.error("Errore nel controllo del codice coupon", error);
     }
+    return result;
 }
 
 
@@ -284,7 +277,6 @@ async function createGiftDiv(codeValue) {
 
 async function redeemGift(codeValue) {
     let check = checkBeneficiaries();
-    debugger;
     let lastCheckForCode = await checkCodeAvailability(codeValue);
     if (lastCheckForCode) {
         if (selectedGiftId && check) {
@@ -387,6 +379,7 @@ function checkBeneficiaries() {
 }
 
 function giftSelection(id) {
+    //controlla che ci sia effettivamente l'html  dinamico
     const verifiedDiv = insertDiv.querySelector(".gift-div");
     const gift = verifiedDiv.querySelector(`#gift-${id}`);
 
@@ -396,7 +389,6 @@ function giftSelection(id) {
     gift.classList.add('selected-gift');
 
     selectedGiftId = id;
-    console.log(selectedGiftId);
     return selectedGiftId;
 
 };
@@ -444,7 +436,7 @@ function verifyInput(modified = false) {
                 }
             ]
             createHtml(verificationText);
-        }
+        }//direttamente da db
         const today = new Date();
         const year = today.getFullYear();
         const month = (today.getMonth() + 1).toString().padStart(2, '0'); // Aggiunge uno zero iniziale se il mese è inferiore a 10
@@ -461,7 +453,6 @@ function verifyInput(modified = false) {
         if (modified) {
             alert("Dati modificati");
         }
-        console.log(beneficiaries);
         return beneficiaries;
     } else {
         alert('Dati non validi. Si prega di controllare nuovamente i campi.');

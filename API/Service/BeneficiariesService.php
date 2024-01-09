@@ -34,6 +34,7 @@ class BeneficiariesService extends BaseService
                 if (empty($result['errors'])) {
                     $this->response->setData($result['data']);
                 } else {
+                    //via tutti i message
                     $this->response->setErrors(['message' => $result['errors']]);
                     $this->response->setSuccess(false);
                 }
